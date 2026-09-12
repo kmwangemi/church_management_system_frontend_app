@@ -1,0 +1,43 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
+  "extends": ["ultracite"],
+  "linter": {
+    "rules": {
+      "nursery": {
+        "noUnknownAtRule": "off",
+        "noShadow": "off",
+        "noNestedComponentDefinitions": "off"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off",
+        "noExplicitAny": "off", // THIS WILL BE REVIEWD
+        "noDocumentCookie": "off"
+      },
+      "a11y": {
+        "noSvgWithoutTitle": "off"
+        // "useFocusableInteractive": "off"
+      },
+      "style": {
+        "useBlockStatements": "off",
+        "noNestedTernary": "off",
+        "noNonNullAssertion": "off",
+        "useConsistentMemberAccessibility": "off",
+        "noEnum": "off"
+      },
+      "complexity": {
+        "noForEach": "off",
+        "noExcessiveCognitiveComplexity": "off"
+      },
+      "performance": {
+        "noNamespaceImport": "off"
+      }
+    }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "off"
+      }
+    }
+  }
+}
