@@ -71,7 +71,12 @@ import {
   GENDER_OPTIONS,
   getRolesForPosition,
 } from '@/lib/utils';
-import { adminDataSchema, type AdminPayload } from '@/lib/validations/users';
+import {
+  adminDataSchema,
+  adminEditSchema,
+  type AdminPayload,
+  type AdminEditPayload,
+} from '@/lib/validations/users';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   AlertCircle,
@@ -354,7 +359,7 @@ export function ManageChurchUsersDialog({
             </Select>
             <Button onClick={() => setAddUserDialogOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              Add User
+              Add Church Administrator
             </Button>
           </div>
           {/* Users Table */}
@@ -396,8 +401,13 @@ export function ManageChurchUsersDialog({
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <div className="font-medium">
-                              {member.user.name}
+                            <div className="font-medium flex items-center gap-2">
+                              <span>{member.user.name}</span>
+                              {(member.membershipNumber || member.memberId) && (
+                                <span className="font-mono text-[11px] font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">
+                                  {member.membershipNumber || member.memberId}
+                                </span>
+                              )}
                             </div>
                             <div className="text-muted-foreground text-sm">
                               {member.user.email}
@@ -574,8 +584,8 @@ function AddUserDialog({
       email: '',
       phoneNumber: '',
       gender: 'MALE',
-      position: '',
-      role: undefined,
+      position: 'Church Administrator',
+      role: ['ADMIN'] as any,
       teamId: '',
       address: {
         street: '',
@@ -588,9 +598,7 @@ function AddUserDialog({
       confirmPassword: '',
     },
   });
-  const { reset, watch } = form;
-  const watchPosition = watch('position');
-  const CHURCH_ROLE_OPTIONS = getRolesForPosition(watchPosition);
+  const { reset } = form;
   const onSubmit = (payload: AdminPayload) => {
     addMember(
       {
@@ -601,10 +609,10 @@ function AddUserDialog({
         phoneNumber: payload.phoneNumber,
         password: payload.password,
         gender: payload.gender,
-        position: payload.position,
+        position: 'Church Administrator',
         address: payload.address,
-        teamId: payload.teamId,
-        role: payload.role,
+        teamId: payload.teamId || undefined,
+        role: ['ADMIN'],
         sendWelcomeEmail: payload.sendWelcomeEmail,
       },
       {
@@ -622,10 +630,10 @@ function AddUserDialog({
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            Add New User to {capitalizeFirstLetterOfEachWord(church.name)}
+            Add Church Administrator to {capitalizeFirstLetterOfEachWord(church.name)}
           </DialogTitle>
           <DialogDescription>
-            Create a new user account with specific role and permissions
+            Create the primary church administrator for {church.name}. The church administrator will be assigned to the main branch and can manage other church users.
           </DialogDescription>
         </DialogHeader>
         {isError && <RenderApiError error={error} />}
@@ -825,92 +833,50 @@ function AddUserDialog({
                 </div>
               </CardContent>
             </Card>
-            {/* Church Information */}
+            {/* Church Information (Auto-picked) */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Church className="h-5 w-5" />
                   <span>Church Information</span>
                 </CardTitle>
-                <CardDescription>Role and branch assignments</CardDescription>
+                <CardDescription>
+                  Automatically assigned role, position, and branch
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="position"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Church Position{' '}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select church position" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {CHURCH_POSITION_OPTIONS.map((option) => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="role"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Roles & Permissions{' '}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <MultiSelect
-                            onChange={field.onChange}
-                            options={CHURCH_ROLE_OPTIONS}
-                            placeholder="Select roles & permissions"
-                            selected={field.value || []}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <div className="rounded-lg border border-blue-200 bg-blue-50/70 p-4 text-sm">
+                  <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                    <div>
+                      <span className="font-semibold text-blue-900 block">Church:</span>
+                      <span className="text-blue-700">{church.name}</span>
+                    </div>
+                    <div>
+                      <span className="font-semibold text-blue-900 block">Assigned Role:</span>
+                      <span className="text-blue-700">Church Administrator</span>
+                    </div>
+                    <div>
+                      <span className="font-semibold text-blue-900 block">Assigned Branch:</span>
+                      <span className="text-blue-700">Main Branch (Headquarters)</span>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-xs text-blue-600">
+                    * This church administrator will have full management access to create other church users, pastors, and staff.
+                  </p>
                 </div>
-                <FormField
-                  control={form.control}
-                  name="teamId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Branch <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <BranchCombobox
-                          className="w-full"
-                          onChange={field.onChange}
-                          placeholder="Search and select a branch"
-                          value={field.value}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              </CardContent>
+            </Card>
+
+            {/* Security / Password */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Shield className="h-5 w-5" />
+                  <span>Account Security</span>
+                </CardTitle>
+                <CardDescription>Set initial login credentials</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <FormField
                     control={form.control}
@@ -965,10 +931,10 @@ function AddUserDialog({
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating User...
+                    Creating Administrator...
                   </>
                 ) : (
-                  'Create User'
+                  'Create Administrator'
                 )}
               </Button>
             </div>
@@ -987,18 +953,12 @@ interface EditUserDialogProps {
   onSuccess: () => void;
 }
 
-function EditUserDialog({
-  open,
-  onOpenChange,
-  member,
-  onSuccess,
-}: EditUserDialogProps) {
+function EditUserDialog({ open, onOpenChange, member, onSuccess }: EditUserDialogProps) {
   const { mutate: updateMember, isPending: isLoading } = useAdminUpdateMember(
     member?.organizationId || ''
   );
-  type EditPayload = Partial<AdminPayload> & { status?: string };
-  const form = useForm<EditPayload>({
-    resolver: zodResolver(adminDataSchema.partial()),
+   const form = useForm<AdminEditPayload>({
+    resolver: zodResolver(adminEditSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -1006,7 +966,7 @@ function EditUserDialog({
       phoneNumber: '',
       gender: 'MALE',
       position: '',
-      role: undefined,
+      role: [],
       status: 'ACTIVE',
     },
   });
@@ -1030,15 +990,19 @@ function EditUserDialog({
         role: (Array.isArray(member.role)
           ? member.role
           : [member.role].filter(Boolean)) as any,
-        status: member.user.status,
+        status: (member.user.status?.toUpperCase() || 'ACTIVE') as
+          | 'ACTIVE'
+          | 'INACTIVE'
+          | 'SUSPENDED'
+          | 'PENDING',
       });
     }
   }, [member, form]);
-  const onSubmit = (payload: EditPayload) => {
+  const onSubmit = (payload: AdminEditPayload) => {
     if (!member) return;
     updateMember(
       {
-        userId: member.id,
+        userId: member.user.id,
         organizationId: member.organizationId,
         firstName: payload.firstName,
         lastName: payload.lastName,

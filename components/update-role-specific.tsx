@@ -51,21 +51,13 @@ export const RenderMemberUpdate: React.FC<RestSpecificFormProps> = ({
 };
 
 export const RenderStaffUpdate: React.FC<StaffUpdateFormProps> = ({
-  roles,
   form,
 }) => {
-  if (hasRole(roles, 'STAFF')) {
-    return <StaffUpdateCard form={form} />;
-  }
-  return null;
+  return <StaffUpdateCard form={form} />;
 };
 
 export const RenderVolunteerUpdate: React.FC<StaffUpdateFormProps> = ({
-  roles,
   form,
 }) => {
-  if (hasRole(roles, 'VOLUNTEER')) {
-    return <VolunteerUpdateCard form={form} />;
-  }
-  return null;
+  return <VolunteerUpdateCard form={form} />;
 };

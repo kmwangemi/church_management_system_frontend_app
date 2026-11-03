@@ -43,29 +43,37 @@ import {
 } from '@/components/ui/chart';
 import { Progress } from '@/components/ui/progress';
 
+import { useSuperAdminSystemHealth } from '@/hooks/api/use-superadmin';
+
 export default function SystemHealthPage() {
+  const { data: healthData, isFetching, refetch } = useSuperAdminSystemHealth();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
-  // Simulate real-time data updates
+  // Real-time data updates
   useEffect(() => {
-    const interval = setInterval(() => {
-      setLastUpdated(new Date());
-    }, 30_000); // Update every 30 seconds
+    if (healthData?.timestamp) {
+      setLastUpdated(new Date(healthData.timestamp));
+    }
+  }, [healthData]);
 
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true);
-    setTimeout(() => {
-      setIsRefreshing(false);
-      setLastUpdated(new Date());
-    }, 2000);
+    await refetch();
+    setIsRefreshing(false);
+    setLastUpdated(new Date());
   };
 
+
   // System metrics data
-  const systemMetrics = [
+  const metricIconMap: Record<string, any> = {
+    'Server Uptime': Server,
+    'Database Performance': Database,
+    'API Response Time': Activity,
+    'Network Latency': Wifi,
+  };
+
+  const defaultMetrics = [
     {
       name: 'Server Uptime',
       value: 99.97,
@@ -99,6 +107,14 @@ export default function SystemHealthPage() {
       target: 90.0,
     },
   ];
+
+  const systemMetrics = (healthData?.metrics && healthData.metrics.length > 0)
+    ? healthData.metrics.map((m: any) => ({
+        ...m,
+        icon: metricIconMap[m.name] || Server,
+      }))
+    : defaultMetrics;
+
 
   const resourceUsage = [
     {
@@ -291,10 +307,11 @@ export default function SystemHealthPage() {
 
       {/* System Overview */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {systemMetrics.map((metric) => (
+        {systemMetrics.map((metric: any) => (
           <Card key={metric.name}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="font-medium text-sm">
+
                 {metric.name}
               </CardTitle>
               <metric.icon className="h-4 w-4 text-muted-foreground" />

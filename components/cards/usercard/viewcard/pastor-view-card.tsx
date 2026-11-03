@@ -14,8 +14,8 @@ export const PastorViewCard: React.FC<UserViewProps> = ({ user }) => {
         <Label className="font-medium text-sm" htmlFor={''}>
           Pastor ID
         </Label>
-        <p className="text-muted-foreground text-sm">
-          {user.pastorDetails.pastorId}
+        <p className="font-mono text-sm font-semibold text-primary">
+          {user.pastorDetails.pastorId || user.membershipNumber || user.memberId || 'N/A'}
         </p>
       </div>
       <div>

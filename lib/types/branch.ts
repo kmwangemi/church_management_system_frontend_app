@@ -3,6 +3,8 @@ import type { Address } from '@/lib/types';
 export interface BranchAddResponse {
   churchId: string;
   branchName: string;
+  email?: string;
+  phoneNumber?: string;
   address: Address;
   capacity: number;
   establishedDate: string;

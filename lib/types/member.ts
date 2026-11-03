@@ -5,6 +5,8 @@ export interface MembersResponse {
 
 export interface Member {
   id: string;
+  membershipNumber?: string;
+  memberId?: string;
   organizationId: string;
   userId: string;
   role: string[];
@@ -17,6 +19,8 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  membershipNumber?: string;
+  memberId?: string;
   image: string | null;
   phoneNumber: string;
   occupation: string | null;

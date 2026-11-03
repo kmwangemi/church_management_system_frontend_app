@@ -36,12 +36,12 @@ export const MemberUpdateCard: React.FC<MemberUpdateCardProps> = ({
       <CardContent className="space-y-4">
         <FormField
           control={form.control}
-          name="memberUpdate.memberId"
+          name="memberDetails.memberId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Member ID</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input placeholder="Auto-generated Member ID" {...field} value={field.value || ''} className="font-mono bg-muted/40 font-semibold" readOnly />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -49,7 +49,7 @@ export const MemberUpdateCard: React.FC<MemberUpdateCardProps> = ({
         />
         <FormField
           control={form.control}
-          name="memberUpdate.membershipDate"
+          name="memberDetails.membershipDate"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Membership Date</FormLabel>
@@ -71,11 +71,11 @@ export const MemberUpdateCard: React.FC<MemberUpdateCardProps> = ({
         />
         <FormField
           control={form.control}
-          name="memberUpdate.membershipStatus"
+          name="memberDetails.membershipStatus"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Membership Status</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select onValueChange={field.onChange} value={field.value || 'active'}>
                 <FormControl>
                   <SelectTrigger className="cursor-pointer">
                     <SelectValue placeholder="Select membership status" />
@@ -99,7 +99,7 @@ export const MemberUpdateCard: React.FC<MemberUpdateCardProps> = ({
         />
         <FormField
           control={form.control}
-          name="memberUpdate.baptismDate"
+          name="memberDetails.baptismDate"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Baptism Date</FormLabel>
@@ -121,7 +121,7 @@ export const MemberUpdateCard: React.FC<MemberUpdateCardProps> = ({
         />
         <FormField
           control={form.control}
-          name="memberUpdate.joinedDate"
+          name="memberDetails.joinedDate"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Joined Date</FormLabel>

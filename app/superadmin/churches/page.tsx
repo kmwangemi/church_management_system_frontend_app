@@ -464,12 +464,13 @@ export default function ChurchesPage() {
                             <Avatar className="h-10 w-10">
                               <AvatarImage src={church?.logo || undefined} />
                               <AvatarFallback>
-                                {church.name
+                                {(church.name || 'CH')
                                   .split(' ')
+                                  .filter(Boolean)
                                   .map((n: string) => n[0])
                                   .join('')
                                   .slice(0, 2)
-                                  .toUpperCase()}
+                                  .toUpperCase() || 'CH'}
                               </AvatarFallback>
                             </Avatar>
                             <div>
@@ -514,7 +515,9 @@ export default function ChurchesPage() {
                           <div className="flex items-center">
                             <Users className="mr-1 h-4 w-4 text-muted-foreground" />
                             {(
-                              churches?.stats?.totalMembers || 0
+                              church?._count?.members ??
+                              church?.subscription?.currentUsers ??
+                              0
                             ).toLocaleString()}
                           </div>
                         </TableCell>
@@ -602,6 +605,7 @@ export default function ChurchesPage() {
       {/* Dialogs */}
       <ViewChurchDetailsDialog
         church={selectedChurch}
+        onEdit={handleEditChurch}
         onOpenChange={setViewDialogOpen}
         open={viewDialogOpen}
       />

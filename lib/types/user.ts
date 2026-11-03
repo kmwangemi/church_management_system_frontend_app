@@ -145,6 +145,9 @@ export interface VisitorDetails {
 
 export interface UserResponse {
   _id: string;
+  id?: string;
+  membershipNumber?: string;
+  memberId?: string;
   firstName: string;
   lastName: string;
   email?: string;

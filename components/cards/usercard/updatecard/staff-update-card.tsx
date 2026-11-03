@@ -35,12 +35,12 @@ export const StaffUpdateCard: React.FC<StaffUpdateCardProps> = ({ form }) => {
       <CardContent className="space-y-4">
         <FormField
           control={form.control}
-          name="staffUpdate.staffId"
+          name="staffDetails.staffId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Staff ID</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input placeholder="Auto-generated Staff ID" {...field} value={field.value || ''} className="font-mono bg-muted/40 font-semibold" readOnly />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -49,12 +49,12 @@ export const StaffUpdateCard: React.FC<StaffUpdateCardProps> = ({ form }) => {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
-            name="staffUpdate.jobTitle"
+            name="staffDetails.jobTitle"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Job Title</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input placeholder="Enter job title" {...field} value={field.value || ''} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -62,12 +62,12 @@ export const StaffUpdateCard: React.FC<StaffUpdateCardProps> = ({ form }) => {
           />
           <FormField
             control={form.control}
-            name="staffUpdate.department"
+            name="staffDetails.department"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Department</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input placeholder="Enter department" {...field} value={field.value || ''} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -76,11 +76,11 @@ export const StaffUpdateCard: React.FC<StaffUpdateCardProps> = ({ form }) => {
         </div>
         <FormField
           control={form.control}
-          name="staffUpdate.employmentType"
+          name="staffDetails.employmentType"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Employment Type</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select onValueChange={field.onChange} value={field.value || 'full-time'}>
                 <FormControl>
                   <SelectTrigger className="cursor-pointer">
                     <SelectValue placeholder="Select employment type" />
@@ -104,7 +104,7 @@ export const StaffUpdateCard: React.FC<StaffUpdateCardProps> = ({ form }) => {
         />
         <FormField
           control={form.control}
-          name="staffUpdate.startDate"
+          name="staffDetails.startDate"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Start Date</FormLabel>
@@ -126,7 +126,7 @@ export const StaffUpdateCard: React.FC<StaffUpdateCardProps> = ({ form }) => {
         />
         <FormField
           control={form.control}
-          name="staffUpdate.salary"
+          name="staffDetails.salary"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Salary</FormLabel>
@@ -134,6 +134,7 @@ export const StaffUpdateCard: React.FC<StaffUpdateCardProps> = ({ form }) => {
                 <Input
                   type="number"
                   {...field}
+                  value={field.value ?? 0}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
@@ -143,7 +144,7 @@ export const StaffUpdateCard: React.FC<StaffUpdateCardProps> = ({ form }) => {
         />
         <FormField
           control={form.control}
-          name="staffUpdate.isActive"
+          name="staffDetails.isActive"
           render={({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
@@ -151,7 +152,7 @@ export const StaffUpdateCard: React.FC<StaffUpdateCardProps> = ({ form }) => {
               </div>
               <FormControl>
                 <Switch
-                  checked={field.value}
+                  checked={!!field.value}
                   onCheckedChange={field.onChange}
                 />
               </FormControl>

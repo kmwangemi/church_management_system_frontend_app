@@ -42,6 +42,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { MultiSelect } from '../multi-select';
+import { useCreateSuperAdminUser } from '@/hooks/api/use-superadmin';
 
 const adminSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -107,21 +108,28 @@ export function AddAdminForm({ onCloseDialog }: AddAdminFormProps) {
       sendWelcomeEmail: false,
     },
   });
+  const { mutateAsync: createUserMutation } = useCreateSuperAdminUser();
+
 
   const onSubmit = async (data: AdminForm) => {
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      // biome-ignore lint/suspicious/noConsole: ignore
-      console.log('User data:', data);
+      await createUserMutation({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phoneNumber: data.phoneNumber,
+        role: data.role || 'ADMIN',
+        password: data.password || 'User@123',
+      });
       onCloseDialog();
     } catch (error) {
-      // biome-ignore lint/suspicious/noConsole: ignore
       console.error('Error adding user:', error);
     } finally {
       setIsLoading(false);
     }
   };
+
 
   return (
     <Form {...form}>

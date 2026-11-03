@@ -34,15 +34,31 @@ export const useRegisterUser = () => {
 };
 
 /* ========== FETCH ALL USERS ========== */
-const fetchUsers = async (page = 1, search = ''): Promise<UserListResponse> => {
-  const { data } = await apiClient.get(`/church/users?page=${page}&search=${search}`);
+const fetchUsers = async (
+  page = 1,
+  search = '',
+  pageSize = 50,
+  organizationId?: string
+): Promise<UserListResponse> => {
+  const params = new URLSearchParams({
+    page: String(page),
+    pageSize: String(pageSize),
+  });
+  if (search) params.append('search', search);
+  if (organizationId) params.append('organizationId', organizationId);
+  const { data } = await apiClient.get(`/church/users?${params.toString()}`);
   return data;
 };
 
-export const useFetchUsers = (page = 1, search = '') => {
+export const useFetchUsers = (
+  page = 1,
+  search = '',
+  pageSize = 50,
+  organizationId?: string
+) => {
   return useQuery({
-    queryKey: ['users', page, search],
-    queryFn: () => fetchUsers(page, search),
+    queryKey: ['users', page, search, pageSize, organizationId],
+    queryFn: () => fetchUsers(page, search, pageSize, organizationId),
   });
 };
 
@@ -81,6 +97,8 @@ export const useUpdateUserById = (userId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       queryClient.invalidateQueries({ queryKey: ['user', userId] });
+      queryClient.invalidateQueries({ queryKey: ['organization-members'] });
+      queryClient.invalidateQueries({ queryKey: ['member-details'] });
       toast.success('User has been updated successfully.', {
         style: successToastStyle,
       });

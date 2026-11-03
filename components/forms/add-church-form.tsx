@@ -130,11 +130,14 @@ export function AddChurchForm({ onCloseDialog }: AddChurchFormProps) {
   const handleLogoUpload = async () => {
     if (!logoFile) return;
     try {
+      setLogoUploading(true);
       const uploadResponse = await upload(logoFile);
       setValue('churchLogoUrl', uploadResponse || '');
       toast.success('Logo uploaded successfully');
-    } catch (_error) {
-      toast.error('Failed to upload logo');
+    } catch (_error: any) {
+      toast.error(_error?.message || 'Failed to upload logo');
+    } finally {
+      setLogoUploading(false);
     }
   };
   // Handle logo removal
@@ -764,12 +767,14 @@ export function AddChurchForm({ onCloseDialog }: AddChurchFormProps) {
                   </h4>
                   <ul className="space-y-1 text-green-700 text-sm">
                     <li>
-                      • Church organization will be created with Better Auth
+                      • Church organization will be created with the provided details and subscription plan
                     </li>
-                    <li>• You'll be set as the organization owner</li>
+                    <li>
+                      • A primary "Main Branch" is automatically created so you can immediately assign users and leaders
+                    </li>
                     <li>• Organization will be set as active automatically</li>
                     <li>
-                      • You can then invite other members and manage roles
+                      • You can add more branches, manage users, and configure church settings anytime
                     </li>
                   </ul>
                 </div>

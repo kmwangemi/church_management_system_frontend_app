@@ -112,6 +112,21 @@ import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+const getBranchAddress = (b: any) => {
+  if (Array.isArray(b?.address) && b.address.length > 0) {
+    return b.address[0];
+  }
+  if (b?.address && typeof b.address === 'object' && !Array.isArray(b.address)) {
+    return b.address;
+  }
+  if (b?.metadata?.address) {
+    return typeof b.metadata.address === 'object'
+      ? b.metadata.address
+      : { street: b.metadata.address };
+  }
+  return {};
+};
+
 export default function BranchDetailsPage({
   params,
 }: {
@@ -177,22 +192,23 @@ export default function BranchDetailsPage({
   });
   useEffect(() => {
     if (branch) {
+      const branchAddr = getBranchAddress(branch);
       const formData: any = {
         branchName: capitalizeFirstLetter(branch?.name || ''),
         email: branch?.email || undefined, // undefined instead of empty string
-        phoneNumber: branch?.phoneNumber || '',
+        phoneNumber: branch?.phoneNumber || (branch as any)?.phone || '',
         address: {
-          street: branch?.address?.[0]?.street
-            ? capitalizeFirstLetter(branch.address[0].street)
+          street: branchAddr?.street
+            ? capitalizeFirstLetter(branchAddr.street)
             : undefined,
-          city: branch?.address?.[0]?.city
-            ? capitalizeFirstLetter(branch.address[0].city)
+          city: branchAddr?.city
+            ? capitalizeFirstLetter(branchAddr.city)
             : undefined,
-          state: branch?.address?.[0]?.state
-            ? capitalizeFirstLetter(branch.address[0].state)
+          state: branchAddr?.state
+            ? capitalizeFirstLetter(branchAddr.state)
             : undefined,
-          zipCode: branch?.address?.[0]?.zipCode || undefined,
-          country: branch?.address?.[0]?.country || undefined,
+          zipCode: branchAddr?.zipCode || branchAddr?.zip_code || undefined,
+          country: branchAddr?.country || undefined,
         },
         establishedDate: branch?.establishedDate || undefined,
         capacity: branch?.capacity || undefined,
@@ -739,23 +755,15 @@ export default function BranchDetailsPage({
                     ) : (
                       <>
                         <div className="flex items-center space-x-2">
-                          <MapPin className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">
-                            {capitalizeFirstLetter(
-                              branch?.address?.[0]?.street ?? 'Not Provided'
-                            )}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-2">
                           <Phone className="h-4 w-4 text-muted-foreground" />
                           <span className="text-sm">
-                            {branch?.phoneNumber ?? 'Not Provided'}
+                            {branch?.phoneNumber || (branch as any)?.phone || 'Not Provided'}
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Mail className="h-4 w-4 text-muted-foreground" />
                           <span className="text-sm">
-                            {branch?.email ?? 'Not Provided'}
+                            {branch?.email || 'Not Provided'}
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -767,6 +775,74 @@ export default function BranchDetailsPage({
                               : 'Not Provided'}
                           </span>
                         </div>
+
+                        {/* Address Information Section */}
+                        {(() => {
+                          const branchAddr = getBranchAddress(branch);
+                          const street = branchAddr?.street;
+                          const city = branchAddr?.city;
+                          const state = branchAddr?.state;
+                          const zipCode = branchAddr?.zipCode || branchAddr?.zip_code;
+                          const country = branchAddr?.country;
+                          const hasAddress = Boolean(street || city || state || zipCode || country);
+
+                          return (
+                            <div className="mt-4 rounded-lg border bg-muted/40 p-4 space-y-3">
+                              <div className="flex items-center space-x-2 font-medium text-sm">
+                                <MapPin className="h-4 w-4 text-primary" />
+                                <span>Address Information</span>
+                              </div>
+                              {hasAddress ? (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                                  <div>
+                                    <span className="text-xs text-muted-foreground block">
+                                      Street Address
+                                    </span>
+                                    <span className="font-medium">
+                                      {street ? capitalizeFirstLetter(street) : 'Not Provided'}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <span className="text-xs text-muted-foreground block">
+                                      City
+                                    </span>
+                                    <span className="font-medium">
+                                      {city ? capitalizeFirstLetter(city) : 'Not Provided'}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <span className="text-xs text-muted-foreground block">
+                                      State / Region
+                                    </span>
+                                    <span className="font-medium">
+                                      {state ? capitalizeFirstLetter(state) : 'Not Provided'}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <span className="text-xs text-muted-foreground block">
+                                      Postal / Zip Code
+                                    </span>
+                                    <span className="font-medium">
+                                      {zipCode || 'Not Provided'}
+                                    </span>
+                                  </div>
+                                  <div className="sm:col-span-2">
+                                    <span className="text-xs text-muted-foreground block">
+                                      Country
+                                    </span>
+                                    <span className="font-medium">
+                                      {country ? capitalizeFirstLetter(country) : 'Kenya'}
+                                    </span>
+                                  </div>
+                                </div>
+                              ) : (
+                                <p className="text-sm text-muted-foreground">
+                                  No address provided
+                                </p>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </>
                     )}
                   </CardContent>
@@ -893,7 +969,7 @@ export default function BranchDetailsPage({
                               {filteredUsers?.map((user) => (
                                 <TableRow
                                   className="hover:bg-accent"
-                                  key={user._id}
+                                  key={user._id || user.id}
                                 >
                                   <TableCell>
                                     <div className="flex items-center space-x-3">
@@ -942,7 +1018,9 @@ export default function BranchDetailsPage({
                                   </TableCell>
                                   <TableCell>
                                     <span className="text-foreground text-sm">
-                                      {formatToNewDate(user.createdAt)}
+                                      {user.createdAt
+                                        ? formatToNewDate(new Date(user.createdAt))
+                                        : 'Not Provided'}
                                     </span>
                                   </TableCell>
                                   <TableCell className="text-right">

@@ -27,6 +27,7 @@ export const useRegisterBranch = () => {
     mutationFn: registerBranch,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['branches'] });
+      queryClient.invalidateQueries({ queryKey: ['teams'] });
       toast.success('Church branch has been created successfully.', {
         style: successToastStyle,
       });
@@ -186,9 +187,48 @@ export const useDeleteBranchById = () => {
     mutationFn: deleteBranchById,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['branches'] });
+      queryClient.invalidateQueries({ queryKey: ['teams'] });
       toast.success('Branch has been deleted successfully.', {
         style: successToastStyle,
       });
+    },
+  });
+};
+
+/* ========== ASSIGN MEMBER TO BRANCH ========== */
+const assignBranchMember = async ({
+  branchId,
+  payload,
+}: {
+  branchId: string;
+  payload: { userId: string; role?: string | string[]; position?: string };
+}) => {
+  const { data } = await apiClient.post(
+    `/church/branches/${branchId}/members`,
+    payload
+  );
+  return data;
+};
+
+export const useAssignBranchMember = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: assignBranchMember,
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['branchMembers'] });
+      queryClient.invalidateQueries({ queryKey: ['branch', variables.branchId] });
+      queryClient.invalidateQueries({ queryKey: ['branches'] });
+      queryClient.invalidateQueries({ queryKey: ['teams'] });
+      queryClient.invalidateQueries({ queryKey: ['organization-members'] });
+      queryClient.invalidateQueries({ queryKey: ['member-statistics'] });
+      toast.success('Member assigned to branch successfully.', {
+        style: successToastStyle,
+      });
+    },
+    onError: (error: any) => {
+      toast.error(
+        error?.response?.data?.detail || 'Failed to assign member to branch.'
+      );
     },
   });
 };
