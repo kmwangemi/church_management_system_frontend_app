@@ -35,26 +35,39 @@ import {
   Server,
   Shield,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSuperAdminSettings, useUpdateSuperAdminSettings } from '@/hooks/api/use-superadmin';
 
 export default function GlobalSettingsPage() {
+  const { data: settingsData } = useSuperAdminSettings();
+  const { mutateAsync: updateSettingsMutation } = useUpdateSuperAdminSettings();
+
   const [isLoading, setIsLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState<
     'idle' | 'saving' | 'saved' | 'error'
   >('idle');
 
-  // biome-ignore lint/suspicious/useAwait: ignore asynchronous operation
   const handleSave = async () => {
     setIsLoading(true);
     setSaveStatus('saving');
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await updateSettingsMutation({
+        siteName: systemSettings.siteName,
+        supportEmail: systemSettings.adminEmail,
+        maintenanceMode: systemSettings.maintenanceMode,
+        allowNewRegistrations: systemSettings.registrationEnabled,
+      });
       setSaveStatus('saved');
-      setIsLoading(false);
       setTimeout(() => setSaveStatus('idle'), 3000);
-    }, 2000);
+    } catch (_error) {
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
 
   const systemSettings = {
     siteName: 'ChurchHub Global',

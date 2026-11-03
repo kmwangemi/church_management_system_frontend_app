@@ -25,6 +25,7 @@ interface BranchComboboxProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  organizationId?: string;
 }
 
 export function BranchCombobox({
@@ -33,10 +34,12 @@ export function BranchCombobox({
   placeholder = 'Select branch...',
   className,
   disabled = false,
+  organizationId: propOrganizationId,
 }: BranchComboboxProps) {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const { organizationId } = useActiveOrganization();
+  const { organizationId: activeOrgId } = useActiveOrganization();
+  const organizationId = propOrganizationId || activeOrgId;
   // Fetch branches with search term
   const { data, isLoading } = useAdminTeams({
     organizationId,

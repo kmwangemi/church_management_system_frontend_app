@@ -4,6 +4,7 @@ import RenderApiError from '@/components/api-error';
 import { CountrySelect } from '@/components/country-list-input';
 import { DatePicker } from '@/components/date-picker';
 import { NumberInput } from '@/components/number-input';
+import { PhoneInput } from '@/components/phone-number-input';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -47,6 +48,8 @@ export function AddBranchForm({ onCloseDialog }: AddBranchFormProps) {
     resolver: zodResolver(addBranchSchema),
     defaultValues: {
       branchName: '',
+      email: '',
+      phoneNumber: '',
       pastorId: '',
       address: {
         street: '',
@@ -102,6 +105,42 @@ export function AddBranchForm({ onCloseDialog }: AddBranchFormProps) {
                   </FormItem>
                 )}
               />
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <FormField
+                  control={branchForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email (Optional)</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="branch@church.org"
+                          type="email"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={branchForm.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number (Optional)</FormLabel>
+                      <FormControl>
+                        <PhoneInput
+                          onChange={field.onChange}
+                          placeholder="Enter branch phone number"
+                          value={field.value}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <FormField
                 control={branchForm.control}
                 name="pastorId" // Form field stores just the user ID string

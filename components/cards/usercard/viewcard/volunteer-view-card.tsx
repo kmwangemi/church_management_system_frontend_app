@@ -26,8 +26,8 @@ export const VolunteerViewCard: React.FC<UserViewProps> = ({ user }) => {
             <Label className="font-medium text-sm" htmlFor={''}>
               Volunteer ID
             </Label>
-            <p className="text-muted-foreground text-sm">
-              {user.volunteerDetails.volunteerId}
+            <p className="font-mono text-sm font-semibold text-primary">
+              {user.volunteerDetails.volunteerId || user.membershipNumber || user.memberId || 'N/A'}
             </p>
           </div>
           <div>

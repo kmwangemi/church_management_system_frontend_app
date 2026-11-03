@@ -33,12 +33,12 @@ export const AdminUpdateCard: React.FC<AdminUpdateCardProps> = ({ form }) => {
       <CardContent className="space-y-4">
         <FormField
           control={form.control}
-          name="adminUpdate.adminId"
+          name="adminDetails.adminId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Admin ID</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input placeholder="Auto-generated Admin ID" {...field} value={field.value || ''} className="font-mono bg-muted/40 font-semibold" readOnly />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -46,31 +46,42 @@ export const AdminUpdateCard: React.FC<AdminUpdateCardProps> = ({ form }) => {
         />
         <FormField
           control={form.control}
-          name="adminUpdate.accessLevel"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Access Level</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger className="cursor-pointer">
-                    <SelectValue placeholder="Select access level" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent className="max-h-[400px] overflow-y-auto">
-                  {ADMIN_ACCESS_LEVEL_OPTIONS.map((option) => (
-                    <SelectItem
-                      className="cursor-pointer"
-                      key={option.value}
-                      value={option.value}
-                    >
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
+          name="adminDetails.accessLevel"
+          render={({ field }) => {
+            const currentVal = field.value ? String(field.value).toUpperCase() : 'NATIONAL';
+            return (
+              <FormItem>
+                <FormLabel>Access Level</FormLabel>
+                <Select
+                  onValueChange={(val) => {
+                    field.onChange(val);
+                    if (form.setValue) {
+                      form.setValue('adminUpdate.accessLevel', val);
+                    }
+                  }}
+                  value={currentVal}
+                >
+                  <FormControl>
+                    <SelectTrigger className="cursor-pointer">
+                      <SelectValue placeholder="Select access level" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="max-h-[400px] overflow-y-auto">
+                    {ADMIN_ACCESS_LEVEL_OPTIONS.map((option) => (
+                      <SelectItem
+                        className="cursor-pointer"
+                        key={option.value}
+                        value={option.value}
+                      >
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
       </CardContent>
     </Card>

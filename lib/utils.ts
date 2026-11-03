@@ -199,23 +199,56 @@ export const splitFullName = (
 export const CHURCH_POSITION_OPTIONS = [
   { value: 'bishop', label: 'Bishop' },
   { value: 'senior-pastor', label: 'Senior Pastor' },
-  { value: 'reverent', label: 'Reverent' },
   { value: 'pastor', label: 'Pastor' },
+  { value: 'reverent', label: 'Reverend' },
   { value: 'elder', label: 'Elder' },
+  { value: 'deacon', label: 'Deacon' },
   { value: 'church-administrator', label: 'Church Administrator' },
   { value: 'treasurer', label: 'Treasurer' },
   { value: 'secretary', label: 'Secretary' },
+  { value: 'department-leader', label: 'Department / Ministry Leader' },
   { value: 'member', label: 'Member' },
   { value: 'visitor', label: 'Visitor' },
 ];
 
 export const CHURCH_ROLE_OPTIONS = [
-  { value: 'ADMIN', label: 'Admin' },
-  { value: 'STAFF', label: 'Staff' },
-  { value: 'MEMBER', label: 'Member' },
-  { value: 'VOLUNTEER', label: 'Volunteer' },
-  { value: 'VISITOR', label: 'Visitor' },
+  { value: 'ADMIN', label: 'Admin (Full System Access)' },
+  { value: 'STAFF', label: 'Staff (Ministry & Operations)' },
+  { value: 'VOLUNTEER', label: 'Volunteer (Ministry Servant)' },
+  { value: 'MEMBER', label: 'Member (Congregant)' },
+  { value: 'VISITOR', label: 'Visitor (Guest)' },
 ];
+
+// Smart automatic role defaults based on church position
+export const getDefaultRolesForPosition = (
+  position?: string
+): ('ADMIN' | 'STAFF' | 'MEMBER' | 'VOLUNTEER' | 'VISITOR')[] => {
+  if (!position) return ['MEMBER'];
+  const pos = position.toLowerCase();
+  switch (pos) {
+    case 'church-administrator':
+    case 'administrator':
+    case 'admin':
+      return ['ADMIN'];
+    case 'senior-pastor':
+    case 'bishop':
+    case 'reverent':
+    case 'pastor':
+      return ['STAFF', 'ADMIN'];
+    case 'treasurer':
+    case 'secretary':
+      return ['STAFF'];
+    case 'elder':
+    case 'deacon':
+    case 'department-leader':
+      return ['MEMBER', 'VOLUNTEER'];
+    case 'visitor':
+      return ['VISITOR'];
+    case 'member':
+    default:
+      return ['MEMBER'];
+  }
+};
 
 // Staffs are paid while volunteers are not paid
 // Staffs are employed volunteers are not employed
@@ -225,67 +258,248 @@ export const CHURCH_ROLE_BY_POSITION: Record<
   { value: string; label: string }[]
 > = {
   bishop: [
-    { value: 'ADMIN', label: 'Admin' },
-    { value: 'STAFF', label: 'Staff' },
-    { value: 'MEMBER', label: 'Member' },
-    { value: 'VOLUNTEER', label: 'Volunteer' },
+    { value: 'ADMIN', label: 'Admin (Full System Access)' },
+    { value: 'STAFF', label: 'Staff (Ministry & Operations)' },
+    { value: 'MEMBER', label: 'Member (Congregant)' },
+    { value: 'VOLUNTEER', label: 'Volunteer (Ministry Servant)' },
   ],
   'senior-pastor': [
-    { value: 'ADMIN', label: 'Admin' },
-    { value: 'STAFF', label: 'Staff' },
-    { value: 'MEMBER', label: 'Member' },
-    { value: 'VOLUNTEER', label: 'Volunteer' },
+    { value: 'ADMIN', label: 'Admin (Full System Access)' },
+    { value: 'STAFF', label: 'Staff (Ministry & Operations)' },
+    { value: 'MEMBER', label: 'Member (Congregant)' },
+    { value: 'VOLUNTEER', label: 'Volunteer (Ministry Servant)' },
   ],
   reverent: [
-    { value: 'ADMIN', label: 'Admin' },
-    { value: 'STAFF', label: 'Staff' },
-    { value: 'MEMBER', label: 'Member' },
-    { value: 'VOLUNTEER', label: 'Volunteer' },
+    { value: 'ADMIN', label: 'Admin (Full System Access)' },
+    { value: 'STAFF', label: 'Staff (Ministry & Operations)' },
+    { value: 'MEMBER', label: 'Member (Congregant)' },
+    { value: 'VOLUNTEER', label: 'Volunteer (Ministry Servant)' },
   ],
   pastor: [
-    { value: 'ADMIN', label: 'Admin' },
-    { value: 'STAFF', label: 'Staff' },
-    { value: 'MEMBER', label: 'Member' },
-    { value: 'VOLUNTEER', label: 'Volunteer' },
+    { value: 'ADMIN', label: 'Admin (Full System Access)' },
+    { value: 'STAFF', label: 'Staff (Ministry & Operations)' },
+    { value: 'MEMBER', label: 'Member (Congregant)' },
+    { value: 'VOLUNTEER', label: 'Volunteer (Ministry Servant)' },
   ],
   elder: [
-    { value: 'ADMIN', label: 'Admin' },
-    { value: 'STAFF', label: 'Staff' },
-    { value: 'MEMBER', label: 'Member' },
-    { value: 'VOLUNTEER', label: 'Volunteer' },
+    { value: 'ADMIN', label: 'Admin (Full System Access)' },
+    { value: 'STAFF', label: 'Staff (Ministry & Operations)' },
+    { value: 'MEMBER', label: 'Member (Congregant)' },
+    { value: 'VOLUNTEER', label: 'Volunteer (Ministry Servant)' },
+  ],
+  deacon: [
+    { value: 'ADMIN', label: 'Admin (Full System Access)' },
+    { value: 'STAFF', label: 'Staff (Ministry & Operations)' },
+    { value: 'MEMBER', label: 'Member (Congregant)' },
+    { value: 'VOLUNTEER', label: 'Volunteer (Ministry Servant)' },
   ],
   'church-administrator': [
-    { value: 'ADMIN', label: 'Admin' },
-    { value: 'STAFF', label: 'Staff' },
-    { value: 'MEMBER', label: 'Member' },
-    { value: 'VOLUNTEER', label: 'Volunteer' },
+    { value: 'ADMIN', label: 'Admin (Full System Access)' },
+    { value: 'STAFF', label: 'Staff (Ministry & Operations)' },
+    { value: 'MEMBER', label: 'Member (Congregant)' },
+    { value: 'VOLUNTEER', label: 'Volunteer (Ministry Servant)' },
   ],
   treasurer: [
-    { value: 'ADMIN', label: 'Admin' },
-    { value: 'STAFF', label: 'Staff' },
-    { value: 'MEMBER', label: 'Member' },
-    { value: 'VOLUNTEER', label: 'Volunteer' },
+    { value: 'ADMIN', label: 'Admin (Full System Access)' },
+    { value: 'STAFF', label: 'Staff (Ministry & Operations)' },
+    { value: 'MEMBER', label: 'Member (Congregant)' },
+    { value: 'VOLUNTEER', label: 'Volunteer (Ministry Servant)' },
   ],
   secretary: [
-    { value: 'ADMIN', label: 'Admin' },
-    { value: 'STAFF', label: 'Staff' },
-    { value: 'MEMBER', label: 'Member' },
-    { value: 'VOLUNTEER', label: 'Volunteer' },
+    { value: 'ADMIN', label: 'Admin (Full System Access)' },
+    { value: 'STAFF', label: 'Staff (Ministry & Operations)' },
+    { value: 'MEMBER', label: 'Member (Congregant)' },
+    { value: 'VOLUNTEER', label: 'Volunteer (Ministry Servant)' },
+  ],
+  'department-leader': [
+    { value: 'ADMIN', label: 'Admin (Full System Access)' },
+    { value: 'STAFF', label: 'Staff (Ministry & Operations)' },
+    { value: 'MEMBER', label: 'Member (Congregant)' },
+    { value: 'VOLUNTEER', label: 'Volunteer (Ministry Servant)' },
   ],
   member: [
-    { value: 'ADMIN', label: 'Admin' },
-    { value: 'STAFF', label: 'Staff' },
-    { value: 'MEMBER', label: 'Member' },
-    { value: 'VOLUNTEER', label: 'Volunteer' },
+    { value: 'ADMIN', label: 'Admin (Full System Access)' },
+    { value: 'STAFF', label: 'Staff (Ministry & Operations)' },
+    { value: 'MEMBER', label: 'Member (Congregant)' },
+    { value: 'VOLUNTEER', label: 'Volunteer (Ministry Servant)' },
   ],
   visitor: [
-    { value: 'VISITOR', label: 'Visitor' },
-    { value: 'VOLUNTEER', label: 'Volunteer' },
+    { value: 'VISITOR', label: 'Visitor (Guest)' },
+    { value: 'VOLUNTEER', label: 'Volunteer (Ministry Servant)' },
+    { value: 'MEMBER', label: 'Member (Congregant)' },
   ],
 };
 
-export const getRolesForPosition = (position: string) =>
-  CHURCH_ROLE_BY_POSITION[position] || [];
+export const getRolesForPosition = (position?: string) => {
+  if (!position) return CHURCH_ROLE_OPTIONS;
+  return CHURCH_ROLE_BY_POSITION[position] || CHURCH_ROLE_OPTIONS;
+};
+
+export type SystemAccessLevel = 'NONE' | 'PORTAL' | 'STAFF' | 'ADMIN';
+export type MinistryTag = 'Member' | 'Volunteer' | 'Staff';
+
+export interface SystemAccessLevelOption {
+  value: SystemAccessLevel;
+  label: string;
+  description: string;
+  badge: string;
+}
+
+export const SYSTEM_ACCESS_LEVEL_OPTIONS: SystemAccessLevelOption[] = [
+  {
+    value: 'NONE',
+    label: 'None',
+    description: 'No system login. Stored for church directory and records only.',
+    badge: 'Directory Only',
+  },
+  {
+    value: 'PORTAL',
+    label: 'Member Portal',
+    description: 'Self-service login for giving, events, directory & profile.',
+    badge: 'Member Login',
+  },
+  {
+    value: 'STAFF',
+    label: 'Staff / Operations',
+    description: 'Management access for ministries, records, attendance & events.',
+    badge: 'Ministry Staff',
+  },
+  {
+    value: 'ADMIN',
+    label: 'Administrator',
+    description: 'Full administrative access to settings, finances, users & system.',
+    badge: 'Full Access',
+  },
+];
+
+export interface MinistryTagOption {
+  value: MinistryTag;
+  label: string;
+  description: string;
+}
+
+export const MINISTRY_TAG_OPTIONS: MinistryTagOption[] = [
+  {
+    value: 'Member',
+    label: 'Church Member',
+    description: 'Active congregant in the local church family.',
+  },
+  {
+    value: 'Volunteer',
+    label: 'Ministry Volunteer',
+    description: 'Unpaid servant serving in departments or church teams.',
+  },
+  {
+    value: 'Staff',
+    label: 'Employed / Key Staff',
+    description: 'Employed personnel or official church ministry staff.',
+  },
+];
+
+export const getDefaultsForPosition = (
+  position?: string
+): { accessLevel: SystemAccessLevel; tags: MinistryTag[] } => {
+  if (!position) {
+    return { accessLevel: 'NONE', tags: ['Member'] };
+  }
+  const pos = position.toLowerCase();
+  switch (pos) {
+    case 'church-administrator':
+    case 'administrator':
+    case 'admin':
+      return { accessLevel: 'ADMIN', tags: ['Staff'] };
+    case 'senior-pastor':
+    case 'bishop':
+    case 'reverent':
+    case 'pastor':
+      return { accessLevel: 'STAFF', tags: ['Staff', 'Member'] };
+    case 'treasurer':
+    case 'secretary':
+      return { accessLevel: 'STAFF', tags: ['Staff'] };
+    case 'elder':
+    case 'deacon':
+    case 'department-leader':
+      return { accessLevel: 'NONE', tags: ['Member', 'Volunteer'] };
+    case 'visitor':
+      return { accessLevel: 'NONE', tags: [] };
+    case 'member':
+    default:
+      return { accessLevel: 'NONE', tags: ['Member'] };
+  }
+};
+
+export const mapAccessAndTagsToRoles = (
+  accessLevel: SystemAccessLevel = 'NONE',
+  tags: (MinistryTag | string)[] = [],
+  position?: string
+): ('ADMIN' | 'STAFF' | 'MEMBER' | 'VOLUNTEER' | 'VISITOR')[] => {
+  const hasStaffTag = tags.includes('Staff');
+  const hasVolunteerTag = tags.includes('Volunteer');
+  const hasMemberTag = tags.includes('Member');
+
+  if (accessLevel === 'ADMIN') {
+    if (hasStaffTag) return ['ADMIN', 'STAFF'];
+    return ['ADMIN'];
+  }
+
+  if (accessLevel === 'STAFF') {
+    if (hasVolunteerTag) return ['STAFF', 'VOLUNTEER'];
+    if (hasMemberTag) return ['STAFF', 'MEMBER'];
+    return ['STAFF'];
+  }
+
+  if (accessLevel === 'PORTAL') {
+    if (hasVolunteerTag) return ['MEMBER', 'VOLUNTEER'];
+    return ['MEMBER'];
+  }
+
+  // accessLevel === 'NONE'
+  if (position?.toLowerCase() === 'visitor') {
+    return ['VISITOR'];
+  }
+  if (hasVolunteerTag && hasMemberTag) {
+    return ['MEMBER', 'VOLUNTEER'];
+  }
+  if (hasVolunteerTag) {
+    return ['VOLUNTEER'];
+  }
+  return ['MEMBER'];
+};
+
+export const mapRolesToAccessAndTags = (
+  roles: string[] = [],
+  position?: string
+): { accessLevel: SystemAccessLevel; tags: MinistryTag[] } => {
+  const upperRoles = (roles || []).map((r) => r.toUpperCase());
+  let accessLevel: SystemAccessLevel = 'NONE';
+
+  if (upperRoles.includes('ADMIN') || upperRoles.includes('OWNER')) {
+    accessLevel = 'ADMIN';
+  } else if (upperRoles.includes('STAFF')) {
+    accessLevel = 'STAFF';
+  } else if (upperRoles.includes('MEMBER')) {
+    accessLevel = 'PORTAL';
+  } else {
+    accessLevel = 'NONE';
+  }
+
+  const tags: MinistryTag[] = [];
+  if (upperRoles.includes('STAFF')) {
+    tags.push('Staff');
+  }
+  if (upperRoles.includes('VOLUNTEER')) {
+    tags.push('Volunteer');
+  }
+  if (upperRoles.includes('MEMBER')) {
+    tags.push('Member');
+  }
+
+  if (tags.length === 0 && position?.toLowerCase() !== 'visitor') {
+    tags.push('Member');
+  }
+
+  return { accessLevel, tags };
+};
 
 export const PRAYER_CATEGORY_OPTIONS = [
   { value: 'health', label: 'Health & Healing' },
@@ -587,9 +801,9 @@ export const REPORT_DATE_RANGE_OPTIONS = [
 ];
 
 export const ADMIN_ACCESS_LEVEL_OPTIONS = [
-  { value: 'branch', label: 'Branch' },
-  { value: 'regional', label: 'Regional' },
-  { value: 'national', label: 'National' },
+  { value: 'BRANCH', label: 'Branch' },
+  { value: 'REGIONAL', label: 'Regional' },
+  { value: 'NATIONAL', label: 'National' },
 ];
 
 export const SUPERADMIN_ACCESS_LEVEL_OPTIONS = [

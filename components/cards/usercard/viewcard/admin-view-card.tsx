@@ -13,8 +13,8 @@ export const AdminViewCard: React.FC<UserViewProps> = ({ user }) => {
         <Label className="font-medium text-sm" htmlFor={''}>
           Admin ID
         </Label>
-        <p className="text-muted-foreground text-sm">
-          {user.adminDetails.adminId}
+        <p className="font-mono text-sm font-semibold text-primary">
+          {user.adminDetails.adminId || user.membershipNumber || user.memberId || 'N/A'}
         </p>
       </div>
       <div>

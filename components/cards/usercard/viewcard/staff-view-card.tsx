@@ -27,8 +27,8 @@ export const StaffViewCard: React.FC<UserViewProps> = ({ user }) => {
             <Label className="font-medium text-sm" htmlFor={''}>
               Staff ID
             </Label>
-            <p className="text-muted-foreground text-sm">
-              {user.staffDetails.staffId}
+            <p className="font-mono text-sm font-semibold text-primary">
+              {user.staffDetails.staffId || user.membershipNumber || user.memberId || 'N/A'}
             </p>
           </div>
           <div>

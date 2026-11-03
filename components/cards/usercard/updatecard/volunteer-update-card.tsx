@@ -52,12 +52,12 @@ export const VolunteerUpdateCard: React.FC<VolunteerUpdateCardProps> = ({
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
-            name="volunteerUpdate.volunteerId"
+            name="volunteerDetails.volunteerId"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Volunteer ID</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input placeholder="Auto-generated Volunteer ID" {...field} value={field.value || ''} className="font-mono bg-muted/40 font-semibold" readOnly />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -65,11 +65,11 @@ export const VolunteerUpdateCard: React.FC<VolunteerUpdateCardProps> = ({
           />
           <FormField
             control={form.control}
-            name="volunteerUpdate.volunteerStatus"
+            name="volunteerDetails.volunteerStatus"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Volunteer Status</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select onValueChange={field.onChange} value={field.value || 'ACTIVE'}>
                   <FormControl>
                     <SelectTrigger className="cursor-pointer">
                       <SelectValue placeholder="Select volunteer Status" />
@@ -98,7 +98,7 @@ export const VolunteerUpdateCard: React.FC<VolunteerUpdateCardProps> = ({
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
-              name="volunteerUpdate.availabilitySchedule.days"
+              name="volunteerDetails.availabilitySchedule.days"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Available Days</FormLabel>
@@ -121,12 +121,12 @@ export const VolunteerUpdateCard: React.FC<VolunteerUpdateCardProps> = ({
                             checked={field.value?.includes(day)}
                             className="cursor-pointer rounded"
                             onChange={(e) => {
-                              const currentDays = field.value || [];
+                              const currentDays: string[] = field.value || [];
                               if (e.target.checked) {
                                 field.onChange([...currentDays, day]);
                               } else {
                                 field.onChange(
-                                  currentDays.filter((d) => d !== day)
+                                  currentDays.filter((d: string) => d !== day)
                                 );
                               }
                             }}
@@ -143,7 +143,7 @@ export const VolunteerUpdateCard: React.FC<VolunteerUpdateCardProps> = ({
             />
             <FormField
               control={form.control}
-              name="volunteerUpdate.availabilitySchedule.preferredTimes"
+              name="volunteerDetails.availabilitySchedule.preferredTimes"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Preferred Times</FormLabel>
@@ -164,7 +164,7 @@ export const VolunteerUpdateCard: React.FC<VolunteerUpdateCardProps> = ({
         {/* Departments */}
         <FormField
           control={form.control}
-          name="volunteerUpdate.departments"
+          name="volunteerDetails.departments"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Departments</FormLabel>
@@ -191,7 +191,7 @@ export const VolunteerUpdateCard: React.FC<VolunteerUpdateCardProps> = ({
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
-              name="volunteerUpdate.backgroundCheck.completed"
+              name="volunteerDetails.backgroundCheck.completed"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
@@ -201,7 +201,7 @@ export const VolunteerUpdateCard: React.FC<VolunteerUpdateCardProps> = ({
                   </div>
                   <FormControl>
                     <Switch
-                      checked={field.value}
+                      checked={!!field.value}
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
@@ -210,11 +210,11 @@ export const VolunteerUpdateCard: React.FC<VolunteerUpdateCardProps> = ({
             />
             <FormField
               control={form.control}
-              name="volunteerUpdate.backgroundCheck.clearanceLevel"
+              name="volunteerDetails.backgroundCheck.clearanceLevel"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Clearance Level</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || 'basic'}>
                     <FormControl>
                       <SelectTrigger className="cursor-pointer">
                         <SelectValue placeholder="Select clearance level" />
@@ -230,11 +230,12 @@ export const VolunteerUpdateCard: React.FC<VolunteerUpdateCardProps> = ({
               )}
             />
           </div>
-          {form.watch('volunteerUpdate.backgroundCheck.completed') && (
+          {(form.watch('volunteerDetails.backgroundCheck.completed') ||
+            form.watch('volunteerUpdate.backgroundCheck.completed')) && (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
                 control={form.control}
-                name="volunteerUpdate.backgroundCheck.completedDate"
+                name="volunteerDetails.backgroundCheck.completedDate"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Completed Date</FormLabel>
@@ -256,7 +257,7 @@ export const VolunteerUpdateCard: React.FC<VolunteerUpdateCardProps> = ({
               />
               <FormField
                 control={form.control}
-                name="volunteerUpdate.backgroundCheck.expiryDate"
+                name="volunteerDetails.backgroundCheck.expiryDate"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Expiry Date</FormLabel>
@@ -282,7 +283,7 @@ export const VolunteerUpdateCard: React.FC<VolunteerUpdateCardProps> = ({
         {/* Hours Contributed */}
         <FormField
           control={form.control}
-          name="volunteerUpdate.hoursContributed"
+          name="volunteerDetails.hoursContributed"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Hours Contributed</FormLabel>
@@ -291,6 +292,7 @@ export const VolunteerUpdateCard: React.FC<VolunteerUpdateCardProps> = ({
                   min="0"
                   type="number"
                   {...field}
+                  value={field.value ?? 0}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>

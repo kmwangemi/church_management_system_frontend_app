@@ -80,6 +80,14 @@ export interface UserFormData {
     };
     hoursContributed: number;
   };
+  // Details objects
+  adminDetails?: any;
+  staffDetails?: any;
+  volunteerDetails?: any;
+  memberDetails?: any;
+  pastorDetails?: any;
+  bishopDetails?: any;
+  visitorDetails?: any;
   // General fields
   isStaff?: boolean;
   isVolunteer?: boolean;
@@ -87,35 +95,35 @@ export interface UserFormData {
 
 // Component prop interfaces
 export interface PastorUpdateCardProps {
-  form: UseFormReturn<UserFormData>;
+  form: UseFormReturn<any>;
 }
 
 export interface BishopUpdateCardProps {
-  form: UseFormReturn<UserFormData>;
+  form: UseFormReturn<any>;
 }
 
 export interface AdminUpdateCardProps {
-  form: UseFormReturn<UserFormData>;
+  form: UseFormReturn<any>;
 }
 
 export interface SuperAdminUpdateCardProps {
-  form: UseFormReturn<UserFormData>;
+  form: UseFormReturn<any>;
 }
 
 export interface VisitorUpdateCardProps {
-  form: UseFormReturn<UserFormData>;
+  form: UseFormReturn<any>;
 }
 
 export interface MemberUpdateCardProps {
-  form: UseFormReturn<UserFormData>;
+  form: UseFormReturn<any>;
 }
 
 export interface StaffUpdateCardProps {
-  form: UseFormReturn<UserFormData>;
+  form: UseFormReturn<any>;
 }
 
 export interface VolunteerUpdateCardProps {
-  form: UseFormReturn<UserFormData>;
+  form: UseFormReturn<any>;
 }
 
 export interface RestSpecificFormProps {

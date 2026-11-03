@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import apiClient from '@/lib/api-client';
+import { useAuthStore } from '@/lib/store/use-auth-store';
 
 // -------------
 // Types
@@ -33,6 +34,9 @@ export interface VerifyResponse {
 const checkAuthStatus = async (): Promise<VerifyResponse | null> => {
   try {
     const { data } = await apiClient.get('/auth/verify');
+    if (data?.user) {
+      useAuthStore.getState().setUser(data.user as any);
+    }
     return data;
   } catch (error) {
     return null;

@@ -1,5 +1,5 @@
 import type { FileType, UploadResponse } from '@/lib/types';
-import axios from 'axios';
+import apiClient from '@/lib/api-client';
 
 // Generic upload function
 export const uploadFile = async (
@@ -9,18 +9,23 @@ export const uploadFile = async (
   const formData = new FormData();
   formData.append('file', file);
   try {
-    const response = await axios.post(`/api/shared/upload?type=${type}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await apiClient.post<UploadResponse>(
+      `/shared/upload?type=${type}`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
     return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      const errorMessage = error.response.data?.message || 'Upload failed';
-      throw new Error(errorMessage);
-    }
-    throw new Error('Upload failed');
+  } catch (error: any) {
+    const errorMessage =
+      error?.response?.data?.detail ||
+      error?.response?.data?.message ||
+      error.message ||
+      'Upload failed';
+    throw new Error(errorMessage);
   }
 };
 

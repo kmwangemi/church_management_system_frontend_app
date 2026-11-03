@@ -32,7 +32,7 @@ export function useAdminTeams(params: AdminGetTeamsParams) {
       const response = await apiClient.get('/admin/teams', { params });
       return response.data;
     },
-    enabled: !!params.organizationId,
+    enabled: true,
     staleTime: 30_000,
     retry: 2,
   });

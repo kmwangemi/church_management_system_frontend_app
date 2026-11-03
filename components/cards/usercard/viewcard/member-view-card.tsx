@@ -13,8 +13,8 @@ export const MemberViewCard: React.FC<UserViewProps> = ({ user }) => {
         <Label className="font-medium text-sm" htmlFor={''}>
           Member ID
         </Label>
-        <p className="text-muted-foreground text-sm">
-          {user.memberDetails.memberId}
+        <p className="font-mono text-sm font-semibold text-primary">
+          {user.memberDetails.memberId || user.membershipNumber || user.memberId || 'N/A'}
         </p>
       </div>
       <div>

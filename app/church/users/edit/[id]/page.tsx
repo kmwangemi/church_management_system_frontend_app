@@ -9,6 +9,8 @@ import { MultiSelect } from '@/components/multi-select';
 import { PhoneInput } from '@/components/phone-number-input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Card,
   CardContent,
@@ -51,18 +53,37 @@ import {
   capitalizeFirstLetter,
   CHURCH_POSITION_OPTIONS,
   GENDER_OPTIONS,
+  getDefaultsForPosition,
   getRelativeYear,
   getRolesForPosition,
+  mapAccessAndTagsToRoles,
+  mapRolesToAccessAndTags,
   MARITAL_STATUS_OPTIONS,
+  MINISTRY_TAG_OPTIONS,
+  type MinistryTag,
   splitFullName,
+  SYSTEM_ACCESS_LEVEL_OPTIONS,
+  type SystemAccessLevel,
   USER_STATUS_OPTIONS,
+  cn,
 } from '@/lib/utils';
 import {
   type UpdateUserPayload,
   userUpdateSchema,
 } from '@/lib/validations/users';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft, Loader2, Save, Shield, Upload, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  Building2,
+  Church,
+  KeyRound,
+  Loader2,
+  Save,
+  Shield,
+  Tags,
+  Upload,
+  X,
+} from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -127,6 +148,8 @@ export default function EditMemberPage({
       branchId: undefined,
       position: '',
       role: undefined,
+      systemAccessLevel: 'NONE',
+      ministryTags: ['Member'],
       status: 'ACTIVE',
       lastLogin: undefined,
       maritalStatus: 'SINGLE',
@@ -219,27 +242,35 @@ export default function EditMemberPage({
         address: {
           street: user?.address?.street
             ? capitalizeFirstLetter(user.address.street)
-            : undefined,
+            : '',
           city: user?.address?.city
             ? capitalizeFirstLetter(user.address.city)
-            : undefined,
+            : '',
           state: user?.address?.state
             ? capitalizeFirstLetter(user.address.state)
-            : undefined,
-          zipCode: user?.address?.zipCode || undefined,
-          country: user?.address?.country || undefined,
+            : '',
+          zipCode: user?.address?.zipCode || '',
+          country: user?.address?.country || 'Kenya',
         },
         dateOfBirth: user?.user?.dateOfBirth || undefined,
-        gender: user?.user?.gender || 'male',
+        gender: (user?.user?.gender || 'MALE').toUpperCase(),
         image: user?.user?.image || undefined,
         occupation: user?.user?.occupation
           ? capitalizeFirstLetter(user?.user?.occupation)
           : undefined,
-        branchId: user?.member?.teamId || undefined,
+        branchId: user?.member?.teamId || user?.member?.branchId || undefined,
         position: user?.member?.position || '',
-        role: user?.member?.role,
-        status: user?.user?.status || 'ACTIVE',
-        maritalStatus: user?.user?.maritalStatus || 'SINGLE',
+        role: user?.member?.role || (user?.member?.roles ? (Array.isArray(user.member.roles) ? user.member.roles : [user.member.roles]) : ['MEMBER']),
+        systemAccessLevel: mapRolesToAccessAndTags(
+          user?.member?.role || (user?.member?.roles ? (Array.isArray(user.member.roles) ? user.member.roles : [user.member.roles]) : ['MEMBER']),
+          user?.member?.position
+        ).accessLevel,
+        ministryTags: mapRolesToAccessAndTags(
+          user?.member?.role || (user?.member?.roles ? (Array.isArray(user.member.roles) ? user.member.roles : [user.member.roles]) : ['MEMBER']),
+          user?.member?.position
+        ).tags,
+        status: (user?.user?.status || 'ACTIVE').toUpperCase(),
+        maritalStatus: (user?.user?.maritalStatus || 'SINGLE').toUpperCase(),
         emergencyDetails: {
           emergencyContactFullName:
             user?.emergencyContact?.emergencyContactFullName || undefined,
@@ -257,10 +288,21 @@ export default function EditMemberPage({
         notes: user?.user?.notes || undefined,
         skills: user?.user?.skills || [],
       };
+      // Distinct church membership identifier
+      const customId =
+        user?.membershipNumber ||
+        user?.member?.membershipNumber ||
+        user?.memberDetails?.memberId ||
+        user?.adminDetails?.adminId ||
+        user?.staffDetails?.staffId ||
+        user?.volunteerDetails?.volunteerId ||
+        user?.pastorDetails?.pastorId ||
+        '';
+
       // Only add role-specific details that actually exist
       // Member details
       formData.memberDetails = {
-        memberId: user?.memberDetails?.memberId || '',
+        memberId: customId || user?.memberDetails?.memberId || user?.member?.id || user?.id || '',
         membershipDate: user?.memberDetails?.membershipDate || undefined,
         membershipStatus: user?.memberDetails?.membershipStatus || 'active',
         departmentIds: user?.memberDetails?.departmentIds || [],
@@ -268,9 +310,10 @@ export default function EditMemberPage({
         baptismDate: user?.memberDetails?.baptismDate || undefined,
         joinedDate: user?.memberDetails?.joinedDate || undefined,
       };
+      formData.memberUpdate = { ...formData.memberDetails };
       // Pastor details
       formData.pastorDetails = {
-        pastorId: user?.pastorDetails?.pastorId || '',
+        pastorId: customId || user?.pastorDetails?.pastorId || '',
         ordinationDate: user?.pastorDetails?.ordinationDate || undefined,
         qualifications: user?.pastorDetails?.qualifications || [],
         specializations: user?.pastorDetails?.specializations || [],
@@ -279,10 +322,11 @@ export default function EditMemberPage({
         counselingSessions: user?.pastorDetails?.counselingSessions || 0,
         biography: user?.pastorDetails?.biography || '',
       };
+      formData.pastorUpdate = { ...formData.pastorDetails };
       // Bishop details
       if (user?.bishopDetails) {
         formData.bishopDetails = {
-          bishopId: user?.bishopDetails?.bishopId || '',
+          bishopId: customId || user?.bishopDetails?.bishopId || '',
           appointmentDate: user?.bishopDetails?.appointmentDate || undefined,
           jurisdictionArea: user?.bishopDetails?.jurisdictionArea || '',
           oversight: user?.bishopDetails?.oversight || {},
@@ -290,15 +334,32 @@ export default function EditMemberPage({
           achievements: user?.bishopDetails?.achievements || [],
           biography: user?.bishopDetails?.biography || '',
         };
+        formData.bishopUpdate = { ...formData.bishopDetails };
       }
       // Admin details
-      if (user?.adminDetails) {
-        formData.adminDetails = {
-          adminId: user?.adminDetails?.adminId || '',
-          accessLevel: user?.adminDetails?.accessLevel || 'national',
-          assignedBranches: user?.adminDetails?.assignedBranches || [],
-        };
-      }
+      const adminIdVal =
+        customId ||
+        user?.adminDetails?.adminId ||
+        user?.member?.id ||
+        user?.id ||
+        user?.userId ||
+        '';
+      const accessLevelVal = (
+        user?.adminDetails?.accessLevel || 'NATIONAL'
+      ).toUpperCase();
+      const assignedBranchesVal =
+        user?.adminDetails?.assignedBranches ||
+        (user?.member?.branchId ? [user.member.branchId] : []);
+
+      formData.adminDetails = {
+        adminId: adminIdVal,
+        accessLevel: accessLevelVal,
+        assignedBranches: assignedBranchesVal,
+      };
+      formData.adminUpdate = {
+        adminId: adminIdVal,
+        accessLevel: accessLevelVal,
+      };
       // Visitor details
       if (user?.visitorDetails) {
         formData.visitorDetails = {
@@ -312,34 +373,37 @@ export default function EditMemberPage({
           interestedInMembership: user?.visitorDetails?.interestedInMembership,
           servicesAttended: user?.visitorDetails?.servicesAttended || [],
         };
+        formData.visitorUpdate = { ...formData.visitorDetails };
       }
       // staff details
-      if (user?.member?.role.includes('STAFF') && user?.staffDetails) {
-        formData.staffDetails = {
-          staffId: user?.staffDetails?.staffId || '',
-          jobTitle: capitalizeFirstLetter(user?.staffDetails?.jobTitle || ''),
-          department: capitalizeFirstLetter(
-            user?.staffDetails?.department || ''
-          ),
-          startDate: user?.staffDetails?.startDate || undefined,
-          salary: user?.staffDetails?.salary || 0,
-          employmentType: user?.staffDetails?.employmentType || 'full-time',
-          isActive: user?.staffDetails?.isActive,
-        };
-      }
+      formData.staffDetails = {
+        staffId: customId || user?.staffDetails?.staffId || user?.member?.id || user?.id || '',
+        jobTitle: capitalizeFirstLetter(user?.staffDetails?.jobTitle || user?.member?.position || ''),
+        department: capitalizeFirstLetter(
+          user?.staffDetails?.department || ''
+        ),
+        startDate: user?.staffDetails?.startDate || undefined,
+        salary: user?.staffDetails?.salary || 0,
+        employmentType: user?.staffDetails?.employmentType || 'full-time',
+        isActive: user?.staffDetails?.isActive ?? true,
+      };
+      formData.staffUpdate = {
+        ...formData.staffDetails,
+      };
       // volunteer details
-      if (user?.member?.role.includes('VOLUNTEER') && user?.volunteerDetails) {
-        formData.volunteerDetails = {
-          volunteerId: user?.volunteerDetails?.volunteerId || '',
-          volunteerStatus: user?.volunteerDetails?.volunteerStatus || 'active',
-          availabilitySchedule:
-            user?.volunteerDetails?.availabilitySchedule || {},
-          departments: user?.volunteerDetails?.departments || [],
-          volunteerRoles: user?.volunteerDetails?.volunteerRoles || [],
-          backgroundCheck: user?.volunteerDetails?.backgroundCheck || {},
-          hoursContributed: user?.volunteerDetails?.hoursContributed || 0,
-        };
-      }
+      formData.volunteerDetails = {
+        volunteerId: customId || user?.volunteerDetails?.volunteerId || user?.member?.id || user?.id || '',
+        volunteerStatus: user?.volunteerDetails?.volunteerStatus || 'active',
+        availabilitySchedule:
+          user?.volunteerDetails?.availabilitySchedule || {},
+        departments: user?.volunteerDetails?.departments || [],
+        volunteerRoles: user?.volunteerDetails?.volunteerRoles || [],
+        backgroundCheck: user?.volunteerDetails?.backgroundCheck || {},
+        hoursContributed: user?.volunteerDetails?.hoursContributed || 0,
+      };
+      formData.volunteerUpdate = {
+        ...formData.volunteerDetails,
+      };
       form.reset(formData);
     }
   }, [form, user]);
@@ -407,6 +471,16 @@ export default function EditMemberPage({
   };
   // Handle form submission
   const onSubmit = async (payload: UpdateUserPayload) => {
+    // Synchronize role array from system access level and ministry tags
+    const accessLevel = payload.systemAccessLevel || 'NONE';
+    const ministryTags = payload.ministryTags || [];
+    const computedRoles = mapAccessAndTagsToRoles(
+      accessLevel,
+      ministryTags,
+      payload.position
+    );
+    payload.role = computedRoles as any;
+
     // Only upload profile picture if a file was selected
     if (profilePicFile) {
       setProfilePicUploading(true);
@@ -423,13 +497,14 @@ export default function EditMemberPage({
     // Validate the payload
     const validation = userUpdateSchema.safeParse(payload);
     if (!validation.success) {
-      toast.error('Please fix all validation errors');
+      const firstError = validation.error.issues?.[0]?.message || 'Please fix all validation errors';
+      toast.error(firstError);
       return;
     }
     // Update user with proper error handling
     await updateUserMutation({ userId: id, payload });
-    // Only reset on success
-    reset();
+    // Reset form state with submitted values to keep state synced
+    reset(payload);
     setProfilePicFile(null);
     setProfilePicPreview(null);
   };
@@ -453,9 +528,16 @@ export default function EditMemberPage({
                 </Button>
               </Link>
               <div>
-                <h1 className="font-bold text-3xl tracking-tight">
-                  Edit Member
-                </h1>
+                <div className="flex items-center gap-3">
+                  <h1 className="font-bold text-3xl tracking-tight">
+                    Edit Member
+                  </h1>
+                  {(user?.membershipNumber || user?.member?.membershipNumber) && (
+                    <span className="font-mono text-xs font-semibold px-2.5 py-1 rounded bg-primary/10 text-primary border border-primary/20">
+                      {user?.membershipNumber || user?.member?.membershipNumber}
+                    </span>
+                  )}
+                </div>
                 <p className="text-muted-foreground">
                   Update member information and settings
                 </p>
@@ -500,10 +582,11 @@ export default function EditMemberPage({
                             }
                           />
                           <AvatarFallback className="bg-blue-100 text-blue-600">
-                            {user?.user.name
+                            {(user?.user?.name || 'User')
                               .split(' ')
-                              .map((n: string) => n[0].toUpperCase())
-                              .join('')}
+                              .filter(Boolean)
+                              .map((n: string) => n[0]?.toUpperCase() || '')
+                              .join('') || 'U'}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
@@ -1110,18 +1193,41 @@ export default function EditMemberPage({
                   </div>
                 </TabsContent>
                 <TabsContent className="space-y-6" value="role">
+                  {/* 1. Church Position & 2. Branch */}
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <FormField
                       control={form.control}
                       name="position"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>
-                            Church Position{' '}
+                          <FormLabel className="flex items-center gap-1.5 font-medium">
+                            <Church className="h-4 w-4 text-muted-foreground" />
+                            <span>Church Position (Title)</span>
                             <span className="text-red-500">*</span>
                           </FormLabel>
                           <Select
-                            onValueChange={field.onChange}
+                            onValueChange={(val) => {
+                              field.onChange(val);
+                              // Auto-suggest recommended access level & ministry tags based on title
+                              const defaults = getDefaultsForPosition(val);
+                              form.setValue('systemAccessLevel', defaults.accessLevel, {
+                                shouldValidate: true,
+                                shouldDirty: true,
+                              });
+                              form.setValue('ministryTags', defaults.tags, {
+                                shouldValidate: true,
+                                shouldDirty: true,
+                              });
+                              const mappedRoles = mapAccessAndTagsToRoles(
+                                defaults.accessLevel,
+                                defaults.tags,
+                                val
+                              );
+                              form.setValue('role', mappedRoles as any, {
+                                shouldValidate: true,
+                                shouldDirty: true,
+                              });
+                            }}
                             value={field.value}
                           >
                             <FormControl>
@@ -1129,7 +1235,7 @@ export default function EditMemberPage({
                                 <SelectValue placeholder="Select church position" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
+                            <SelectContent className="max-h-[300px] overflow-y-auto">
                               {CHURCH_POSITION_OPTIONS.map((option) => (
                                 <SelectItem
                                   key={option.value}
@@ -1140,50 +1246,221 @@ export default function EditMemberPage({
                               ))}
                             </SelectContent>
                           </Select>
+                          <p className="text-[11px] text-muted-foreground">
+                            Ecclesiastical or congregational title within the church.
+                          </p>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
+
                     <FormField
                       control={form.control}
-                      name="role"
+                      name="branchId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>
-                            Roles & Permissions{' '}
-                            <span className="text-red-500">*</span>
+                          <FormLabel className="flex items-center gap-1.5 font-medium">
+                            <Building2 className="h-4 w-4 text-muted-foreground" />
+                            <span>Branch (Location)</span>
                           </FormLabel>
                           <FormControl>
-                            <MultiSelect
+                            <BranchCombobox
+                              className="w-full"
                               onChange={field.onChange}
-                              options={CHURCH_ROLE_OPTIONS}
-                              placeholder="Select roles & permissions"
-                              selected={field.value || []}
+                              placeholder="Search and select a branch"
+                              value={field.value}
                             />
                           </FormControl>
+                          <p className="text-[11px] text-muted-foreground">
+                            Physical campus or congregation branch.
+                          </p>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
+
+                  {/* 3. System Access Level */}
                   <FormField
                     control={form.control}
-                    name="branchId"
+                    name="systemAccessLevel"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Branch</FormLabel>
+                      <FormItem className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <FormLabel className="flex items-center gap-1.5 font-medium">
+                            <KeyRound className="h-4 w-4 text-primary" />
+                            <span>System Access Level</span>
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <span className="text-xs text-muted-foreground">
+                            Controls software dashboard & login permissions
+                          </span>
+                        </div>
                         <FormControl>
-                          <BranchCombobox
-                            className="w-full"
-                            onChange={field.onChange}
-                            placeholder="Search and select a branch"
-                            value={field.value}
-                          />
+                          <RadioGroup
+                            className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4"
+                            onValueChange={(val: SystemAccessLevel) => {
+                              field.onChange(val);
+                              const currentTags = form.getValues('ministryTags') || [];
+                              const currentPos = form.getValues('position');
+                              const mappedRoles = mapAccessAndTagsToRoles(
+                                val,
+                                currentTags,
+                                currentPos
+                              );
+                              form.setValue('role', mappedRoles as any, {
+                                shouldValidate: true,
+                                shouldDirty: true,
+                              });
+                            }}
+                            value={field.value || 'NONE'}
+                          >
+                            {SYSTEM_ACCESS_LEVEL_OPTIONS.map((option) => {
+                              const isSelected = (field.value || 'NONE') === option.value;
+                              return (
+                                <label
+                                  key={option.value}
+                                  htmlFor={`edit-access-${option.value}`}
+                                  className={cn(
+                                    'relative flex cursor-pointer flex-col justify-between rounded-lg border p-3.5 transition-all hover:bg-accent/50 focus:outline-none',
+                                    isSelected
+                                      ? 'border-primary bg-primary/5 ring-1 ring-primary shadow-xs'
+                                      : 'border-border bg-card'
+                                  )}
+                                >
+                                  <div className="flex items-start justify-between gap-2">
+                                    <div className="space-y-1">
+                                      <div className="flex items-center gap-1.5">
+                                        <RadioGroupItem
+                                          id={`edit-access-${option.value}`}
+                                          value={option.value}
+                                        />
+                                        <span className="text-sm font-semibold text-foreground">
+                                          {option.label}
+                                        </span>
+                                      </div>
+                                      <p className="text-xs text-muted-foreground leading-snug">
+                                        {option.description}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="mt-2.5">
+                                    <span
+                                      className={cn(
+                                        'inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium tracking-tight',
+                                        isSelected
+                                          ? 'bg-primary/15 text-primary'
+                                          : 'bg-muted text-muted-foreground'
+                                      )}
+                                    >
+                                      {option.badge}
+                                    </span>
+                                  </div>
+                                </label>
+                              );
+                            })}
+                          </RadioGroup>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                  {/* 4. Ministry Tags */}
+                  <FormField
+                    control={form.control}
+                    name="ministryTags"
+                    render={({ field }) => {
+                      const currentTags = (field.value || []) as MinistryTag[];
+                      return (
+                        <FormItem className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <FormLabel className="flex items-center gap-1.5 font-medium">
+                              <Tags className="h-4 w-4 text-primary" />
+                              <span>Ministry Tags</span>
+                            </FormLabel>
+                            <span className="text-xs text-muted-foreground">
+                              Select all ministry engagement badges that apply
+                            </span>
+                          </div>
+                          <FormControl>
+                            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+                              {MINISTRY_TAG_OPTIONS.map((tagOpt) => {
+                                const isChecked = currentTags.includes(tagOpt.value);
+                                return (
+                                  <div
+                                    key={tagOpt.value}
+                                    onClick={() => {
+                                      const next = isChecked
+                                        ? currentTags.filter((t) => t !== tagOpt.value)
+                                        : [...currentTags, tagOpt.value];
+                                      field.onChange(next);
+                                      const currentAccess =
+                                        form.getValues('systemAccessLevel') || 'NONE';
+                                      const currentPos = form.getValues('position');
+                                      const mappedRoles = mapAccessAndTagsToRoles(
+                                        currentAccess,
+                                        next,
+                                        currentPos
+                                      );
+                                      form.setValue('role', mappedRoles as any, {
+                                        shouldValidate: true,
+                                        shouldDirty: true,
+                                      });
+                                    }}
+                                    className={cn(
+                                      'flex cursor-pointer items-start space-x-3 rounded-lg border p-3.5 transition-all hover:bg-accent/50',
+                                      isChecked
+                                        ? 'border-primary/80 bg-primary/5 ring-1 ring-primary/40'
+                                        : 'border-border bg-card'
+                                    )}
+                                  >
+                                    <Checkbox
+                                      checked={isChecked}
+                                      onCheckedChange={() => {
+                                        // Handled by card click
+                                      }}
+                                      className="mt-0.5"
+                                    />
+                                    <div className="space-y-1">
+                                      <span className="text-sm font-medium leading-none text-foreground block">
+                                        {tagOpt.label}
+                                      </span>
+                                      <p className="text-xs text-muted-foreground leading-snug">
+                                        {tagOpt.description}
+                                      </p>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+
+                  {/* Dynamic Backend Role Mapping Preview */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <Shield className="h-3.5 w-3.5 text-primary" />
+                      <span>Mapped System Role(s):</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {(roles || []).map((r: string) => (
+                          <span
+                            key={r}
+                            className="inline-flex items-center rounded bg-primary/10 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-primary"
+                          >
+                            {r}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <span className="text-[11px] text-muted-foreground">
+                      100% backward-compatible with system permission tiers
+                    </span>
+                  </div>
                   <RenderMemberUpdate form={form} roles={roles} />
                   <RenderUpdateRoleSpecificFields
                     form={form}

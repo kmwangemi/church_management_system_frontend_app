@@ -149,6 +149,14 @@ export default function MemberDetailsPage({
   ];
 
   const roles = user?.member?.role;
+  const displayId =
+    user?.membershipNumber ||
+    user?.member?.membershipNumber ||
+    user?.memberDetails?.memberId ||
+    user?.adminDetails?.adminId ||
+    user?.staffDetails?.staffId ||
+    user?.volunteerDetails?.volunteerId ||
+    user?.pastorDetails?.pastorId;
 
   return (
     <div className="space-y-6">
@@ -167,18 +175,25 @@ export default function MemberDetailsPage({
                 </Button>
               </Link>
               <div>
-                <h1 className="font-bold text-3xl tracking-tight">
-                  {capitalizeFirstLetterOfEachWord(
-                    user?.user.name || 'Not Provided'
+                <div className="flex items-center gap-3">
+                  <h1 className="font-bold text-3xl tracking-tight">
+                    {capitalizeFirstLetterOfEachWord(
+                      user?.user?.name || 'Not Provided'
+                    )}
+                  </h1>
+                  {displayId && (
+                    <Badge variant="outline" className="font-mono text-xs px-2.5 py-1 border-primary/30 bg-primary/5 text-primary font-semibold">
+                      {displayId}
+                    </Badge>
                   )}
-                </h1>
+                </div>
                 <p className="text-muted-foreground">
                   User profile and analytics
                 </p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Link href={`/church/users/edit/${user?.member?.id}`}>
+              <Link href={`/church/users/edit/${user?.member?.id || user?.id || id}`}>
                 <Button>
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Profile
@@ -192,24 +207,32 @@ export default function MemberDetailsPage({
               <CardContent className="flex flex-col items-center space-y-4 p-6">
                 <Avatar className="h-24 w-24">
                   <AvatarImage
-                    alt={user?.user.name || 'User'}
-                    src={user?.user.image ?? ''}
+                    alt={user?.user?.name || 'User'}
+                    src={user?.user?.image ?? ''}
                   />
                   <AvatarFallback className="bg-blue-100 text-blue-600">
-                    {user?.user.name
+                    {(user?.user?.name || 'User')
                       .split(' ')
-                      .map((n: string) => n[0].toUpperCase())
-                      .join('')}
+                      .filter(Boolean)
+                      .map((n: string) => n[0]?.toUpperCase() || '')
+                      .join('') || 'U'}
                   </AvatarFallback>
                 </Avatar>
-                <div className="text-center">
+                <div className="text-center space-y-1">
                   <h3 className="font-semibold text-lg">
                     {capitalizeFirstLetterOfEachWord(
-                      user?.user.name || 'Not Provided'
+                      user?.user?.name || 'Not Provided'
                     )}
                   </h3>
-                  <div className="flex flex-wrap gap-1">
-                    {user?.member?.role?.map((role: string) => (
+                  {displayId && (
+                    <div className="flex justify-center pb-1">
+                      <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-muted text-foreground border">
+                        {displayId}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex flex-wrap justify-center gap-1">
+                    {(user?.member?.role || user?.role || ['MEMBER'])?.map((role: string) => (
                       <span key={role}>{getRoleBadge(role)}</span>
                     ))}
                   </div>
@@ -220,11 +243,11 @@ export default function MemberDetailsPage({
                 <div className="w-full space-y-2 text-sm">
                   <div className="flex items-center space-x-2">
                     <Mail className="h-4 w-4 text-muted-foreground" />
-                    <span className="truncate">{user?.user?.email}</span>
+                    <span className="truncate">{user?.user?.email || 'N/A'}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Phone className="h-4 w-4 text-muted-foreground" />
-                    <span>{user?.user?.phoneNumber}</span>
+                    <span>{user?.user?.phoneNumber || 'N/A'}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -237,10 +260,8 @@ export default function MemberDetailsPage({
                     <span>
                       Joined {''}
                       {user?.memberDetails?.joinedDate
-                        ? typeof user.memberDetails.joinedDate === 'string'
-                          ? formatToNewDate(user.memberDetails.joinedDate)
-                          : formatToNewDate(user.memberDetails.joinedDate)
-                        : 'N/A'}
+                        ? formatToNewDate(user.memberDetails.joinedDate)
+                        : (user?.createdAt ? formatToNewDate(user.createdAt) : 'N/A')}
                     </span>
                   </div>
                 </div>
@@ -462,10 +483,8 @@ export default function MemberDetailsPage({
                       </Label>
                       <p className="text-muted-foreground text-sm">
                         {user?.memberDetails?.joinedDate
-                          ? typeof user?.memberDetails?.joinedDate === 'string'
-                            ? formatToNewDate(user?.memberDetails?.joinedDate)
-                            : formatToNewDate(user?.memberDetails?.joinedDate)
-                          : 'N/A'}
+                          ? formatToNewDate(user.memberDetails.joinedDate)
+                          : (user?.createdAt ? formatToNewDate(user.createdAt) : 'N/A')}
                       </p>
                     </div>
                     <div>
@@ -473,7 +492,7 @@ export default function MemberDetailsPage({
                         Membership Type
                       </Label>
                       <p className="text-muted-foreground text-sm">
-                        {capitalizeFirstLetter(user?.role || 'N/A')}
+                        {capitalizeFirstLetter(user?.role || user?.position || 'N/A')}
                       </p>
                     </div>
                   </CardContent>
@@ -499,14 +518,18 @@ export default function MemberDetailsPage({
                         Active Departments
                       </Label>
                       <div className="mt-2 flex flex-wrap gap-2">
-                        {user?.memberDetails?.departmentIds.map(
-                          (department: any, index: number) => (
-                            <Badge key={index} variant="default">
-                              {capitalizeFirstLetter(
-                                department?.departmentName || 'N/A'
-                              )}
-                            </Badge>
+                        {user?.memberDetails?.departmentIds && user.memberDetails.departmentIds.length > 0 ? (
+                          user.memberDetails.departmentIds.map(
+                            (department: any, index: number) => (
+                              <Badge key={index} variant="default">
+                                {capitalizeFirstLetter(
+                                  department?.departmentName || 'N/A'
+                                )}
+                              </Badge>
+                            )
                           )
+                        ) : (
+                          <span className="text-muted-foreground text-sm">No active departments</span>
                         )}
                       </div>
                     </div>
@@ -515,11 +538,15 @@ export default function MemberDetailsPage({
                         Active Groups
                       </Label>
                       <div className="mt-2 flex flex-wrap gap-2">
-                        {user?.memberDetails?.groupIds.map((group: any, index: number) => (
-                          <Badge key={index} variant="outline">
-                            {capitalizeFirstLetter(group?.groupName || 'N/A')}
-                          </Badge>
-                        ))}
+                        {user?.memberDetails?.groupIds && user.memberDetails.groupIds.length > 0 ? (
+                          user.memberDetails.groupIds.map((group: any, index: number) => (
+                            <Badge key={index} variant="outline">
+                              {capitalizeFirstLetter(group?.groupName || 'N/A')}
+                            </Badge>
+                          ))
+                        ) : (
+                          <span className="text-muted-foreground text-sm">No active groups</span>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -538,11 +565,15 @@ export default function MemberDetailsPage({
                         Skills
                       </Label>
                       <div className="mt-2 flex flex-wrap gap-2">
-                        {user?.user?.skills?.map((skill: any, index: number) => (
-                          <Badge key={index} variant="secondary">
-                            {capitalizeFirstLetter(skill || 'N/A')}
-                          </Badge>
-                        ))}
+                        {user?.user?.skills && user.user.skills.length > 0 ? (
+                          user.user.skills.map((skill: any, index: number) => (
+                            <Badge key={index} variant="secondary">
+                              {capitalizeFirstLetter(skill || 'N/A')}
+                            </Badge>
+                          ))
+                        ) : (
+                          <span className="text-muted-foreground text-sm">None listed</span>
+                        )}
                       </div>
                     </div>
                     <div>

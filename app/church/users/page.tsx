@@ -137,6 +137,17 @@ export default function UsersPage() {
           break;
       }
     }
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(
+        (u: any) =>
+          u?.user?.name?.toLowerCase().includes(q) ||
+          u?.user?.email?.toLowerCase().includes(q) ||
+          u?.user?.phoneNumber?.toLowerCase().includes(q) ||
+          (u?.membershipNumber && u.membershipNumber.toLowerCase().includes(q)) ||
+          (u?.memberId && String(u.memberId).toLowerCase().includes(q))
+      );
+    }
     return filtered;
   }, [users?.members, selectedStatus, selectedTab]);
   // Calculate stats
@@ -314,6 +325,7 @@ export default function UsersPage() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>User</TableHead>
+                        <TableHead>Member ID</TableHead>
                         <TableHead>Gender</TableHead>
                         <TableHead>Role</TableHead>
                         <TableHead>Branch</TableHead>
@@ -333,10 +345,11 @@ export default function UsersPage() {
                                   src={user?.user.image ?? ''}
                                 />
                                 <AvatarFallback className="bg-blue-100 text-blue-600">
-                                  {user?.user.name
+                                  {(user?.user?.name || 'U')
                                     .split(' ')
-                                    .map((n: string) => n[0].toUpperCase())
-                                    .join('')}
+                                    .filter(Boolean)
+                                    .map((n: string) => n[0]?.toUpperCase() || '')
+                                    .join('') || 'U'}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
@@ -353,6 +366,11 @@ export default function UsersPage() {
                                 </div>
                               </div>
                             </div>
+                          </TableCell>
+                          <TableCell>
+                            <span className="font-mono text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
+                              {user?.membershipNumber || user?.memberId || user?.user?.membershipNumber || '—'}
+                            </span>
                           </TableCell>
                           <TableCell>
                             <span className="text-foreground text-sm">
@@ -378,7 +396,7 @@ export default function UsersPage() {
                                     key={tm.id}
                                   >
                                     {capitalizeFirstLetterOfEachWord(
-                                      tm.team.name
+                                      tm?.team?.name || 'Main Branch'
                                     )}
                                   </span>
                                 ))

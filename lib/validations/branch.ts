@@ -5,6 +5,8 @@ const optionalEmail = z.email().optional().or(z.literal(''));
 
 export const addBranchSchema = z.object({
   branchName: z.string().min(1, 'Branch name is required'),
+  email: optionalEmail,
+  phoneNumber: optionalString,
   pastorId: optionalString,
   address: z.object({
     street: z.string().min(2, 'Street address must be at least 2 characters'),

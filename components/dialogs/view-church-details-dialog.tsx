@@ -33,12 +33,14 @@ interface ViewChurchDetailsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   church: ChurchListResponse | null;
+  onEdit?: (church: ChurchListResponse) => void;
 }
 
 export function ViewChurchDetailsDialog({
   open,
   onOpenChange,
   church,
+  onEdit,
 }: ViewChurchDetailsDialogProps) {
   if (!church) return null;
   const getStatusBadge = (status: string) => {
@@ -98,12 +100,13 @@ export function ViewChurchDetailsDialog({
                   <Avatar className="h-20 w-20">
                     <AvatarImage src={church?.logo || undefined} />
                     <AvatarFallback>
-                      {church.name
+                      {(church.name || 'CH')
                         .split(' ')
+                        .filter(Boolean)
                         .map((n) => n[0])
                         .join('')
                         .slice(0, 2)
-                        .toUpperCase()}
+                        .toUpperCase() || 'CH'}
                     </AvatarFallback>
                   </Avatar>
                   <div className="space-y-1">
@@ -131,9 +134,9 @@ export function ViewChurchDetailsDialog({
                     >
                       Lead Pastor
                     </Label>
-                    {/* <p className="font-semibold text-sm">
+                    <p className="font-semibold text-sm">
                       {church?.metadata?.pastor || 'Not Provided'}
-                    </p> */}
+                    </p>
                   </div>
                   <div>
                     <Label
@@ -143,7 +146,9 @@ export function ViewChurchDetailsDialog({
                       Established
                     </Label>
                     <p className="text-sm">
-                      {church?.establishedDate?.toLocaleString()}
+                      {church?.establishedDate
+                        ? new Date(church.establishedDate).toLocaleDateString()
+                        : 'Not Provided'}
                     </p>
                   </div>
                   <div>
@@ -155,9 +160,11 @@ export function ViewChurchDetailsDialog({
                     </Label>
                     <div className="flex items-center gap-2">
                       <Activity className="h-4 w-4 text-green-500" />
-                      {/* <p className="text-sm">
-                        {church?.metadata?.lastActivity}
-                      </p> */}
+                      <p className="text-sm">
+                        {church?.updatedAt
+                          ? new Date(church.updatedAt).toLocaleDateString()
+                          : 'Active'}
+                      </p>
                     </div>
                   </div>
                   <div>
@@ -169,7 +176,7 @@ export function ViewChurchDetailsDialog({
                     </Label>
                     <p className="flex items-center gap-1 text-sm">
                       <MapPin className="h-4 w-4" />
-                      {church?.numberOfBranches}
+                      {church?.numberOfBranches ?? 0}
                     </p>
                   </div>
                 </div>
@@ -182,7 +189,19 @@ export function ViewChurchDetailsDialog({
                   </Label>
                   <div className="mt-1 flex items-start gap-2">
                     <MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" />
-                    <p className="text-sm">{church?.address?.street}</p>
+                    <p className="text-sm">
+                      {typeof church?.address === 'string'
+                        ? church.address
+                        : church?.address?.street ||
+                          [
+                            church?.address?.city,
+                            church?.address?.state,
+                            church?.address?.country,
+                          ]
+                            .filter(Boolean)
+                            .join(', ') ||
+                          'Not Provided'}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -488,7 +507,16 @@ export function ViewChurchDetailsDialog({
           <Button onClick={() => onOpenChange(false)} variant="outline">
             Close
           </Button>
-          <Button>Edit Church</Button>
+          <Button
+            onClick={() => {
+              onOpenChange(false);
+              if (onEdit) {
+                onEdit(church);
+              }
+            }}
+          >
+            Edit Church
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

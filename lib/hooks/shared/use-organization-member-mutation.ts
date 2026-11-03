@@ -13,7 +13,7 @@ export function useAdminOrganizationMembers(params: AdminGetMembersParams) {
       const response = await apiClient.get('/admin/members', { params });
       return response.data;
     },
-    enabled: !!params?.organizationId,
+    enabled: true,
     staleTime: 30_000,
     refetchOnWindowFocus: false,
   });
@@ -31,28 +31,37 @@ export function useAdminMemberDetails(userId: string, organizationId?: string) {
   });
 }
 
-export function useAdminMemberStatistics(organizationId: string) {
+export function useAdminMemberStatistics(organizationId?: string) {
   return useQuery({
     queryKey: ['member-statistics', organizationId],
     queryFn: async () => {
       const response = await apiClient.get(`/admin/members/statistics`, { params: { organizationId } });
       return response.data;
     },
-    enabled: !!organizationId,
+    enabled: true,
     staleTime: 60_000,
   });
 }
 
-export function useAdminAddMember(organizationId: string) {
+export function useAdminAddMember(organizationId?: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: any) => {
-      const response = await apiClient.post('/admin/members', payload);
+      const fullPayload = {
+        organizationId: payload.organizationId || organizationId,
+        ...payload,
+      };
+      const response = await apiClient.post('/admin/members', fullPayload);
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organization-members', { organizationId }] });
-      queryClient.invalidateQueries({ queryKey: ['member-statistics', organizationId] });
+      queryClient.invalidateQueries({ queryKey: ['organization-members'] });
+      queryClient.invalidateQueries({ queryKey: ['member-statistics'] });
+      queryClient.invalidateQueries({ queryKey: ['branchMembers'] });
+      queryClient.invalidateQueries({ queryKey: ['branch'] });
+      queryClient.invalidateQueries({ queryKey: ['branches'] });
+      queryClient.invalidateQueries({ queryKey: ['teams'] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success('Member added successfully');
     },
     onError: (error: Error) => {
