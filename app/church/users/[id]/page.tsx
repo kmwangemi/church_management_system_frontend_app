@@ -112,7 +112,7 @@ export default function MemberDetailsPage({
       activity: 'Volunteered at Food Drive',
       type: 'Service',
     },
-    { date: '2024-12-15', activity: 'Donated $250 (Tithe)', type: 'Giving' },
+    { date: '2024-12-15', activity: 'Donated KES 250 (Tithe)', type: 'Giving' },
     {
       date: '2024-12-12',
       activity: "Led Children's Bible Study",
@@ -243,25 +243,34 @@ export default function MemberDetailsPage({
                 <div className="w-full space-y-2 text-sm">
                   <div className="flex items-center space-x-2">
                     <Mail className="h-4 w-4 text-muted-foreground" />
-                    <span className="truncate">{user?.user?.email || 'N/A'}</span>
+                    <span className="truncate">{user?.user?.email || 'Not Provided'}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Phone className="h-4 w-4 text-muted-foreground" />
-                    <span>{user?.user?.phoneNumber || 'N/A'}</span>
+                    <span>{user?.user?.phoneNumber || 'Not Provided'}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-xs">{`${capitalizeFirstLetter(
-                      user?.address?.country || 'N/A'
-                    )}, ${capitalizeFirstLetter(user?.address?.city || 'N/A')}, ${capitalizeFirstLetter(user?.address?.street || 'N/A')}`}</span>
+                    <span className="text-xs">
+                      {[user?.address?.street, user?.address?.city, user?.address?.country]
+                        .filter((p) => Boolean(p && p !== 'N/A' && p !== 'Not Provided'))
+                        .map((p) => capitalizeFirstLetter(p!))
+                        .join(', ') || 'Not Provided'}
+                    </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <span>
-                      Joined {''}
-                      {user?.memberDetails?.joinedDate
-                        ? formatToNewDate(user.memberDetails.joinedDate)
-                        : (user?.createdAt ? formatToNewDate(user.createdAt) : 'N/A')}
+                      Joined{' '}
+                      {user?.memberDetails?.membershipDate || user?.memberDetails?.joinedDate || user?.member?.joinedDate || user?.joinedAt || user?.createdAt
+                        ? formatToNewDate(
+                            user?.memberDetails?.membershipDate ||
+                            user?.memberDetails?.joinedDate ||
+                            user?.member?.joinedDate ||
+                            user?.joinedAt ||
+                            user?.createdAt
+                          ) || 'Not Provided'
+                        : 'Not Provided'}
                     </span>
                   </div>
                 </div>
@@ -278,7 +287,7 @@ export default function MemberDetailsPage({
                 </CardHeader>
                 <CardContent>
                   <div className="font-bold text-2xl">
-                    {/* ${user.totalGiving.toLocaleString()} */}${0}
+                    KES 0
                   </div>
                   <p className="text-muted-foreground text-xs">This year</p>
                 </CardContent>
@@ -342,11 +351,9 @@ export default function MemberDetailsPage({
                           Birth Date
                         </Label>
                         <p className="text-muted-foreground text-sm">
-                          {user?.user?.dateOfBirth
-                            ? typeof user?.user?.dateOfBirth === 'string'
-                              ? formatToNewDate(user?.user?.dateOfBirth)
-                              : formatToNewDate(user?.user?.dateOfBirth)
-                            : 'N/A'}
+                          {user?.user?.dateOfBirth || user?.dateOfBirth
+                            ? formatToNewDate(user?.user?.dateOfBirth || user?.dateOfBirth) || 'Not Provided'
+                            : 'Not Provided'}
                         </p>
                       </div>
                       <div>
@@ -355,7 +362,7 @@ export default function MemberDetailsPage({
                         </Label>
                         <p className="text-muted-foreground text-sm">
                           {capitalizeFirstLetter(
-                            user?.user?.maritalStatus || 'N/A'
+                            user?.user?.maritalStatus || user?.maritalStatus || 'Not Provided'
                           )}
                         </p>
                       </div>
@@ -365,7 +372,7 @@ export default function MemberDetailsPage({
                         </Label>
                         <p className="text-muted-foreground text-sm">
                           {capitalizeFirstLetter(
-                            user?.user?.occupation || 'N/A'
+                            user?.user?.occupation || user?.occupation || 'Not Provided'
                           )}
                         </p>
                       </div>
@@ -374,7 +381,27 @@ export default function MemberDetailsPage({
                           Gender
                         </Label>
                         <p className="text-muted-foreground text-sm">
-                          {capitalizeFirstLetter(user?.user?.gender || 'N/A')}
+                          {capitalizeFirstLetter(user?.user?.gender || user?.gender || 'Not Provided')}
+                        </p>
+                      </div>
+                      <div>
+                        <Label className="font-medium text-sm" htmlFor={''}>
+                          Household Role
+                        </Label>
+                        <p className="text-muted-foreground text-sm">
+                          {capitalizeFirstLetter(
+                            user?.member?.householdRole || user?.householdRole || 'Not Provided'
+                          )}
+                        </p>
+                      </div>
+                      <div>
+                        <Label className="font-medium text-sm" htmlFor={''}>
+                          Member Type
+                        </Label>
+                        <p className="text-muted-foreground text-sm">
+                          {capitalizeFirstLetter(
+                            user?.memberType || user?.member?.memberType || 'Member'
+                          )}
                         </p>
                       </div>
                     </div>
@@ -399,21 +426,21 @@ export default function MemberDetailsPage({
                         </span>
                         {capitalizeFirstLetterOfEachWord(
                           user?.emergencyContact?.emergencyContactFullName ||
-                          'N/A'
+                          'Not Provided'
                         )}
                       </p>
                       <p className="text-muted-foreground text-sm">
                         <span className="mr-2 text-foreground text-sm">
                           Email:
                         </span>
-                        {user?.emergencyContact?.emergencyContactEmail || 'N/A'}
+                        {user?.emergencyContact?.emergencyContactEmail || 'Not Provided'}
                       </p>
                       <p className="text-muted-foreground text-sm">
                         <span className="mr-2 text-foreground text-sm">
                           Phone Number:
                         </span>
                         {user?.emergencyContact?.emergencyContactPhoneNumber ||
-                          'N/A'}
+                          'Not Provided'}
                       </p>
                       <p className="text-muted-foreground text-sm">
                         <span className="mr-2 text-foreground text-sm">
@@ -421,7 +448,7 @@ export default function MemberDetailsPage({
                         </span>
                         {capitalizeFirstLetterOfEachWord(
                           user?.emergencyContact
-                            ?.emergencyContactRelationship || 'N/A'
+                            ?.emergencyContactRelationship || 'Not Provided'
                         )}
                       </p>
                       <p className="text-muted-foreground text-sm">
@@ -430,7 +457,7 @@ export default function MemberDetailsPage({
                         </span>
                         {capitalizeFirstLetterOfEachWord(
                           user?.emergencyContact?.emergencyContactAddress ||
-                          'N/A'
+                          'Not Provided'
                         )}
                       </p>
                       <p className="text-muted-foreground text-sm">
@@ -438,7 +465,7 @@ export default function MemberDetailsPage({
                           Notes:
                         </span>
                         {capitalizeFirstLetterOfEachWord(
-                          user?.emergencyContact?.emergencyContactNotes || 'N/A'
+                          user?.emergencyContact?.emergencyContactNotes || 'Not Provided'
                         )}
                       </p>
                     </div>
@@ -449,7 +476,7 @@ export default function MemberDetailsPage({
                   <CardHeader>
                     <CardTitle>Spiritual Status</CardTitle>
                     <CardDescription>
-                      Baptism and confirmation status
+                      Baptism, confirmation, and membership details
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -468,13 +495,17 @@ export default function MemberDetailsPage({
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="font-medium text-sm">Confirmed</span>
+                      <span className="font-medium text-sm">Membership Status</span>
                       <Badge
                         variant={
-                          user?.status === 'active' ? 'default' : 'secondary'
+                          (user?.memberDetails?.membershipStatus || user?.member?.status || user?.status || 'ACTIVE').toLowerCase() === 'active'
+                            ? 'default'
+                            : 'secondary'
                         }
                       >
-                        {user?.status === 'active' ? 'Yes' : 'No'}
+                        {capitalizeFirstLetter(
+                          user?.memberDetails?.membershipStatus || user?.member?.status || user?.status || 'Active'
+                        )}
                       </Badge>
                     </div>
                     <div>
@@ -482,9 +513,15 @@ export default function MemberDetailsPage({
                         Member Since
                       </Label>
                       <p className="text-muted-foreground text-sm">
-                        {user?.memberDetails?.joinedDate
-                          ? formatToNewDate(user.memberDetails.joinedDate)
-                          : (user?.createdAt ? formatToNewDate(user.createdAt) : 'N/A')}
+                        {user?.memberDetails?.membershipDate || user?.memberDetails?.joinedDate || user?.member?.joinedDate || user?.joinedAt || user?.createdAt
+                          ? formatToNewDate(
+                              user?.memberDetails?.membershipDate ||
+                              user?.memberDetails?.joinedDate ||
+                              user?.member?.joinedDate ||
+                              user?.joinedAt ||
+                              user?.createdAt
+                            ) || 'Not Provided'
+                          : 'Not Provided'}
                       </p>
                     </div>
                     <div>
@@ -492,7 +529,23 @@ export default function MemberDetailsPage({
                         Membership Type
                       </Label>
                       <p className="text-muted-foreground text-sm">
-                        {capitalizeFirstLetter(user?.role || user?.position || 'N/A')}
+                        {capitalizeFirstLetter(
+                          user?.memberType ||
+                          user?.member?.memberType ||
+                          user?.position ||
+                          (Array.isArray(user?.role) ? user.role[0] : user?.role) ||
+                          'Member'
+                        )}
+                      </p>
+                    </div>
+                    <div>
+                      <Label className="font-medium text-sm" htmlFor={''}>
+                        Household Role
+                      </Label>
+                      <p className="text-muted-foreground text-sm">
+                        {capitalizeFirstLetter(
+                          user?.member?.householdRole || user?.householdRole || 'Not Provided'
+                        )}
                       </p>
                     </div>
                   </CardContent>
@@ -728,7 +781,7 @@ export default function MemberDetailsPage({
                   </CardHeader>
                   <CardContent>
                     <div className="font-bold text-3xl">
-                      {/* ${user?.totalGiving.toLocaleString()} */}${0}$
+                      KES 0
                     </div>
                     <p className="text-muted-foreground text-sm">
                       +15% from last year
@@ -742,8 +795,7 @@ export default function MemberDetailsPage({
                   </CardHeader>
                   <CardContent>
                     <div className="font-bold text-3xl">
-                      {/* ${Math.round(user?.totalGiving / 6).toLocaleString()} */}
-                      $ ${0}
+                      KES 0
                     </div>
                     <p className="text-muted-foreground text-sm">
                       Last 6 months

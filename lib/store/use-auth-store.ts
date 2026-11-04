@@ -9,6 +9,7 @@ interface AuthState {
   hasHydrated: boolean;
   setUser: (user: AuthUser) => void;
   setToken: (token: string, refreshToken?: string) => void;
+  setActiveChurch: (churchId: string) => void;
   logout: () => void;
   checkAuth: () => boolean;
   setHasHydrated: (state: boolean) => void;
@@ -27,6 +28,24 @@ export const useAuthStore = create<AuthState>()(
           token, 
           refreshToken: refreshToken !== undefined ? refreshToken : state.refreshToken 
         })),
+      setActiveChurch: (churchId: string) =>
+        set((state: AuthState) => {
+          if (!state.user) return state;
+          const membership = state.user.memberships?.find(
+            (m) => m.churchId === churchId
+          );
+          return {
+            user: {
+              ...state.user,
+              churchId,
+              churchName: membership?.churchName ?? state.user.churchName,
+              branchId: membership?.branchId ?? state.user.branchId,
+              branchName: membership?.branchName ?? state.user.branchName,
+              role: membership?.roles?.[0] ?? state.user.role,
+              roles: membership?.roles ?? state.user.roles,
+            },
+          };
+        }),
       logout: () =>
         set({
           user: null,

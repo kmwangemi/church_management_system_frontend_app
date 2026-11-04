@@ -37,13 +37,13 @@ export function RecordOfferingForm() {
           <label className="block text-sm font-medium text-muted-foreground mb-1">Amount</label>
           <div className="relative rounded-md shadow-sm">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span className="text-muted-foreground sm:text-sm">$</span>
+              <span className="text-muted-foreground sm:text-sm">KES</span>
             </div>
             <input 
               type="number"
               step="0.01"
               {...register("amount", { required: "Amount is required", min: 0.01 })}
-              className="pl-7 block w-full rounded-md border-border shadow-sm border p-2 focus:ring-blue-500 focus:border-blue-500"
+              className="pl-12 block w-full rounded-md border-border shadow-sm border p-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="0.00"
             />
           </div>

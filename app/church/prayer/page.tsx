@@ -58,6 +58,11 @@ import {
   User,
 } from 'lucide-react';
 import { useState } from 'react';
+import {
+  useDeletePrayerRequest,
+  useFetchPrayerRequests,
+  useUpdatePrayerCount,
+} from '@/lib/hooks/church/prayer-request/use-prayer-request-queries';
 
 // Mock data
 const prayerRequests = [
@@ -194,11 +199,26 @@ export default function PrayerPage() {
   const [selectedTab, setSelectedTab] = useState('requests');
   const [isAddRequestDialogOpen, setIsAddRequestDialogOpen] = useState(false);
 
-  const filteredRequests = prayerRequests.filter(
-    (request) =>
-      request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      request.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      request.requester.toLowerCase().includes(searchTerm.toLowerCase())
+  const { data: prayersData } = useFetchPrayerRequests({ search: searchTerm });
+  const { mutate: updatePrayerCount } = useUpdatePrayerCount();
+  const { mutate: deletePrayerRequest } = useDeletePrayerRequest();
+
+  const serverPrayers =
+    (prayersData as any)?.data?.prayerRequests ||
+    (prayersData as any)?.prayerRequests ||
+    (prayersData as any)?.data;
+  const activePrayers =
+    serverPrayers && serverPrayers.length > 0
+      ? serverPrayers
+      : prayersData
+        ? []
+        : prayerRequests;
+
+  const filteredRequests = activePrayers.filter(
+    (request: any) =>
+      (request.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (request.category || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (request.requester || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getPriorityBadge = (priority: string) => {
@@ -501,7 +521,7 @@ export default function PrayerPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredRequests.map((request) => (
+                      {filteredRequests.map((request: any) => (
                         <TableRow className="hover:bg-accent" key={request.id}>
                           <TableCell>
                             <div className="space-y-1">
@@ -523,9 +543,9 @@ export default function PrayerPage() {
                                         }
                                       />
                                       <AvatarFallback className="bg-blue-100 text-blue-600 text-xs">
-                                        {request.requester
+                                        {(request.requester || 'P')
                                           .split(' ')
-                                          .map((n) => n[0])
+                                          .map((n: string) => n[0])
                                           .join('')}
                                       </AvatarFallback>
                                     </Avatar>
@@ -575,7 +595,13 @@ export default function PrayerPage() {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="cursor-pointer"
+                                  onClick={() => {
+                                    const targetId = request._id || request.id;
+                                    if (targetId) updatePrayerCount(targetId);
+                                  }}
+                                >
                                   <Heart className="mr-2 h-4 w-4" />
                                   Pray for This
                                 </DropdownMenuItem>
@@ -588,7 +614,13 @@ export default function PrayerPage() {
                                   Mark as Answered
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-red-600">
+                                <DropdownMenuItem
+                                  className="cursor-pointer text-red-600"
+                                  onClick={() => {
+                                    const targetId = request._id || request.id;
+                                    if (targetId) deletePrayerRequest(targetId);
+                                  }}
+                                >
                                   <Trash2 className="mr-2 h-4 w-4" />
                                   Delete Request
                                 </DropdownMenuItem>

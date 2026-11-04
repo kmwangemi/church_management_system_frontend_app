@@ -44,3 +44,21 @@ export const useFetchOfferings = (page = 1, search = '') => {
     queryFn: () => fetchOfferings(page, search),
   });
 };
+
+const deleteOffering = async (id: string | number) => {
+  const { data } = await apiClient.delete(`/church/offerings/${id}`);
+  return data;
+};
+
+export const useDeleteOffering = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteOffering,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['offerings'] });
+      toast.success('Offering deleted successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};

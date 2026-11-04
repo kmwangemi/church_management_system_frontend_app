@@ -116,7 +116,7 @@ export default function MemberDashboard() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">
-              ${memberStats.totalGiving.toLocaleString()}
+              KES {memberStats.totalGiving.toLocaleString()}
             </div>
             <p className="text-muted-foreground text-xs">This year</p>
           </CardContent>

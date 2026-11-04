@@ -57,9 +57,14 @@ import {
   MoreHorizontal,
   Plus,
   Search,
+  Trash2,
   Users,
 } from 'lucide-react';
 import { useState } from 'react';
+import {
+  useDeleteDisciple,
+  useDisciples,
+} from '@/lib/hooks/church/disciple/use-disciple-queries';
 
 // Mock data
 const disciples = [
@@ -218,10 +223,24 @@ export default function DiscipleshipPage() {
   const [isAddDiscipleDialogOpen, setIsAddDiscipleDialogOpen] = useState(false);
   const [isAddMentorDialogOpen, setIsAddMentorDialogOpen] = useState(false);
 
-  const filteredDisciples = disciples.filter(
-    (disciple) =>
-      disciple.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      disciple.mentor.toLowerCase().includes(searchTerm.toLowerCase())
+  const { data: disciplesData } = useDisciples({ search: searchTerm });
+  const { mutate: deleteDisciple } = useDeleteDisciple();
+
+  const serverDisciples =
+    (disciplesData as any)?.data?.disciples ||
+    (disciplesData as any)?.disciples ||
+    (disciplesData as any)?.data;
+  const activeDisciples =
+    serverDisciples && serverDisciples.length > 0
+      ? serverDisciples
+      : disciplesData
+        ? []
+        : disciples;
+
+  const filteredDisciples = activeDisciples.filter(
+    (disciple: any) =>
+      (disciple.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (disciple.mentor || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getLevelBadge = (level: string) => {
@@ -575,7 +594,7 @@ export default function DiscipleshipPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {filteredDisciples.map((disciple) => (
+                        {filteredDisciples.map((disciple: any) => (
                           <TableRow
                             className="hover:bg-accent"
                             key={disciple.id}
@@ -588,9 +607,9 @@ export default function DiscipleshipPage() {
                                     src={disciple.avatar || '/placeholder.svg'}
                                   />
                                   <AvatarFallback className="bg-blue-100 text-blue-600">
-                                    {disciple.name
+                                    {(disciple.name || 'D')
                                       .split(' ')
-                                      .map((n) => n[0])
+                                      .map((n: string) => n[0])
                                       .join('')}
                                   </AvatarFallback>
                                 </Avatar>
@@ -653,8 +672,14 @@ export default function DiscipleshipPage() {
                                     Update
                                   </DropdownMenuItem>
                                   <DropdownMenuSeparator />
-                                  <DropdownMenuItem className="text-red-600">
-                                    <Users className="mr-2 h-4 w-4" />
+                                  <DropdownMenuItem
+                                    className="cursor-pointer text-red-600"
+                                    onClick={() => {
+                                      const targetId = disciple._id || disciple.id;
+                                      if (targetId) deleteDisciple(targetId);
+                                    }}
+                                  >
+                                    <Trash2 className="mr-2 h-4 w-4" />
                                     Remove from Program
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>

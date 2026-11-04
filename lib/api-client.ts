@@ -1,8 +1,8 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from './store/use-auth-store';
 
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -10,19 +10,46 @@ const apiClient = axios.create({
   timeout: 50000,
 });
 
-// Add Authorization header
+// Add Authorization and multi-tenant X-Church-Id headers
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = useAuthStore.getState().token;
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
+  const authState = useAuthStore.getState();
+  const token = authState.token;
+  const user = authState.user;
+
+  if (config.headers) {
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    // Automatically attach active church ID for multi-tenant isolation
+    const hasExplicitChurchHeader =
+      Boolean(config.headers['X-Church-Id'] || config.headers['x-church-id']);
+
+    const targetChurchId =
+      user?.churchId ||
+      config.data?.organizationId ||
+      config.data?.churchId ||
+      config.params?.organizationId ||
+      config.params?.churchId;
+
+    if (!hasExplicitChurchHeader && targetChurchId) {
+      config.headers['X-Church-Id'] = targetChurchId;
+    }
   }
+
   return config;
 });
 
 let isRefreshing = false;
-let failedQueue: Array<{ resolve: (value?: unknown) => void; reject: (reason?: any) => void }> = [];
+let failedQueue: Array<{
+  resolve: (value?: unknown) => void;
+  reject: (reason?: any) => void;
+}> = [];
 
-const processQueue = (error: AxiosError | null, token: string | null = null) => {
+const processQueue = (
+  error: AxiosError | null,
+  token: string | null = null
+) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
@@ -36,7 +63,9 @@ const processQueue = (error: AxiosError | null, token: string | null = null) => 
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
@@ -57,11 +86,19 @@ apiClient.interceptors.response.use(
 
       try {
         const refreshToken = useAuthStore.getState().refreshToken;
-        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, null, {
-          params: { refresh_token: refreshToken },
-        });
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
+        }
 
-        const { access_token, refresh_token: new_refresh_token } = response.data;
+        // Send refresh token in the JSON body matching backend RefreshRequest
+        const response = await axios.post(
+          `${API_BASE_URL}/auth/refresh`,
+          { refresh_token: refreshToken },
+          { headers: { 'Content-Type': 'application/json' } }
+        );
+
+        const { access_token, refresh_token: new_refresh_token } =
+          response.data;
         useAuthStore.getState().setToken(access_token, new_refresh_token);
 
         if (originalRequest.headers) {
@@ -76,7 +113,10 @@ apiClient.interceptors.response.use(
         // Redirect to login or trigger global logout event
         if (typeof window !== 'undefined') {
           const pathname = window.location.pathname;
-          const isPublicRoute = pathname === '/' || pathname.startsWith('/auth') || pathname.startsWith('/shared');
+          const isPublicRoute =
+            pathname === '/' ||
+            pathname.startsWith('/auth') ||
+            pathname.startsWith('/shared');
           if (!isPublicRoute) {
             window.location.href = '/auth/member';
           }

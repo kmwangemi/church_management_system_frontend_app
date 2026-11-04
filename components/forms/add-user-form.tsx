@@ -5,14 +5,8 @@ import { BranchCombobox } from '@/components/branch-combobox';
 import { CountrySelect } from '@/components/country-list-input';
 import { PhoneInput } from '@/components/phone-number-input';
 import { Button } from '@/components/ui/button';
-import { useEffect } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -29,35 +23,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useAdminAddMember } from '@/lib/hooks/shared/use-organization-member-mutation';
 import {
   CHURCH_POSITION_OPTIONS,
   GENDER_OPTIONS,
+  MEMBER_TYPE_OPTIONS,
+  SYSTEM_ACCESS_LEVEL_OPTIONS,
   getDefaultsForPosition,
   mapAccessAndTagsToRoles,
-  MINISTRY_TAG_OPTIONS,
-  type MinistryTag,
-  SYSTEM_ACCESS_LEVEL_OPTIONS,
   type SystemAccessLevel,
-  cn,
 } from '@/lib/utils';
 import { type AddUserPayload, userSchema } from '@/lib/validations/users';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Checkbox } from '@/components/ui/checkbox';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { toast } from 'sonner';
 import {
   Building2,
+  Calendar,
   Church,
+  Eye,
+  EyeOff,
   KeyRound,
   Loader2,
+  Mail,
   MapPin,
   Shield,
-  Tags,
   User,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 interface AddUserFormProps {
   onCloseDialog: () => void;
@@ -73,12 +68,16 @@ export function AddUserForm({
   onSuccess,
 }: AddUserFormProps) {
   const { organizationId } = useActiveOrganization();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const {
     mutateAsync: registerUserMutation,
     isPending,
     isError,
     error,
   } = useAdminAddMember(organizationId);
+
   const form = useForm<AddUserPayload>({
     resolver: zodResolver(userSchema),
     mode: 'onChange',
@@ -89,10 +88,15 @@ export function AddUserForm({
       phoneNumber: '',
       gender: 'MALE',
       position: 'member',
-      role: ['MEMBER'],
+      memberType: 'MEMBER',
+      dateOfBirth: '',
+      teamId: defaultBranchId || '',
+      createLogin: false,
+      password: '',
+      confirmPassword: '',
       systemAccessLevel: 'NONE',
       ministryTags: ['Member'],
-      teamId: defaultBranchId || '',
+      role: ['MEMBER'],
       sendWelcomeEmail: false,
       address: {
         street: '',
@@ -103,36 +107,84 @@ export function AddUserForm({
       },
     },
   });
-  const { reset, watch } = form;
+
+  const { reset, watch, setValue } = form;
 
   useEffect(() => {
     if (defaultBranchId) {
-      form.setValue('teamId', defaultBranchId);
+      setValue('teamId', defaultBranchId);
     }
-  }, [defaultBranchId, form]);
+  }, [defaultBranchId, setValue]);
+
+  const watchCreateLogin = watch('createLogin');
+  const watchMemberType = watch('memberType');
   const watchPosition = watch('position');
-  const watchRoles = watch('role') || ['MEMBER'];
+  const watchAccessLevel = watch('systemAccessLevel');
 
   // Handle form submission
   const onSubmit = async (payload: AddUserPayload) => {
     try {
-      const accessLevel = payload.systemAccessLevel || 'NONE';
-      const ministryTags = payload.ministryTags || [];
+      const branchId = payload.teamId || (payload as any).branchId;
+      if (!branchId) {
+        toast.error('Please select a church branch');
+        return;
+      }
+
+      const hasLogin = Boolean(payload.createLogin);
+      const accessLevel = hasLogin
+        ? payload.systemAccessLevel && payload.systemAccessLevel !== 'NONE'
+          ? payload.systemAccessLevel
+          : 'PORTAL'
+        : 'NONE';
+
+      const ministryTags =
+        payload.ministryTags && payload.ministryTags.length > 0
+          ? payload.ministryTags
+          : payload.memberType === 'VISITOR'
+            ? []
+            : ['Member'];
+
       const computedRoles = mapAccessAndTagsToRoles(
         accessLevel,
         ministryTags,
         payload.position
       );
-      const result: any = await registerUserMutation({
-        ...payload,
-        role: computedRoles as any,
+
+      const finalPayload: any = {
+        organizationId,
+        branchId,
+        teamId: branchId,
+        firstName: payload.firstName.trim(),
+        lastName: payload.lastName.trim(),
+        memberType: payload.memberType || 'MEMBER',
+        position: payload.position || 'member',
+        gender: payload.gender || 'MALE',
+        phoneNumber: payload.phoneNumber?.trim() || null,
+        email: payload.email?.trim() || null,
+        dateOfBirth: payload.dateOfBirth || null,
+        createLogin: hasLogin,
+        roles: computedRoles,
+        role: computedRoles,
         systemAccessLevel: accessLevel,
         ministryTags,
-        isStaff: ministryTags.includes('Staff'),
-        isVolunteer: ministryTags.includes('Volunteer'),
-        isMember: ministryTags.includes('Member'),
-        organizationId,
-      });
+        isStaff: computedRoles.includes('STAFF'),
+        isVolunteer: computedRoles.includes('VOLUNTEER'),
+        isMember: computedRoles.includes('MEMBER'),
+        sendWelcomeEmail: Boolean(payload.sendWelcomeEmail),
+      };
+
+      if (hasLogin && payload.password) {
+        finalPayload.password = payload.password;
+      }
+
+      if (
+        payload.address &&
+        Object.values(payload.address).some((v) => Boolean(v && String(v).trim()))
+      ) {
+        finalPayload.address = payload.address;
+      }
+
+      const result: any = await registerUserMutation(finalPayload);
       const generatedId = result?.membershipNumber || result?.memberId;
       if (generatedId) {
         toast.success(`User created successfully with ID: ${generatedId}`);
@@ -146,28 +198,56 @@ export function AddUserForm({
       console.error('Error adding user:', err);
     }
   };
+
   const handleCancelDialog = () => {
     onCloseDialog();
     reset();
   };
+
   return (
     <>
       {isError && <RenderApiError error={error} />}
       <Form {...form}>
-        <form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
-          {/* Personal Information */}
+        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+          {/* Branch & Primary Information */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <User className="h-5 w-5" />
-                <span>Personal Information</span>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center space-x-2 text-base font-semibold">
+                <User className="h-4 w-4 text-primary" />
+                <span>Basic Details</span>
               </CardTitle>
               <CardDescription>
-                Basic user details and contact information
+                Essential information required to add a member to the church database.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {/* Branch */}
+              <FormField
+                control={form.control}
+                name="teamId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-1.5 font-medium">
+                      <Building2 className="h-4 w-4 text-muted-foreground" />
+                      <span>Branch (Location)</span>
+                      <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <BranchCombobox
+                        className="w-full"
+                        disabled={lockBranch}
+                        onChange={field.onChange}
+                        placeholder="Search and select a branch"
+                        value={field.value}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Names */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="firstName"
@@ -177,7 +257,7 @@ export function AddUserForm({
                         First Name <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter first name" {...field} />
+                        <Input placeholder="e.g. John" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -192,23 +272,147 @@ export function AddUserForm({
                         Last Name <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter last name" {...field} />
+                        <Input placeholder="e.g. Kamau" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+              {/* Member Type & Church Position */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="memberType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Member Type</FormLabel>
+                      <Select
+                        onValueChange={(val) => {
+                          field.onChange(val);
+                          if (val === 'VISITOR') {
+                            setValue('position', 'visitor');
+                          } else if (watchPosition === 'visitor') {
+                            setValue('position', 'member');
+                          }
+                        }}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select member type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {MEMBER_TYPE_OPTIONS.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="position"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Church Position (Title)</FormLabel>
+                      <Select
+                        onValueChange={(val) => {
+                          field.onChange(val);
+                          const defaults = getDefaultsForPosition(val);
+                          if (defaults.accessLevel !== 'NONE') {
+                            setValue('createLogin', true);
+                            setValue('systemAccessLevel', defaults.accessLevel);
+                          }
+                        }}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select position" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="max-h-[300px] overflow-y-auto">
+                          {CHURCH_POSITION_OPTIONS.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Gender & Phone */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Gender <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select gender" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {GENDER_OPTIONS.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl>
+                        <PhoneInput
+                          defaultCountry="KE"
+                          onChange={field.onChange}
+                          placeholder="0712 345 678"
+                          value={field.value}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Email (Optional when no login; Required when creating login) */}
+              {!watchCreateLogin && (
                 <FormField
                   control={form.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email Address</FormLabel>
+                      <FormLabel>Email Address (Optional)</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Enter email address"
+                          placeholder="member@example.com"
                           type="email"
                           {...field}
                         />
@@ -217,438 +421,288 @@ export function AddUserForm({
                     </FormItem>
                   )}
                 />
+              )}
+
+              {/* Date of birth (Required if Child) */}
+              {watchMemberType === 'CHILD' && (
                 <FormField
                   control={form.control}
-                  name="phoneNumber"
+                  name="dateOfBirth"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        Phone Number <span className="text-red-500">*</span>
+                      <FormLabel className="flex items-center gap-1.5">
+                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                        <span>Date of Birth</span>
+                        <span className="text-red-500">* (Required for Child)</span>
                       </FormLabel>
                       <FormControl>
-                        <PhoneInput
-                          defaultCountry="KE"
-                          onChange={field.onChange}
-                          placeholder="Enter phone number"
-                          value={field.value}
-                        />
+                        <Input type="date" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+              )}
+            </CardContent>
+          </Card>
+
+          {/* User Login & System Access (Optional Toggle) */}
+          <Card className="border-primary/20 bg-primary/2">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <CardTitle className="flex items-center space-x-2 text-base font-semibold">
+                    <KeyRound className="h-4 w-4 text-primary" />
+                    <span>Create User Login Account</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Enable sign-in credentials for portal or administrative software access.
+                  </CardDescription>
+                </div>
+                <FormField
+                  control={form.control}
+                  name="createLogin"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked);
+                            if (checked && form.getValues('systemAccessLevel') === 'NONE') {
+                              setValue('systemAccessLevel', 'PORTAL');
+                            } else if (!checked) {
+                              setValue('systemAccessLevel', 'NONE');
+                            }
+                          }}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </div>
+            </CardHeader>
+
+            {watchCreateLogin && (
+              <CardContent className="space-y-4 pt-2">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Login Email <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="user@example.com"
+                            type="email"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="systemAccessLevel"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Access Level</FormLabel>
+                        <Select
+                          onValueChange={(val: SystemAccessLevel) => field.onChange(val)}
+                          value={field.value !== 'NONE' ? field.value : 'PORTAL'}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select access level" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="PORTAL">
+                              Member Portal (Self-Service)
+                            </SelectItem>
+                            <SelectItem value="STAFF">
+                              Staff / Ministry Operations
+                            </SelectItem>
+                            <SelectItem value="ADMIN">
+                              Administrator (Full Church Access)
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Password <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <div className="relative">
+                          <FormControl>
+                            <Input
+                              placeholder="Minimum 8 characters"
+                              type={showPassword ? 'text' : 'password'}
+                              {...field}
+                            />
+                          </FormControl>
+                          <Button
+                            className="absolute right-0 top-0 h-full px-3 py-2 text-muted-foreground hover:text-foreground"
+                            onClick={() => setShowPassword(!showPassword)}
+                            type="button"
+                            variant="ghost"
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Confirm Password <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <div className="relative">
+                          <FormControl>
+                            <Input
+                              placeholder="Confirm password"
+                              type={showConfirmPassword ? 'text' : 'password'}
+                              {...field}
+                            />
+                          </FormControl>
+                          <Button
+                            className="absolute right-0 top-0 h-full px-3 py-2 text-muted-foreground hover:text-foreground"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            type="button"
+                            variant="ghost"
+                          >
+                            {showConfirmPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="sendWelcomeEmail"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-2 space-y-0 pt-1">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel className="cursor-pointer text-xs font-normal text-muted-foreground">
+                        Send welcome email with account login details
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            )}
+          </Card>
+
+          {/* Optional Collapsible Address */}
+          <details className="group rounded-lg border border-border p-3 text-sm">
+            <summary className="flex cursor-pointer select-none items-center justify-between font-medium text-muted-foreground hover:text-foreground">
+              <span className="flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                <span>Address Details (Optional)</span>
+              </span>
+              <span className="text-xs text-muted-foreground transition-transform group-open:rotate-180">
+                ▼
+              </span>
+            </summary>
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 pt-2 border-t">
               <FormField
                 control={form.control}
-                name="gender"
+                name="address.country"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      Gender <span className="text-red-500">*</span>
-                    </FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="cursor-pointer">
-                          <SelectValue placeholder="Select gender" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="max-h-[400px] overflow-y-auto">
-                        {GENDER_OPTIONS.map((option) => (
-                          <SelectItem
-                            className="cursor-pointer"
-                            key={option.value}
-                            value={option.value}
-                          >
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-          {/* Address Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <MapPin className="h-5 w-5" />
-                <span>Address Information</span>
-              </CardTitle>
-              <CardDescription>User address information</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="address.country"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Country <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <CountrySelect
-                          onChange={field.onChange}
-                          placeholder="Select your country"
-                          value={field.value}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="address.city"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        City <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="Nairobi" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="address.street"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Street Address <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="123 Main Street" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="address.zipCode"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Postal Code</FormLabel>
-                      <FormControl>
-                        <Input placeholder="00100" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </CardContent>
-          </Card>
-          {/* Church Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Church className="h-5 w-5 text-primary" />
-                <span>Church Information</span>
-              </CardTitle>
-              <CardDescription>
-                Configure church title, branch location, software system access level, and ministry engagement tags.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* 1. Church Position & 2. Branch */}
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="position"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-1.5 font-medium">
-                        <Church className="h-4 w-4 text-muted-foreground" />
-                        <span>Church Position (Title)</span>
-                        <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <Select
-                        onValueChange={(val) => {
-                          field.onChange(val);
-                          // Smart default: Automatically pre-populate recommended access level and ministry tags based on title
-                          const defaults = getDefaultsForPosition(val);
-                          form.setValue('systemAccessLevel', defaults.accessLevel, {
-                            shouldValidate: true,
-                            shouldDirty: true,
-                          });
-                          form.setValue('ministryTags', defaults.tags, {
-                            shouldValidate: true,
-                            shouldDirty: true,
-                          });
-                          const mappedRoles = mapAccessAndTagsToRoles(
-                            defaults.accessLevel,
-                            defaults.tags,
-                            val
-                          );
-                          form.setValue('role', mappedRoles as any, {
-                            shouldValidate: true,
-                            shouldDirty: true,
-                          });
-                        }}
+                    <FormLabel>Country</FormLabel>
+                    <FormControl>
+                      <CountrySelect
+                        onChange={field.onChange}
+                        placeholder="Select country"
                         value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select church position" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="max-h-[300px] overflow-y-auto">
-                          {CHURCH_POSITION_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <p className="text-[11px] text-muted-foreground">
-                        Ecclesiastical or congregational title within the church.
-                      </p>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="teamId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-1.5 font-medium">
-                        <Building2 className="h-4 w-4 text-muted-foreground" />
-                        <span>Branch (Location)</span>
-                        <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <BranchCombobox
-                          className="w-full"
-                          disabled={lockBranch}
-                          onChange={field.onChange}
-                          placeholder="Search and select a branch"
-                          value={field.value}
-                        />
-                      </FormControl>
-                      {lockBranch ? (
-                        <p className="text-[11px] text-muted-foreground font-medium">
-                          Locked to current branch.
-                        </p>
-                      ) : (
-                        <p className="text-[11px] text-muted-foreground">
-                          Physical campus or local congregation branch.
-                        </p>
-                      )}
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              {/* 3. System Access Level */}
-              <FormField
-                control={form.control}
-                name="systemAccessLevel"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <FormLabel className="flex items-center gap-1.5 font-medium">
-                        <KeyRound className="h-4 w-4 text-primary" />
-                        <span>System Access Level</span>
-                        <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <span className="text-xs text-muted-foreground">
-                        Controls software dashboard & login permissions
-                      </span>
-                    </div>
-                    <FormControl>
-                      <RadioGroup
-                        className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4"
-                        onValueChange={(val: SystemAccessLevel) => {
-                          field.onChange(val);
-                          const currentTags = form.getValues('ministryTags') || [];
-                          const currentPos = form.getValues('position');
-                          const mappedRoles = mapAccessAndTagsToRoles(
-                            val,
-                            currentTags,
-                            currentPos
-                          );
-                          form.setValue('role', mappedRoles as any, {
-                            shouldValidate: true,
-                            shouldDirty: true,
-                          });
-                        }}
-                        value={field.value || 'NONE'}
-                      >
-                        {SYSTEM_ACCESS_LEVEL_OPTIONS.map((option) => {
-                          const isSelected = (field.value || 'NONE') === option.value;
-                          return (
-                            <label
-                              key={option.value}
-                              htmlFor={`access-${option.value}`}
-                              className={cn(
-                                'relative flex cursor-pointer flex-col justify-between rounded-lg border p-3.5 transition-all hover:bg-accent/50 focus:outline-none',
-                                isSelected
-                                  ? 'border-primary bg-primary/5 ring-1 ring-primary shadow-xs'
-                                  : 'border-border bg-card'
-                              )}
-                            >
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="space-y-1">
-                                  <div className="flex items-center gap-1.5">
-                                    <RadioGroupItem
-                                      id={`access-${option.value}`}
-                                      value={option.value}
-                                    />
-                                    <span className="text-sm font-semibold text-foreground">
-                                      {option.label}
-                                    </span>
-                                  </div>
-                                  <p className="text-xs text-muted-foreground leading-snug">
-                                    {option.description}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="mt-2.5">
-                                <span
-                                  className={cn(
-                                    'inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium tracking-tight',
-                                    isSelected
-                                      ? 'bg-primary/15 text-primary'
-                                      : 'bg-muted text-muted-foreground'
-                                  )}
-                                >
-                                  {option.badge}
-                                </span>
-                              </div>
-                            </label>
-                          );
-                        })}
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/* 4. Ministry Tags */}
-              <FormField
-                control={form.control}
-                name="ministryTags"
-                render={({ field }) => {
-                  const currentTags = (field.value || []) as MinistryTag[];
-                  return (
-                    <FormItem className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <FormLabel className="flex items-center gap-1.5 font-medium">
-                          <Tags className="h-4 w-4 text-primary" />
-                          <span>Ministry Tags</span>
-                        </FormLabel>
-                        <span className="text-xs text-muted-foreground">
-                          Select all ministry engagement badges that apply
-                        </span>
-                      </div>
-                      <FormControl>
-                        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
-                          {MINISTRY_TAG_OPTIONS.map((tagOpt) => {
-                            const isChecked = currentTags.includes(tagOpt.value);
-                            return (
-                              <div
-                                key={tagOpt.value}
-                                onClick={() => {
-                                  const next = isChecked
-                                    ? currentTags.filter((t) => t !== tagOpt.value)
-                                    : [...currentTags, tagOpt.value];
-                                  field.onChange(next);
-                                  const currentAccess =
-                                    form.getValues('systemAccessLevel') || 'NONE';
-                                  const currentPos = form.getValues('position');
-                                  const mappedRoles = mapAccessAndTagsToRoles(
-                                    currentAccess,
-                                    next,
-                                    currentPos
-                                  );
-                                  form.setValue('role', mappedRoles as any, {
-                                    shouldValidate: true,
-                                    shouldDirty: true,
-                                  });
-                                }}
-                                className={cn(
-                                  'flex cursor-pointer items-start space-x-3 rounded-lg border p-3.5 transition-all hover:bg-accent/50',
-                                  isChecked
-                                    ? 'border-primary/80 bg-primary/5 ring-1 ring-primary/40'
-                                    : 'border-border bg-card'
-                                )}
-                              >
-                                <Checkbox
-                                  checked={isChecked}
-                                  onCheckedChange={() => {
-                                    // Managed by card container click
-                                  }}
-                                  className="mt-0.5"
-                                />
-                                <div className="space-y-1">
-                                  <span className="text-sm font-medium leading-none text-foreground block">
-                                    {tagOpt.label}
-                                  </span>
-                                  <p className="text-xs text-muted-foreground leading-snug">
-                                    {tagOpt.description}
-                                  </p>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              {/* Dynamic Role Mapping Badge */}
-              <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Shield className="h-3.5 w-3.5 text-primary" />
-                  <span>Mapped System Role(s):</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {watchRoles.map((r: string) => (
-                      <span
-                        key={r}
-                        className="inline-flex items-center rounded bg-primary/10 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-primary"
-                      >
-                        {r}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <span className="text-[11px] text-muted-foreground">
-                  100% backward-compatible with system permission tiers
-                </span>
-              </div>
-              <FormField
-                control={form.control}
-                name="sendWelcomeEmail"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center space-x-2 space-y-0 pt-2">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
                       />
                     </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel className="cursor-pointer text-sm font-normal">
-                        Send welcome email with account details to this user
-                      </FormLabel>
-                    </div>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
-            </CardContent>
-          </Card>
-          <div className="flex justify-end space-x-4 pt-6">
+              <FormField
+                control={form.control}
+                name="address.city"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>City</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. Nairobi" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="address.street"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Street Address</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. 123 Church Rd" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="address.zipCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Postal Code</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. 00100" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </details>
+
+          {/* Form Actions */}
+          <div className="flex justify-end space-x-3 pt-2">
             <Button
               onClick={handleCancelDialog}
               type="button"
@@ -656,10 +710,7 @@ export function AddUserForm({
             >
               Cancel
             </Button>
-            <Button
-              disabled={isPending}
-              type="submit"
-            >
+            <Button disabled={isPending} type="submit">
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

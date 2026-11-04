@@ -170,28 +170,32 @@ export default function ChurchesPage() {
       numberOfBranches: updatedChurch.numberOfBranches,
       status: updatedChurch.status,
       address: updatedChurch.address,
+      subscription: updatedChurch.subscription?.plan
+        ? { plan: updatedChurch.subscription.plan }
+        : undefined,
+      metadata: updatedChurch.metadata,
     });
-    toast.success('Church updated successfully');
     setEditDialogOpen(false);
   };
   const handleSuspendChurch = (church: ChurchListResponse) => {
-    if (confirm('Are you sure you want to suspend this church?')) {
+    if (
+      confirm(
+        `Are you sure you want to deactivate and suspend "${church.name}"? Users in this church will not be able to log in.`
+      )
+    ) {
       suspend.mutate(church.id);
-      toast.success('Church suspended successfully');
     }
   };
   const handleActivateChurch = (church: ChurchListResponse) => {
     activate.mutate(church.id);
-    toast.success('Church activated successfully');
   };
   const handleDeleteChurch = (church: ChurchListResponse) => {
     if (
       confirm(
-        'Are you sure you want to delete this church? This action cannot be undone.'
+        `Are you sure you want to permanently delete "${church.name}"?\n\nWARNING: This will wipe all church data and its related data (branches, members, financial records, events, etc.). This action cannot be undone.`
       )
     ) {
       deleteChurch.mutate(church.id);
-      toast.success('Church deleted successfully');
     }
   };
   // Loading State
@@ -520,6 +524,11 @@ export default function ChurchesPage() {
                               0
                             ).toLocaleString()}
                           </div>
+                          {church.churchSize && (
+                            <div className="text-muted-foreground text-xs">
+                              Size: {church.churchSize}
+                            </div>
+                          )}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center">
@@ -566,7 +575,8 @@ export default function ChurchesPage() {
                                 Manage Users
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              {church?.status?.toLowerCase() === 'suspended' ? (
+                              {church?.status?.toUpperCase() === 'SUSPENDED' ||
+                              church?.status?.toUpperCase() === 'INACTIVE' ? (
                                 <DropdownMenuItem
                                   className="cursor-pointer text-green-600"
                                   onClick={() => handleActivateChurch(church)}

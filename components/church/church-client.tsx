@@ -58,10 +58,10 @@ export function ChurchClient({
     );
   }
   return (
-    <div className="flex h-screen bg-accent">
+    <div className="min-h-screen bg-accent">
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex lg:flex-shrink-0">
-        <div className="flex w-64 flex-col border-border border-r">
+      <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
+        <div className="flex grow flex-col border-border border-r bg-background">
           <ChurchSidebar
             pathname={pathname}
             setSidebarOpen={setSidebarOpen}
@@ -85,9 +85,9 @@ export function ChurchClient({
         </SheetContent>
       </Sheet>
       {/* Main Content */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col min-h-screen lg:pl-64">
         {/* Header */}
-        <header className="flex items-center justify-between border-border border-b bg-background px-4 py-2.5">
+        <header className="sticky top-0 z-40 flex items-center justify-between border-border border-b bg-background px-4 py-2.5">
           <div className="flex items-center space-x-4">
             <Sheet onOpenChange={setSidebarOpen} open={sidebarOpen}>
               <SheetTrigger asChild>
@@ -189,7 +189,7 @@ export function ChurchClient({
           </div>
         </header>
         {/* Main Content */}
-        <main className="flex-1 overflow-auto bg-accent p-6">{children}</main>
+        <main className="flex-1 bg-accent p-6">{children}</main>
       </div>
     </div>
   );

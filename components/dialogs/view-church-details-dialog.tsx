@@ -44,26 +44,29 @@ export function ViewChurchDetailsDialog({
 }: ViewChurchDetailsDialogProps) {
   if (!church) return null;
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
+    switch (status?.toUpperCase()) {
+      case 'ACTIVE':
         return <Badge className="bg-green-100 text-green-800">Active</Badge>;
-      case 'pending':
+      case 'PENDING':
         return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
-      case 'suspended':
+      case 'SUSPENDED':
         return <Badge className="bg-red-100 text-red-800">Suspended</Badge>;
+      case 'INACTIVE':
+        return <Badge className="bg-gray-100 text-gray-800">Inactive</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
   };
   const getPlanBadge = (plan?: string) => {
-    const planLower = plan?.toLowerCase();
-    switch (planLower) {
+    switch (plan?.toUpperCase()) {
       case 'CUSTOM':
         return <Badge className="bg-purple-100 text-purple-800">Custom</Badge>;
       case 'CATHEDRAL':
         return <Badge className="bg-blue-100 text-blue-800">Cathedral</Badge>;
       case 'MINISTRY':
         return <Badge className="bg-muted text-foreground">Ministry</Badge>;
+      case 'BASIC':
+        return <Badge className="bg-emerald-100 text-emerald-800">Basic</Badge>;
       default:
         return <Badge variant="secondary">{plan || 'None'}</Badge>;
     }
@@ -130,12 +133,13 @@ export function ViewChurchDetailsDialog({
                   <div>
                     <Label
                       className="font-medium text-muted-foreground text-sm"
-                      htmlFor="pastor"
+                      htmlFor="churchSize"
                     >
-                      Lead Pastor
+                      Congregation Size
                     </Label>
-                    <p className="font-semibold text-sm">
-                      {church?.metadata?.pastor || 'Not Provided'}
+                    <p className="flex items-center gap-1 text-sm font-semibold">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      {church?.churchSize || '101-250 Members'}
                     </p>
                   </div>
                   <div>

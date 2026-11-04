@@ -41,6 +41,7 @@ import {
   Edit,
   Filter,
   Home,
+  Loader2,
   MoreHorizontal,
   Plus,
   Search,
@@ -49,6 +50,10 @@ import {
   Wrench,
 } from 'lucide-react';
 import { useState } from 'react';
+import {
+  useDeleteAsset,
+  useFetchAssets,
+} from '@/lib/hooks/church/asset/use-asset-queries';
 
 // Mock data
 const assets = [
@@ -199,30 +204,28 @@ export default function AssetsPage() {
   const [selectedTab, setSelectedTab] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const filteredAssets = assets.filter((asset) => {
-    const matchesSearch =
-      asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      asset.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      asset.location.toLowerCase().includes(searchTerm.toLowerCase());
+  const { data: assetsData, isLoading } = useFetchAssets(1, searchTerm);
+  const { mutate: deleteAsset } = useDeleteAsset();
 
-    // if (selectedTab === 'all') return matchesSearch;
-    // if (selectedTab === 'vehicles')
-    //   return matchesSearch && asset.type === 'Vehicle';
-    // if (selectedTab === 'property')
-    //   return matchesSearch && asset.type === 'Property';
-    // if (selectedTab === 'equipment')
-    //   return matchesSearch && asset.type === 'Equipment';
+  const fetchedAssets = (assetsData as any)?.assets || (assetsData as any)?.data;
+  const activeAssets = fetchedAssets && fetchedAssets.length > 0 ? fetchedAssets : (assetsData ? [] : assets);
+
+  const filteredAssets = activeAssets.filter((asset: any) => {
+    const matchesSearch =
+      (asset.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (asset.category || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (asset.location || '').toLowerCase().includes(searchTerm.toLowerCase());
 
     return matchesSearch;
   });
 
   const stats = {
-    total: assets.length,
-    totalValue: assets.reduce((sum, asset) => sum + asset.value, 0),
-    vehicles: assets.filter((a) => a.type === 'Vehicle').length,
-    properties: assets.filter((a) => a.type === 'Property').length,
-    equipment: assets.filter((a) => a.type === 'Equipment').length,
-    maintenance: assets.filter((a) => a.status === 'Maintenance').length,
+    total: activeAssets.length,
+    totalValue: activeAssets.reduce((sum: number, asset: any) => sum + (Number(asset.value) || 0), 0),
+    vehicles: activeAssets.filter((a: any) => a.type === 'Vehicle').length,
+    properties: activeAssets.filter((a: any) => a.type === 'Property').length,
+    equipment: activeAssets.filter((a: any) => a.type === 'Equipment').length,
+    maintenance: activeAssets.filter((a: any) => (a.status || '').toLowerCase() === 'maintenance').length,
   };
 
   return (
@@ -292,7 +295,7 @@ export default function AssetsPage() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl text-foreground">
-              ${stats.totalValue.toLocaleString()}
+              KES {stats.totalValue.toLocaleString()}
             </div>
             <p className="mt-1 text-muted-foreground text-xs">Combined asset value</p>
           </CardContent>
@@ -380,7 +383,7 @@ export default function AssetsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredAssets.map((asset) => (
+                    {filteredAssets.map((asset: any) => (
                       <TableRow className="hover:bg-accent" key={asset.id}>
                         <TableCell>
                           <div className="flex items-center space-x-3">
@@ -405,7 +408,7 @@ export default function AssetsPage() {
                         </TableCell>
                         <TableCell>
                           <span className="font-medium">
-                            ${asset.value.toLocaleString()}
+                            KES {asset.value.toLocaleString()}
                           </span>
                         </TableCell>
                         <TableCell>
@@ -444,7 +447,13 @@ export default function AssetsPage() {
                                 Maintenance History
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-red-600">
+                              <DropdownMenuItem
+                                className="cursor-pointer text-red-600"
+                                onClick={() => {
+                                  const targetId = asset._id || asset.id;
+                                  if (targetId) deleteAsset(targetId);
+                                }}
+                              >
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 Delete Asset
                               </DropdownMenuItem>

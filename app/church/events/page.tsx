@@ -36,6 +36,7 @@ import {
   Clock,
   Download,
   Edit,
+  Loader2,
   MapPin,
   MoreHorizontal,
   Plus,
@@ -45,6 +46,10 @@ import {
   Users,
 } from 'lucide-react';
 import { useState } from 'react';
+import {
+  useDeleteEvent,
+  useFetchEvents,
+} from '@/lib/hooks/church/event/use-event-queries';
 
 // Mock data
 const events = [
@@ -153,35 +158,42 @@ export default function EventsPage() {
   const [selectedTab, setSelectedTab] = useState('upcoming');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const filteredEvents = events.filter((event) => {
+  const { data: eventsData, isLoading } = useFetchEvents(1, searchTerm);
+  const { mutate: deleteEvent } = useDeleteEvent();
+
+  const fetchedEvents = (eventsData as any)?.events || (eventsData as any)?.data;
+  const activeEvents = fetchedEvents && fetchedEvents.length > 0 ? fetchedEvents : (eventsData ? [] : events);
+
+  const filteredEvents = activeEvents.filter((event: any) => {
     const matchesSearch =
-      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.organizer.toLowerCase().includes(searchTerm.toLowerCase());
+      (event.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (event.location || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (event.organizer || '').toLowerCase().includes(searchTerm.toLowerCase());
     const eventDate = new Date(event.date);
     const today = new Date();
     if (selectedTab === 'upcoming') {
-      return matchesSearch && eventDate >= today;
+      return matchesSearch && (eventDate >= today || !event.date);
     }
     if (selectedTab === 'past') {
       return matchesSearch && eventDate < today;
     }
     if (selectedTab === 'recurring') {
-      return matchesSearch && event.recurring !== 'None';
+      return matchesSearch && event.recurring && event.recurring !== 'None';
     }
     return matchesSearch;
   });
 
   const stats = {
-    total: events.length,
-    upcoming: events.filter((e) => new Date(e.date) >= new Date()).length,
-    thisWeek: events.filter((e) => {
+    total: activeEvents.length,
+    upcoming: activeEvents.filter((e: any) => !e.date || new Date(e.date) >= new Date()).length,
+    thisWeek: activeEvents.filter((e: any) => {
+      if (!e.date) return false;
       const eventDate = new Date(e.date);
       const today = new Date();
       const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
       return eventDate >= today && eventDate <= weekFromNow;
     }).length,
-    registrations: events.reduce((sum, e) => sum + e.registeredAttendees, 0),
+    registrations: activeEvents.reduce((sum: number, e: any) => sum + (e.registeredAttendees || 0), 0),
   };
 
   return (
@@ -325,7 +337,7 @@ export default function EventsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredEvents.map((event) => (
+                    {filteredEvents.map((event: any) => (
                       <TableRow className="hover:bg-accent" key={event.id}>
                         <TableCell>
                           <div>
@@ -405,7 +417,13 @@ export default function EventsPage() {
                                 Send Reminders
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-red-600">
+                              <DropdownMenuItem
+                                className="cursor-pointer text-red-600"
+                                onClick={() => {
+                                  const targetId = event._id || event.id;
+                                  if (targetId) deleteEvent(targetId);
+                                }}
+                              >
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 Cancel Event
                               </DropdownMenuItem>

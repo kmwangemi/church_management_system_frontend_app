@@ -32,7 +32,9 @@ const fetchEvents = async (
   page = 1,
   search = ''
 ): Promise<DepartmentListResponse> => {
-  const { data } = await apiClient.get(`/church/events?page=${page}&search=${search}`);
+  const { data } = await apiClient.get(
+    `/church/events?page=${page}&search=${search}`
+  );
   return data;
 };
 
@@ -40,5 +42,47 @@ export const useFetchEvents = (page = 1, search = '') => {
   return useQuery({
     queryKey: ['events', page, search],
     queryFn: () => fetchEvents(page, search),
+  });
+};
+
+const deleteEvent = async (id: string | number) => {
+  const { data } = await apiClient.delete(`/church/events/${id}`);
+  return data;
+};
+
+export const useDeleteEvent = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteEvent,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      toast.success('Event deleted successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
+const updateEvent = async ({
+  id,
+  payload,
+}: {
+  id: string | number;
+  payload: Partial<AddEventPayload>;
+}) => {
+  const { data } = await apiClient.put(`/church/events/${id}`, payload);
+  return data;
+};
+
+export const useUpdateEvent = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateEvent,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      toast.success('Event updated successfully.', {
+        style: successToastStyle,
+      });
+    },
   });
 };

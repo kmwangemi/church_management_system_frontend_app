@@ -57,7 +57,7 @@ export default function NotificationsPage() {
       id: 3,
       type: 'success',
       title: 'Donation Received',
-      message: 'Anonymous donation of $1,000 received for building fund',
+      message: 'Anonymous donation of KES 1,000 received for building fund',
       time: '2 hours ago',
       read: true,
       category: 'Finance',

@@ -125,36 +125,73 @@ const visitorDetailsSchema = z.object({
   occupation: optionalString,
 });
 
-// 🔹 Create Schema (minimal required)
-export const userSchema = z.object({
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
-  email: optionalEmail,
-  phoneNumber: optionalString,
-  position: z.string().min(1, 'Church position is required'),
-  address: addressSchema.optional().or(
-    z.object({
-      street: optionalString,
-      city: optionalString,
-      state: optionalString,
-      zipCode: optionalString,
-      country: optionalString,
-    })
-  ),
-  gender: z.enum(['MALE', 'FEMALE', 'male', 'female'], {
-    error: 'Gender is required',
-  }),
-  role: z
-    .array(
-      z.enum(['OWNER', 'MEMBER', 'STAFF', 'VOLUNTEER', 'VISITOR', 'ADMIN'])
-    )
-    .min(1, 'At least one role is required')
-    .max(2, 'Only a maximum of 2 roles are allowed'),
-  systemAccessLevel: z.enum(['NONE', 'PORTAL', 'STAFF', 'ADMIN']).optional(),
-  ministryTags: z.array(z.string()).optional(),
-  teamId: optionalString,
-  sendWelcomeEmail: z.boolean().optional(),
-});
+// 🔹 Create Schema (focused minimal fields for first-time creation)
+export const userSchema = z
+  .object({
+    firstName: z.string().min(2, 'First name must be at least 2 characters'),
+    lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+    email: optionalEmail,
+    phoneNumber: optionalString,
+    position: z.string().min(1, 'Church position is required'),
+    memberType: z.enum(['MEMBER', 'VISITOR', 'CHILD']),
+    dateOfBirth: optionalString,
+    gender: z.enum(['MALE', 'FEMALE', 'male', 'female'], {
+      error: 'Gender is required',
+    }),
+    teamId: z.string().min(1, 'Branch is required'),
+    createLogin: z.boolean(),
+    password: optionalString,
+    confirmPassword: optionalString,
+    systemAccessLevel: z.enum(['NONE', 'PORTAL', 'STAFF', 'ADMIN']).optional(),
+    ministryTags: z.array(z.string()).optional(),
+    role: z
+      .array(
+        z.enum(['OWNER', 'MEMBER', 'STAFF', 'VOLUNTEER', 'VISITOR', 'ADMIN'])
+      )
+      .optional(),
+    sendWelcomeEmail: z.boolean().optional(),
+    address: z
+      .object({
+        street: optionalString,
+        city: optionalString,
+        state: optionalString,
+        zipCode: optionalString,
+        country: optionalString,
+      })
+      .optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.createLogin) {
+      if (!data.email || data.email.trim() === '') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Email address is required when creating a login account',
+          path: ['email'],
+        });
+      }
+      if (!data.password || data.password.length < 8) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Password must be at least 8 characters',
+          path: ['password'],
+        });
+      }
+      if (data.confirmPassword && data.password !== data.confirmPassword) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Passwords do not match',
+          path: ['confirmPassword'],
+        });
+      }
+    }
+    if (data.memberType === 'CHILD' && (!data.dateOfBirth || data.dateOfBirth.trim() === '')) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Date of birth is required for a child member',
+        path: ['dateOfBirth'],
+      });
+    }
+  });
 
 export type AddUserPayload = z.infer<typeof userSchema>;
 
@@ -167,7 +204,9 @@ export const adminBaseSchema = z.object({
   gender: z.enum(['MALE', 'FEMALE'], { error: 'Gender is required' }),
   position: z.string().optional(),
   address: addressSchema,
-  password: passwordSchema,
+  password: passwordSchema.refine((val) => val.length >= 8, {
+    message: 'Password must be at least 8 characters',
+  }),
   confirmPassword: z.string(),
   sendWelcomeEmail: z.boolean().optional(),
   teamId: z.string().optional(),
@@ -208,6 +247,11 @@ export const userUpdateSchema = z.object({
   email: optionalEmail,
   phoneNumber: optionalString,
   position: z.string().min(1, 'Church position is required'),
+  memberType: z.enum(['MEMBER', 'VISITOR', 'CHILD']).optional(),
+  householdRole: z.enum(['HEAD', 'SPOUSE', 'CHILD', 'OTHER']).optional().or(z.literal('')),
+  householdId: optionalString,
+  membershipNumber: optionalString,
+  joinedAt: optionalString,
   address: addressSchema.optional().or(
     z.object({
       street: optionalString,

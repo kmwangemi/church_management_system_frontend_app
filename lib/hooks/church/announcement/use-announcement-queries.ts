@@ -44,3 +44,45 @@ export const useFetchAnnouncements = (page = 1, search = '') => {
     queryFn: () => fetchAnnouncements(page, search),
   });
 };
+
+const deleteAnnouncement = async (id: string | number) => {
+  const { data } = await apiClient.delete(`/church/announcements/${id}`);
+  return data;
+};
+
+export const useDeleteAnnouncement = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteAnnouncement,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['announcements'] });
+      toast.success('Announcement deleted successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
+const updateAnnouncement = async ({
+  id,
+  payload,
+}: {
+  id: string | number;
+  payload: Partial<AddAnnouncementPayload>;
+}) => {
+  const { data } = await apiClient.put(`/church/announcements/${id}`, payload);
+  return data;
+};
+
+export const useUpdateAnnouncement = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateAnnouncement,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['announcements'] });
+      toast.success('Announcement updated successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};

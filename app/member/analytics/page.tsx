@@ -153,7 +153,7 @@ export default function MemberAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">
-              ${memberStats.givingProgress.toLocaleString()}
+              KES {memberStats.givingProgress.toLocaleString()}
             </div>
             <Progress
               className="mt-2"
@@ -162,7 +162,7 @@ export default function MemberAnalytics() {
               }
             />
             <p className="mt-2 text-muted-foreground text-xs">
-              ${memberStats.givingGoal - memberStats.givingProgress} to goal
+              KES {memberStats.givingGoal - memberStats.givingProgress} to goal
             </p>
           </CardContent>
         </Card>
@@ -349,7 +349,7 @@ export default function MemberAnalytics() {
               <CardContent className="space-y-4">
                 <div className="rounded-lg bg-gradient-to-r from-green-50 to-blue-50 p-4 text-center">
                   <div className="mb-2 font-bold text-3xl text-green-600">
-                    ${memberStats.givingProgress.toLocaleString()}
+                    KES {memberStats.givingProgress.toLocaleString()}
                   </div>
                   <p className="text-muted-foreground text-sm">Total given this year</p>
                 </div>
@@ -358,12 +358,12 @@ export default function MemberAnalytics() {
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Monthly Average</span>
                     <span className="font-medium">
-                      ${Math.round(memberStats.givingProgress / 12)}
+                      KES {Math.round(memberStats.givingProgress / 12)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Largest Gift</span>
-                    <span className="font-medium">$300</span>
+                    <span className="font-medium">KES 300</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Giving Frequency</span>

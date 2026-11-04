@@ -32,7 +32,9 @@ const fetchAssets = async (
   page = 1,
   search = ''
 ): Promise<DepartmentListResponse> => {
-  const { data } = await apiClient.get(`/church/assets?page=${page}&search=${search}`);
+  const { data } = await apiClient.get(
+    `/church/assets?page=${page}&search=${search}`
+  );
   return data;
 };
 
@@ -40,5 +42,47 @@ export const useFetchAssets = (page = 1, search = '') => {
   return useQuery({
     queryKey: ['assets', page, search],
     queryFn: () => fetchAssets(page, search),
+  });
+};
+
+const deleteAsset = async (id: string | number) => {
+  const { data } = await apiClient.delete(`/church/assets/${id}`);
+  return data;
+};
+
+export const useDeleteAsset = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteAsset,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['assets'] });
+      toast.success('Asset deleted successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
+const updateAsset = async ({
+  id,
+  payload,
+}: {
+  id: string | number;
+  payload: Partial<AddAssetPayload>;
+}) => {
+  const { data } = await apiClient.put(`/church/assets/${id}`, payload);
+  return data;
+};
+
+export const useUpdateAsset = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateAsset,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['assets'] });
+      toast.success('Asset updated successfully.', {
+        style: successToastStyle,
+      });
+    },
   });
 };

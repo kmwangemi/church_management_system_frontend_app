@@ -74,7 +74,7 @@ export default function MemberAnnouncements() {
       id: 3,
       title: 'Youth Ministry Winter Retreat - Registration Open',
       content:
-        "Calling all youth ages 13-18! Our annual winter retreat is scheduled for February 16-18 at Camp Wildwood. This year's theme is 'Unshakeable Faith' and will feature worship, teaching, small groups, and fun activities. The cost is $150 per person, with scholarships available for those who need financial assistance. Registration deadline is February 1st. Contact Pastor Jake for more information.",
+        "Calling all youth ages 13-18! Our annual winter retreat is scheduled for February 16-18 at Camp Wildwood. This year's theme is 'Unshakeable Faith' and will feature worship, teaching, small groups, and fun activities. The cost is KES 150 per person, with scholarships available for those who need financial assistance. Registration deadline is February 1st. Contact Pastor Jake for more information.",
       author: 'Jake Thompson',
       authorRole: 'Youth Pastor',
       date: '2024-01-03T16:45:00Z',

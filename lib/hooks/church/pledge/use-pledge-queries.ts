@@ -44,3 +44,21 @@ export const useFetchPledges = (page = 1, search = '') => {
     queryFn: () => fetchPledges(page, search),
   });
 };
+
+const deletePledge = async (id: string | number) => {
+  const { data } = await apiClient.delete(`/church/pledges/${id}`);
+  return data;
+};
+
+export const useDeletePledge = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deletePledge,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pledges'] });
+      toast.success('Pledge deleted successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
