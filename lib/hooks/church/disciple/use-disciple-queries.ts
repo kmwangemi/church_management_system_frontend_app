@@ -54,7 +54,7 @@ const addMilestoneCompletionApi = async (payload: {
   // const { discipleId, ...data } = payload;
   const { discipleId } = payload;
   const { data } = await apiClient.post(
-    `/api/church/disciples/${discipleId}/milestones`,
+    `/church/disciples/${discipleId}/milestones`,
     payload
   );
   return data;

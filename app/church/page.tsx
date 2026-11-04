@@ -57,7 +57,7 @@ export default function DashboardPage() {
     },
     {
       title: 'Monthly Giving',
-      value: '$45,231',
+      value: 'KES 45,231',
       change: '+8%',
       trend: 'up',
       icon: DollarSign,
@@ -96,7 +96,7 @@ export default function DashboardPage() {
       id: 3,
       type: 'finance',
       title: 'Offering recorded',
-      description: 'Sunday service offering: $2,450',
+      description: 'Sunday service offering: KES 2,450',
       time: '1d ago',
       color: 'bg-purple-500',
     },
@@ -433,7 +433,7 @@ export default function DashboardPage() {
               <div>
                 <div className="mb-2 flex items-center justify-between">
                   <span className="font-medium text-sm">Giving Goal</span>
-                  <span className="text-muted-foreground text-sm">$45K / $50K</span>
+                  <span className="text-muted-foreground text-sm">KES 45K / KES 50K</span>
                 </div>
                 <Progress className="h-2" value={90} />
               </div>

@@ -129,7 +129,7 @@ export const StaffUpdateCard: React.FC<StaffUpdateCardProps> = ({ form }) => {
           name="staffDetails.salary"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Salary</FormLabel>
+              <FormLabel>Salary (KES)</FormLabel>
               <FormControl>
                 <Input
                   type="number"

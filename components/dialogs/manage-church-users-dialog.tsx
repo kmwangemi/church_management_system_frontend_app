@@ -78,6 +78,7 @@ import {
   type AdminEditPayload,
 } from '@/lib/validations/users';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useSuperAdminBranches } from '@/hooks/api/use-superadmin';
 import {
   AlertCircle,
   ChevronLeft,
@@ -570,6 +571,10 @@ function AddUserDialog({
   church,
   onSuccess,
 }: AddUserDialogProps) {
+  const { data: branchData, isLoading: isLoadingBranches } =
+    useSuperAdminBranches({ churchId: church.id });
+  const branches = branchData?.branches || [];
+
   const {
     mutate: addMember,
     isPending: isLoading,
@@ -599,20 +604,43 @@ function AddUserDialog({
     },
   });
   const { reset } = form;
+
+  // Auto-populate branch when branches load
+  useEffect(() => {
+    if (branches.length > 0 && !form.getValues('teamId')) {
+      const mainBranch =
+        branches.find((b: any) =>
+          b.name?.toLowerCase().includes('main')
+        ) || branches[0];
+      if (mainBranch?.id) {
+        form.setValue('teamId', mainBranch.id);
+      }
+    }
+  }, [branches, form]);
+
   const onSubmit = (payload: AdminPayload) => {
+    const branchId = payload.teamId || branches[0]?.id;
+    if (!branchId) {
+      toast.error('No active branch found for this church. Please create a branch first.');
+      return;
+    }
+
     addMember(
       {
         organizationId: church.id,
+        branchId,
+        teamId: branchId,
         firstName: payload.firstName,
         lastName: payload.lastName,
         email: payload.email,
         phoneNumber: payload.phoneNumber,
+        createLogin: Boolean(payload.password),
         password: payload.password,
         gender: payload.gender,
         position: 'Church Administrator',
         address: payload.address,
-        teamId: payload.teamId || undefined,
         role: ['ADMIN'],
+        roles: ['ADMIN'],
         sendWelcomeEmail: payload.sendWelcomeEmail,
       },
       {
@@ -857,7 +885,30 @@ function AddUserDialog({
                     </div>
                     <div>
                       <span className="font-semibold text-blue-900 block">Assigned Branch:</span>
-                      <span className="text-blue-700">Main Branch (Headquarters)</span>
+                      {branches.length > 1 ? (
+                        <FormField
+                          control={form.control}
+                          name="teamId"
+                          render={({ field }) => (
+                            <Select onValueChange={field.onChange} value={field.value || branches[0]?.id}>
+                              <SelectTrigger className="mt-1 h-8 bg-white">
+                                <SelectValue placeholder="Select branch" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {branches.map((b: any) => (
+                                  <SelectItem key={b.id} value={b.id}>
+                                    {b.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                      ) : (
+                        <span className="text-blue-700">
+                          {branches[0]?.name || (isLoadingBranches ? 'Loading branch...' : 'Main Branch (Headquarters)')}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <p className="mt-3 text-xs text-blue-600">

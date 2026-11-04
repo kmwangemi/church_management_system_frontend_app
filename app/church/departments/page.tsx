@@ -254,7 +254,7 @@ export default function DepartmentsPage() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">
-              ${totalBudget.toLocaleString()}
+              KES {totalBudget.toLocaleString()}
             </div>
             <p className="text-muted-foreground text-xs">Annual allocation</p>
           </CardContent>

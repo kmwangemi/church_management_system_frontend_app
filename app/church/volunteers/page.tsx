@@ -42,15 +42,48 @@ import {
   AlertCircle,
   Calendar,
   Clock,
+  Loader2,
   Plus,
   Search,
+  Trash2,
   UserCheck,
   Users,
 } from 'lucide-react';
 import { useState } from 'react';
+import {
+  useDeleteVolunteer,
+  useDeleteVolunteerRole,
+  useFetchVolunteerRoles,
+  useFetchVolunteers,
+  useRegisterVolunteer,
+  useRegisterVolunteerRole,
+} from '@/lib/hooks/church/volunteer/use-volunteer-queries';
 
 export default function VolunteersPage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [volName, setVolName] = useState('');
+  const [volEmail, setVolEmail] = useState('');
+  const [volPhone, setVolPhone] = useState('');
+  const [volSkills, setVolSkills] = useState<string[]>([]);
+  const [volAvailability, setVolAvailability] = useState<string[]>([]);
+  const [volNotes, setVolNotes] = useState('');
+  const [isAddVolOpen, setIsAddVolOpen] = useState(false);
+
+  const [taskTitle, setTaskTitle] = useState('');
+  const [taskPriority, setTaskPriority] = useState('Medium');
+  const [taskDesc, setTaskDesc] = useState('');
+  const [taskDepartment, setTaskDepartment] = useState('General');
+  const [neededVolunteers, setNeededVolunteers] = useState('2');
+  const [isTaskOpen, setIsTaskOpen] = useState(false);
+
+  const { data: volData } = useFetchVolunteers(1, searchTerm);
+  const { mutate: registerVolunteer, isPending: isRegisteringVol } = useRegisterVolunteer();
+  const { mutate: deleteVolunteer } = useDeleteVolunteer();
+
+  const { data: rolesData } = useFetchVolunteerRoles(1, '');
+  const { mutate: registerVolunteerRole, isPending: isRegisteringRole } = useRegisterVolunteerRole();
+  const { mutate: deleteVolunteerRole } = useDeleteVolunteerRole();
+
   const volunteers = [
     {
       id: 1,
@@ -147,6 +180,12 @@ export default function VolunteersPage() {
       description: 'Assist with meal preparation for church events',
     },
   ];
+
+  const serverVols = (volData as any)?.volunteers || (volData as any)?.data;
+  const activeVolunteers = serverVols && serverVols.length > 0 ? serverVols : (volData ? [] : volunteers);
+
+  const serverRoles = (rolesData as any)?.roles || (rolesData as any)?.data;
+  const activeRoles = serverRoles && serverRoles.length > 0 ? serverRoles : (rolesData ? [] : volunteerRoles);
   const upcomingTasks = [
     {
       id: 1,
@@ -219,7 +258,7 @@ export default function VolunteersPage() {
           </p>
         </div>
         <div className="flex space-x-2">
-          <Dialog>
+          <Dialog onOpenChange={setIsAddVolOpen} open={isAddVolOpen}>
             <DialogTrigger asChild>
               <Button variant="outline">
                 <Plus className="mr-2 h-4 w-4" />
@@ -238,7 +277,12 @@ export default function VolunteersPage() {
                   <Label className="text-right" htmlFor="volunteerName">
                     Name
                   </Label>
-                  <Input className="col-span-3" id="volunteerName" />
+                  <Input
+                    className="col-span-3"
+                    id="volunteerName"
+                    onChange={(e) => setVolName(e.target.value)}
+                    value={volName}
+                  />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label className="text-right" htmlFor="volunteerEmail">
@@ -247,14 +291,21 @@ export default function VolunteersPage() {
                   <Input
                     className="col-span-3"
                     id="volunteerEmail"
+                    onChange={(e) => setVolEmail(e.target.value)}
                     type="email"
+                    value={volEmail}
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label className="text-right" htmlFor="volunteerPhone">
                     Phone
                   </Label>
-                  <Input className="col-span-3" id="volunteerPhone" />
+                  <Input
+                    className="col-span-3"
+                    id="volunteerPhone"
+                    onChange={(e) => setVolPhone(e.target.value)}
+                    value={volPhone}
+                  />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label className="text-right">Skills</Label>
@@ -268,7 +319,17 @@ export default function VolunteersPage() {
                       'Security',
                     ].map((skill) => (
                       <div className="flex items-center space-x-2" key={skill}>
-                        <Checkbox id={skill} />
+                        <Checkbox
+                          checked={volSkills.includes(skill)}
+                          id={skill}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setVolSkills([...volSkills, skill]);
+                            } else {
+                              setVolSkills(volSkills.filter((s) => s !== skill));
+                            }
+                          }}
+                        />
                         <Label className="text-sm" htmlFor={skill}>
                           {skill}
                         </Label>
@@ -287,7 +348,19 @@ export default function VolunteersPage() {
                       'Saturday',
                     ].map((time) => (
                       <div className="flex items-center space-x-2" key={time}>
-                        <Checkbox id={time} />
+                        <Checkbox
+                          checked={volAvailability.includes(time)}
+                          id={time}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setVolAvailability([...volAvailability, time]);
+                            } else {
+                              setVolAvailability(
+                                volAvailability.filter((t) => t !== time)
+                              );
+                            }
+                          }}
+                        />
                         <Label className="text-sm" htmlFor={time}>
                           {time}
                         </Label>
@@ -299,27 +372,63 @@ export default function VolunteersPage() {
                   <Label className="text-right" htmlFor="volunteerNotes">
                     Notes
                   </Label>
-                  <Textarea className="col-span-3" id="volunteerNotes" />
+                  <Textarea
+                    className="col-span-3"
+                    id="volunteerNotes"
+                    onChange={(e) => setVolNotes(e.target.value)}
+                    value={volNotes}
+                  />
                 </div>
               </div>
               <div className="flex justify-end space-x-2">
-                <Button variant="outline">Cancel</Button>
-                <Button>Add Volunteer</Button>
+                <Button onClick={() => setIsAddVolOpen(false)} variant="outline">
+                  Cancel
+                </Button>
+                <Button
+                  disabled={isRegisteringVol || !volName}
+                  onClick={() => {
+                    registerVolunteer(
+                      {
+                        volunteerName: volName,
+                        volunteerEmail: volEmail,
+                        volunteerPhone: volPhone,
+                        skills: volSkills,
+                        availability: volAvailability,
+                      },
+                      {
+                        onSuccess: () => {
+                          setIsAddVolOpen(false);
+                          setVolName('');
+                          setVolEmail('');
+                          setVolPhone('');
+                          setVolSkills([]);
+                          setVolAvailability([]);
+                          setVolNotes('');
+                        },
+                      }
+                    );
+                  }}
+                >
+                  {isRegisteringVol && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Add Volunteer
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
-          <Dialog>
+          <Dialog onOpenChange={setIsTaskOpen} open={isTaskOpen}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
-                Create Task
+                Create Role / Task
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Create Volunteer Task</DialogTitle>
+                <DialogTitle>Create Volunteer Role / Task</DialogTitle>
                 <DialogDescription>
-                  Schedule a new task or service opportunity.
+                  Schedule a new position or service opportunity.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
@@ -327,19 +436,24 @@ export default function VolunteersPage() {
                   <Label className="text-right" htmlFor="taskTitle">
                     Title
                   </Label>
-                  <Input className="col-span-3" id="taskTitle" />
+                  <Input
+                    className="col-span-3"
+                    id="taskTitle"
+                    onChange={(e) => setTaskTitle(e.target.value)}
+                    value={taskTitle}
+                  />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label className="text-right" htmlFor="taskDate">
-                    Date
+                  <Label className="text-right" htmlFor="taskDepartment">
+                    Ministry
                   </Label>
-                  <Input className="col-span-3" id="taskDate" type="date" />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label className="text-right" htmlFor="taskTime">
-                    Time
-                  </Label>
-                  <Input className="col-span-3" id="taskTime" type="time" />
+                  <Input
+                    className="col-span-3"
+                    id="taskDepartment"
+                    onChange={(e) => setTaskDepartment(e.target.value)}
+                    placeholder="e.g. Children's Ministry"
+                    value={taskDepartment}
+                  />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label className="text-right" htmlFor="requiredVolunteers">
@@ -348,21 +462,23 @@ export default function VolunteersPage() {
                   <Input
                     className="col-span-3"
                     id="requiredVolunteers"
+                    onChange={(e) => setNeededVolunteers(e.target.value)}
                     type="number"
+                    value={neededVolunteers}
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label className="text-right" htmlFor="taskPriority">
                     Priority
                   </Label>
-                  <Select>
+                  <Select onValueChange={setTaskPriority} value={taskPriority}>
                     <SelectTrigger className="col-span-3">
                       <SelectValue placeholder="Select priority" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="High">High</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="Low">Low</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -370,12 +486,44 @@ export default function VolunteersPage() {
                   <Label className="text-right" htmlFor="taskDescription">
                     Description
                   </Label>
-                  <Textarea className="col-span-3" id="taskDescription" />
+                  <Textarea
+                    className="col-span-3"
+                    id="taskDescription"
+                    onChange={(e) => setTaskDesc(e.target.value)}
+                    value={taskDesc}
+                  />
                 </div>
               </div>
               <div className="flex justify-end space-x-2">
-                <Button variant="outline">Cancel</Button>
-                <Button>Create Task</Button>
+                <Button onClick={() => setIsTaskOpen(false)} variant="outline">
+                  Cancel
+                </Button>
+                <Button
+                  disabled={isRegisteringRole || !taskTitle}
+                  onClick={() => {
+                    registerVolunteerRole(
+                      {
+                        role: taskTitle,
+                        department: taskDepartment,
+                        priority: taskPriority,
+                        description: taskDesc,
+                        neededVolunteers: parseInt(neededVolunteers, 10) || 2,
+                      },
+                      {
+                        onSuccess: () => {
+                          setIsTaskOpen(false);
+                          setTaskTitle('');
+                          setTaskDesc('');
+                        },
+                      }
+                    );
+                  }}
+                >
+                  {isRegisteringRole && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Create Role
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -482,16 +630,16 @@ export default function VolunteersPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {volunteers.map((volunteer) => (
-                    <TableRow key={volunteer.id}>
+                  {activeVolunteers.map((volunteer: any) => (
+                    <TableRow key={volunteer.id || volunteer._id}>
                       <TableCell>
                         <div className="flex items-center space-x-3">
                           <Avatar className="h-8 w-8">
                             <AvatarImage src="/placeholder.svg" />
                             <AvatarFallback>
-                              {volunteer.name
+                              {(volunteer.name || 'V')
                                 .split(' ')
-                                .map((n) => n[0])
+                                .map((n: string) => n[0])
                                 .join('')}
                             </AvatarFallback>
                           </Avatar>
@@ -500,22 +648,22 @@ export default function VolunteersPage() {
                               {volunteer.name}
                             </span>
                             <div className="text-muted-foreground text-xs">
-                              Joined {volunteer.joinDate}
+                              Joined {volunteer.joinDate || 'Recently'}
                             </div>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="space-y-1 text-sm">
-                          <div>{volunteer.email}</div>
+                          <div>{volunteer.email || 'N/A'}</div>
                           <div className="text-muted-foreground">
-                            {volunteer.phone}
+                            {volunteer.phone || 'N/A'}
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
-                          {volunteer.skills.slice(0, 2).map((skill) => (
+                          {(volunteer.skills || []).slice(0, 2).map((skill: string) => (
                             <Badge
                               className="text-xs"
                               key={skill}
@@ -524,16 +672,16 @@ export default function VolunteersPage() {
                               {skill}
                             </Badge>
                           ))}
-                          {volunteer.skills.length > 2 && (
+                          {(volunteer.skills || []).length > 2 && (
                             <Badge className="text-xs" variant="outline">
-                              +{volunteer.skills.length - 2}
+                              +{(volunteer.skills || []).length - 2}
                             </Badge>
                           )}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="space-y-1">
-                          {volunteer.currentRoles.map((role) => (
+                          {(volunteer.currentRoles || ['Volunteer']).map((role: string) => (
                             <div className="text-sm" key={role}>
                               {role}
                             </div>
@@ -542,21 +690,26 @@ export default function VolunteersPage() {
                       </TableCell>
                       <TableCell>
                         <span className="font-medium">
-                          {volunteer.hoursThisMonth}h
+                          {volunteer.hoursThisMonth || 0}h
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Badge className={getStatusColor(volunteer.status)}>
-                          {volunteer.status}
+                        <Badge className={getStatusColor(volunteer.status || 'Active')}>
+                          {volunteer.status || 'Active'}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex space-x-2">
-                          <Button size="sm" variant="ghost">
-                            Assign
-                          </Button>
-                          <Button size="sm" variant="ghost">
-                            Edit
+                          <Button
+                            className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                            onClick={() => {
+                              const targetId = volunteer._id || volunteer.id;
+                              if (targetId) deleteVolunteer(targetId);
+                            }}
+                            size="sm"
+                            variant="ghost"
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </TableCell>
@@ -577,30 +730,30 @@ export default function VolunteersPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {volunteerRoles.map((role) => (
-                  <Card key={role.id}>
+                {activeRoles.map((role: any) => (
+                  <Card key={role.id || role._id}>
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between">
                         <div className="flex-1 space-y-2">
                           <div className="flex items-center space-x-2">
                             <h3 className="font-semibold">{role.title}</h3>
-                            <Badge variant="outline">{role.department}</Badge>
-                            <Badge className={getPriorityColor(role.priority)}>
-                              {role.priority}
+                            <Badge variant="outline">{role.department || 'General'}</Badge>
+                            <Badge className={getPriorityColor(role.priority || 'Medium')}>
+                              {role.priority || 'Medium'}
                             </Badge>
                           </div>
                           <p className="text-muted-foreground text-sm">
                             {role.description}
                           </p>
                           <div className="flex items-center space-x-4 text-sm">
-                            <span>Time: {role.timeCommitment}</span>
+                            <span>Time: {role.timeCommitment || 'Flexible'}</span>
                             <span>
-                              Volunteers: {role.currentVolunteers}/
-                              {role.currentVolunteers + role.neededVolunteers}
+                              Volunteers: {role.currentVolunteers || 0}/
+                              {(role.currentVolunteers || 0) + (role.neededVolunteers || 0)}
                             </span>
                           </div>
                           <div className="flex flex-wrap gap-1">
-                            {role.requiredSkills.map((skill) => (
+                            {(role.requiredSkills || []).map((skill: string) => (
                               <Badge
                                 className="text-xs"
                                 key={skill}
@@ -612,13 +765,17 @@ export default function VolunteersPage() {
                           </div>
                         </div>
                         <div className="flex space-x-2">
-                          {role.neededVolunteers > 0 && (
-                            <Button size="sm" variant="outline">
-                              Find Volunteers
-                            </Button>
-                          )}
-                          <Button size="sm" variant="outline">
-                            Edit Role
+                          <Button
+                            className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                            onClick={() => {
+                              const targetId = role._id || role.id;
+                              if (targetId) deleteVolunteerRole(targetId);
+                            }}
+                            size="sm"
+                            variant="outline"
+                          >
+                            <Trash2 className="mr-1 h-3 w-3" />
+                            Delete
                           </Button>
                         </div>
                       </div>

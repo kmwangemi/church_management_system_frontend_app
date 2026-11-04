@@ -56,9 +56,12 @@ import {
   getDefaultsForPosition,
   getRelativeYear,
   getRolesForPosition,
+  HOUSEHOLD_ROLE_OPTIONS,
   mapAccessAndTagsToRoles,
   mapRolesToAccessAndTags,
   MARITAL_STATUS_OPTIONS,
+  MEMBER_TYPE_OPTIONS,
+  MEMBERSHIP_STATUS_OPTIONS,
   MINISTRY_TAG_OPTIONS,
   type MinistryTag,
   splitFullName,
@@ -145,6 +148,10 @@ export default function EditMemberPage({
       gender: 'MALE',
       profilePictureUrl: undefined,
       occupation: '',
+      householdRole: '' as any,
+      memberType: 'MEMBER' as any,
+      joinedAt: undefined,
+      membershipNumber: '',
       branchId: undefined,
       position: '',
       role: undefined,
@@ -258,6 +265,14 @@ export default function EditMemberPage({
         occupation: user?.user?.occupation
           ? capitalizeFirstLetter(user?.user?.occupation)
           : undefined,
+        householdRole: user?.householdRole || user?.member?.householdRole || '',
+        memberType: user?.memberType || user?.member?.memberType || 'MEMBER',
+        joinedAt: user?.joinedAt || user?.member?.joinedDate || user?.memberDetails?.joinedDate || undefined,
+        membershipNumber:
+          user?.membershipNumber ||
+          user?.member?.membershipNumber ||
+          user?.memberDetails?.memberId ||
+          '',
         branchId: user?.member?.teamId || user?.member?.branchId || undefined,
         position: user?.member?.position || '',
         role: user?.member?.role || (user?.member?.roles ? (Array.isArray(user.member.roles) ? user.member.roles : [user.member.roles]) : ['MEMBER']),
@@ -375,10 +390,31 @@ export default function EditMemberPage({
         };
         formData.visitorUpdate = { ...formData.visitorDetails };
       }
+      // Check if member is actually staff or volunteer
+      const userRoles: string[] = Array.isArray(user?.roles)
+        ? user.roles
+        : Array.isArray(user?.member?.roles)
+        ? user.member.roles
+        : user?.member?.role
+        ? Array.isArray(user.member.role)
+          ? user.member.role
+          : [user.member.role]
+        : [];
+
+      const isStaff = Boolean(
+        userRoles.some((r) => String(r).toUpperCase() === 'STAFF') ||
+        (user?.staffDetails?.staffId && user?.staffDetails?.staffId !== customId)
+      );
+
+      const isVolunteer = Boolean(
+        userRoles.some((r) => String(r).toUpperCase() === 'VOLUNTEER') ||
+        (user?.volunteerDetails?.volunteerId && user?.volunteerDetails?.volunteerId !== customId)
+      );
+
       // staff details
       formData.staffDetails = {
-        staffId: customId || user?.staffDetails?.staffId || user?.member?.id || user?.id || '',
-        jobTitle: capitalizeFirstLetter(user?.staffDetails?.jobTitle || user?.member?.position || ''),
+        staffId: isStaff ? (user?.staffDetails?.staffId || '') : '',
+        jobTitle: capitalizeFirstLetter(user?.staffDetails?.jobTitle || ''),
         department: capitalizeFirstLetter(
           user?.staffDetails?.department || ''
         ),
@@ -392,7 +428,7 @@ export default function EditMemberPage({
       };
       // volunteer details
       formData.volunteerDetails = {
-        volunteerId: customId || user?.volunteerDetails?.volunteerId || user?.member?.id || user?.id || '',
+        volunteerId: isVolunteer ? (user?.volunteerDetails?.volunteerId || '') : '',
         volunteerStatus: user?.volunteerDetails?.volunteerStatus || 'active',
         availabilitySchedule:
           user?.volunteerDetails?.availabilitySchedule || {},
@@ -944,6 +980,96 @@ export default function EditMemberPage({
                                   }}
                                   placeholder="e.g., Teaching, Music, Administration"
                                   value={field.value?.join(', ') || ''}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="householdRole"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Household Role</FormLabel>
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value || ''}
+                              >
+                                <FormControl>
+                                  <SelectTrigger className="cursor-pointer">
+                                    <SelectValue placeholder="Select household role" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {HOUSEHOLD_ROLE_OPTIONS.map((option) => (
+                                    <SelectItem
+                                      className="cursor-pointer"
+                                      key={option.value}
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="memberType"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Member Type</FormLabel>
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value || 'MEMBER'}
+                              >
+                                <FormControl>
+                                  <SelectTrigger className="cursor-pointer">
+                                    <SelectValue placeholder="Select member type" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {MEMBER_TYPE_OPTIONS.map((option) => (
+                                    <SelectItem
+                                      className="cursor-pointer"
+                                      key={option.value}
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="joinedAt"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Membership / Joined Date</FormLabel>
+                              <FormControl>
+                                <DatePicker
+                                  format="long"
+                                  maxDate={getRelativeYear(1)}
+                                  minDate={getRelativeYear(-50)}
+                                  onChange={(date) =>
+                                    field.onChange(
+                                      date ? date.toISOString().split('T')[0] : ''
+                                    )
+                                  }
+                                  placeholder="Select joined date"
+                                  value={
+                                    field.value
+                                      ? new Date(field.value)
+                                      : undefined
+                                  }
                                 />
                               </FormControl>
                               <FormMessage />

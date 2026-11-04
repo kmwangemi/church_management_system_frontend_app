@@ -453,16 +453,20 @@ export default function DepartmentDetailsPage({
                 </CardHeader>
                 <CardContent>
                   <div className="font-bold text-2xl">
-                    {Math.round(
-                      ((departmentExpenses?.summary?.totalSpent ?? 0) /
-                        (departmentExpenses?.summary?.totalBudget ?? 0)) *
-                        100
-                    )}
+                    {Number(departmentExpenses?.summary?.totalBudget || department?.totalBudget || 0) > 0
+                      ? Math.round(
+                          ((departmentExpenses?.summary?.totalSpent ?? 0) /
+                            Number(departmentExpenses?.summary?.totalBudget || department?.totalBudget || 1)) *
+                            100
+                        )
+                      : 0}
                     %
                   </div>
                   <p className="text-muted-foreground text-xs">
                     KES{' '}
-                    {departmentExpenses?.summary?.totalSpent.toLocaleString()}{' '}
+                    {(
+                      departmentExpenses?.summary?.totalSpent ?? 0
+                    ).toLocaleString()}{' '}
                     used
                   </p>
                 </CardContent>
@@ -493,7 +497,7 @@ export default function DepartmentDetailsPage({
                 </CardHeader>
                 <CardContent>
                   <div className="font-bold text-2xl">
-                    {departmentActivities?.data?.pagination?.totalActivities}
+                    {departmentActivities?.data?.pagination?.totalActivities || 0}
                   </div>
                   <p className="text-muted-foreground text-xs">This month</p>
                 </CardContent>
@@ -765,7 +769,9 @@ export default function DepartmentDetailsPage({
                             <DollarSign className="h-4 w-4 text-muted-foreground" />
                             <span className="text-sm">
                               Budget: KES{' '}
-                              {department?.totalBudget.toLocaleString()}
+                              {(
+                                Number(department?.totalBudget) || 0
+                              ).toLocaleString()}
                             </span>
                           </div>
                           <div className="flex items-center space-x-2">
@@ -931,8 +937,7 @@ export default function DepartmentDetailsPage({
                 )}
                 {isLoadingDepartmentMembers ? (
                   <SpinnerLoader description="Loading department members..." />
-                ) : departmentMembers?.data?.members &&
-                  departmentMembers.data.members.length > 0 ? (
+                ) : (departmentMembers?.data?.members?.length ?? 0) > 0 ? (
                   <Card>
                     <CardContent className="p-0">
                       <Table>
@@ -947,7 +952,7 @@ export default function DepartmentDetailsPage({
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {departmentMembers.data.members.map((member) => (
+                          {(departmentMembers?.data?.members ?? []).map((member) => (
                             <TableRow key={member?._id}>
                               <TableCell>
                                 <div className="flex items-center space-x-3">
@@ -979,7 +984,7 @@ export default function DepartmentDetailsPage({
                               </TableCell>
                               <TableCell>
                                 <div className="flex flex-wrap gap-1">
-                                  {member?.skills.map((skill, index) => (
+                                  {(member?.skills ?? []).map((skill, index) => (
                                     <Badge
                                       className="text-xs"
                                       key={index}
@@ -1117,14 +1122,14 @@ export default function DepartmentDetailsPage({
                               Total Allocated
                             </span>
                             <span className="text-sm">
-                              KES {department?.totalBudget.toLocaleString()}
+                              KES {(Number(department?.totalBudget) || 0).toLocaleString()}
                             </span>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="font-medium text-sm">Used</span>
                             <span className="text-sm">
                               KES{' '}
-                              {departmentExpenses?.summary?.totalSpent.toLocaleString()}
+                              {(departmentExpenses?.summary?.totalSpent ?? 0).toLocaleString()}
                             </span>
                           </div>
                           <div className="flex items-center justify-between">
@@ -1133,16 +1138,16 @@ export default function DepartmentDetailsPage({
                             </span>
                             <span className="font-medium text-green-600 text-sm">
                               KES{' '}
-                              {departmentExpenses?.summary?.remainingBudget.toLocaleString()}
+                              {(departmentExpenses?.summary?.remainingBudget ?? (Number(department?.totalBudget) || 0)).toLocaleString()}
                             </span>
                           </div>
                           <Progress
                             className="w-full"
                             value={
-                              department?.totalBudget
+                              Number(department?.totalBudget) > 0
                                 ? ((departmentExpenses?.summary?.totalSpent ??
                                     0) /
-                                    department.totalBudget) *
+                                    Number(department?.totalBudget)) *
                                   100
                                 : 0
                             }
@@ -1172,12 +1177,12 @@ export default function DepartmentDetailsPage({
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                {departmentExpenses.expenses.map((expense) => (
+                                {(departmentExpenses?.expenses ?? []).map((expense) => (
                                   <TableRow key={expense?._id}>
                                     <TableCell className="font-medium">
-                                      {new Date(
-                                        expense?.date
-                                      ).toLocaleDateString()}
+                                      {expense?.date ? new Date(
+                                        expense.date
+                                      ).toLocaleDateString() : 'N/A'}
                                     </TableCell>
                                     <TableCell>
                                       <Badge variant="outline">
@@ -1187,7 +1192,7 @@ export default function DepartmentDetailsPage({
                                       </Badge>
                                     </TableCell>
                                     <TableCell className="font-mono text-sm">
-                                      KES {expense?.amount.toLocaleString()}
+                                      KES {(Number(expense?.amount) || 0).toLocaleString()}
                                     </TableCell>
                                     <TableCell className="text-sm">
                                       {expense?.reference ?? 'Not Provided'}
@@ -1299,8 +1304,7 @@ export default function DepartmentDetailsPage({
                 )}
                 {isLoadingDepartmentActivities ? (
                   <SpinnerLoader description="Loading department activities..." />
-                ) : departmentActivities?.data?.activities &&
-                  departmentActivities.data.activities.length > 0 ? (
+                ) : (departmentActivities?.data?.activities?.length ?? 0) > 0 ? (
                   <Card>
                     <CardContent className="p-0">
                       <Table>
@@ -1317,7 +1321,7 @@ export default function DepartmentDetailsPage({
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {departmentActivities.data.activities.map(
+                          {(departmentActivities?.data?.activities ?? []).map(
                             (activity) => (
                               <TableRow key={activity?._id}>
                                 <TableCell className="font-medium">
@@ -1359,7 +1363,7 @@ export default function DepartmentDetailsPage({
                                 </TableCell>
                                 <TableCell>
                                   <div className="flex flex-wrap gap-1">
-                                    {activity?.participants.map(
+                                    {(activity?.participants ?? []).map(
                                       (participant) => (
                                         <Badge
                                           className="text-xs"
@@ -1470,8 +1474,7 @@ export default function DepartmentDetailsPage({
                 )}
                 {isLoadingDepartmentGoals ? (
                   <SpinnerLoader description="Loading department goals..." />
-                ) : departmentGoals?.data?.goals &&
-                  departmentGoals.data.goals.length > 0 ? (
+                ) : (departmentGoals?.data?.goals?.length ?? 0) > 0 ? (
                   <Card>
                     <CardContent className="p-0">
                       <Table>
@@ -1488,7 +1491,7 @@ export default function DepartmentDetailsPage({
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {departmentGoals.data.goals.map((goal) => (
+                          {(departmentGoals?.data?.goals ?? []).map((goal) => (
                             <TableRow key={goal?._id}>
                               <TableCell className="font-medium">
                                 {new Date(goal?.createdAt).toLocaleDateString()}

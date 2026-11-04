@@ -40,9 +40,18 @@ import {
   Search,
   Smartphone,
   Target,
+  Trash2,
   TrendingUp,
 } from 'lucide-react';
 import { useState } from 'react';
+import {
+  useDeleteOffering,
+  useFetchOfferings,
+} from '@/lib/hooks/church/offering/use-offering-queries';
+import {
+  useDeletePledge,
+  useFetchPledges,
+} from '@/lib/hooks/church/pledge/use-pledge-queries';
 
 // Mock data
 const financialSummary = {
@@ -136,11 +145,42 @@ export default function FinancePage() {
   const [isOfferingOpen, setIsOfferingOpen] = useState(false);
   const [isPledgeOpen, setIsPledgeOpen] = useState(false);
 
-  const filteredTransactions = recentTransactions.filter(
-    (transaction) =>
-      transaction.member.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transaction.type.toLowerCase().includes(searchTerm.toLowerCase())
+  const { data: offeringsData } = useFetchOfferings(1, searchTerm);
+  const { mutate: deleteOffering } = useDeleteOffering();
+
+  const { data: pledgesData } = useFetchPledges(1, searchTerm);
+  const { mutate: deletePledge } = useDeletePledge();
+
+  const serverOfferings = (offeringsData as any)?.offerings || (offeringsData as any)?.data;
+  const activeTransactions = serverOfferings && serverOfferings.length > 0 ? serverOfferings : (offeringsData ? [] : recentTransactions);
+
+  const serverPledges = (pledgesData as any)?.pledges || (pledgesData as any)?.data;
+  const activePledges = serverPledges && serverPledges.length > 0 ? serverPledges : (pledgesData ? [] : pledges);
+
+  const filteredTransactions = activeTransactions.filter(
+    (transaction: any) =>
+      (transaction.member || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (transaction.type || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const filteredPledges = activePledges.filter(
+    (pledge: any) =>
+      (pledge.member || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (pledge.purpose || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalOfferings = activeTransactions.reduce((sum: number, t: any) => sum + (Number(t.amount) || 0), 0);
+  const totalTithes = activeTransactions.filter((t: any) => (t.type || '').toLowerCase().includes('tithe')).reduce((sum: number, t: any) => sum + (Number(t.amount) || 0), 0);
+  const totalPledges = activePledges.reduce((sum: number, p: any) => sum + (Number(p.amount) || 0), 0);
+
+  const summary = {
+    totalOfferings: totalOfferings || financialSummary.totalOfferings,
+    totalTithes: totalTithes || financialSummary.totalTithes,
+    totalPledges: totalPledges || financialSummary.totalPledges,
+    monthlyGoal: 50_000,
+    expenses: 28_750,
+    netIncome: (totalOfferings || financialSummary.totalOfferings) - 28_750,
+  };
 
   const getMethodIcon = (method: string) => {
     switch (method.toLowerCase()) {
@@ -227,7 +267,7 @@ export default function FinancePage() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl text-foreground">
-              ${financialSummary.totalOfferings.toLocaleString()}
+              KES {summary.totalOfferings.toLocaleString()}
             </div>
             <div className="mt-1 flex items-center space-x-1">
               <TrendingUp className="h-4 w-4 text-green-600" />
@@ -246,7 +286,7 @@ export default function FinancePage() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl text-foreground">
-              ${financialSummary.totalTithes.toLocaleString()}
+              KES {summary.totalTithes.toLocaleString()}
             </div>
             <div className="mt-1 flex items-center space-x-1">
               <TrendingUp className="h-4 w-4 text-green-600" />
@@ -265,7 +305,7 @@ export default function FinancePage() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl text-foreground">
-              ${financialSummary.totalPledges.toLocaleString()}
+              KES {summary.totalPledges.toLocaleString()}
             </div>
             <p className="mt-1 text-muted-foreground text-xs">Active commitments</p>
           </CardContent>
@@ -281,20 +321,20 @@ export default function FinancePage() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl text-foreground">
-              ${financialSummary.monthlyGoal.toLocaleString()}
+              KES {summary.monthlyGoal.toLocaleString()}
             </div>
             <div className="mt-2 h-2 w-full rounded-full bg-secondary">
               <div
                 className="h-2 rounded-full bg-orange-600"
                 style={{
-                  width: `${(financialSummary.totalOfferings / financialSummary.monthlyGoal) * 100}%`,
+                  width: `${(summary.totalOfferings / summary.monthlyGoal) * 100}%`,
                 }}
               />
             </div>
             <p className="mt-1 text-muted-foreground text-xs">
               {Math.round(
-                (financialSummary.totalOfferings /
-                  financialSummary.monthlyGoal) *
+                (summary.totalOfferings /
+                  summary.monthlyGoal) *
                   100
               )}
               % achieved
@@ -350,19 +390,22 @@ export default function FinancePage() {
                       <TableHead>Amount</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Reference</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredTransactions.map((transaction) => (
+                    {filteredTransactions.map((transaction: any) => (
                       <TableRow
                         className="hover:bg-accent"
-                        key={transaction.id}
+                        key={transaction.id || transaction._id}
                       >
                         <TableCell>
                           <div className="flex items-center space-x-2">
                             <Calendar className="h-4 w-4 text-muted-foreground" />
                             <span className="text-sm">
-                              {new Date(transaction.date).toLocaleDateString()}
+                              {transaction.date
+                                ? new Date(transaction.date).toLocaleDateString()
+                                : 'N/A'}
                             </span>
                           </div>
                         </TableCell>
@@ -376,15 +419,15 @@ export default function FinancePage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-2">
-                            {getMethodIcon(transaction.method)}
+                            {getMethodIcon(transaction.method || 'Cash')}
                             <span className="text-sm">
-                              {transaction.method}
+                              {transaction.method || 'Cash'}
                             </span>
                           </div>
                         </TableCell>
                         <TableCell>
                           <span className="font-medium text-green-600">
-                            ${transaction.amount.toLocaleString()}
+                            KES {(transaction.amount || 0).toLocaleString()}
                           </span>
                         </TableCell>
                         <TableCell>
@@ -394,6 +437,19 @@ export default function FinancePage() {
                           <span className="text-muted-foreground text-sm">
                             {transaction.reference}
                           </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                            onClick={() => {
+                              const targetId = transaction._id || transaction.id;
+                              if (targetId) deleteOffering(targetId);
+                            }}
+                            size="sm"
+                            variant="ghost"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -420,11 +476,12 @@ export default function FinancePage() {
                       <TableHead>Remaining</TableHead>
                       <TableHead>Due Date</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {pledges.map((pledge) => (
-                      <TableRow className="hover:bg-accent" key={pledge.id}>
+                    {filteredPledges.map((pledge: any) => (
+                      <TableRow className="hover:bg-accent" key={pledge.id || pledge._id}>
                         <TableCell>
                           <span className="font-medium">{pledge.member}</span>
                         </TableCell>
@@ -433,28 +490,30 @@ export default function FinancePage() {
                         </TableCell>
                         <TableCell>
                           <span className="font-medium">
-                            ${pledge.amount.toLocaleString()}
+                            KES {(pledge.amount || 0).toLocaleString()}
                           </span>
                         </TableCell>
                         <TableCell>
                           <span className="text-green-600">
-                            ${pledge.paid.toLocaleString()}
+                            KES {(pledge.paid || 0).toLocaleString()}
                           </span>
                         </TableCell>
                         <TableCell>
                           <span
                             className={
-                              pledge.remaining > 0
+                              (pledge.remaining || 0) > 0
                                 ? 'text-orange-600'
                                 : 'text-green-600'
                             }
                           >
-                            ${pledge.remaining.toLocaleString()}
+                            KES {(pledge.remaining || 0).toLocaleString()}
                           </span>
                         </TableCell>
                         <TableCell>
                           <span className="text-sm">
-                            {new Date(pledge.dueDate).toLocaleDateString()}
+                            {pledge.dueDate
+                              ? new Date(pledge.dueDate).toLocaleDateString()
+                              : 'Ongoing'}
                           </span>
                         </TableCell>
                         <TableCell>
@@ -472,6 +531,19 @@ export default function FinancePage() {
                           >
                             {pledge.status}
                           </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                            onClick={() => {
+                              const targetId = pledge._id || pledge.id;
+                              if (targetId) deletePledge(targetId);
+                            }}
+                            size="sm"
+                            variant="ghost"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -491,7 +563,7 @@ export default function FinancePage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-sm">Tithes</span>
-                    <span className="text-muted-foreground text-sm">$32,450 (50%)</span>
+                    <span className="text-muted-foreground text-sm">KES 32,450 (50%)</span>
                   </div>
                   <div className="h-2 w-full rounded-full bg-secondary">
                     <div
@@ -501,7 +573,7 @@ export default function FinancePage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-sm">Offerings</span>
-                    <span className="text-muted-foreground text-sm">$45,231 (70%)</span>
+                    <span className="text-muted-foreground text-sm">KES 45,231 (70%)</span>
                   </div>
                   <div className="h-2 w-full rounded-full bg-secondary">
                     <div
@@ -513,7 +585,7 @@ export default function FinancePage() {
                     <span className="font-medium text-sm">
                       Special Offerings
                     </span>
-                    <span className="text-muted-foreground text-sm">$8,750 (13%)</span>
+                    <span className="text-muted-foreground text-sm">KES 8,750 (13%)</span>
                   </div>
                   <div className="h-2 w-full rounded-full bg-secondary">
                     <div
@@ -532,7 +604,7 @@ export default function FinancePage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-sm">Utilities</span>
-                    <span className="text-muted-foreground text-sm">$8,500</span>
+                    <span className="text-muted-foreground text-sm">KES 8,500</span>
                   </div>
                   <div className="h-2 w-full rounded-full bg-secondary">
                     <div
@@ -542,7 +614,7 @@ export default function FinancePage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-sm">Maintenance</span>
-                    <span className="text-muted-foreground text-sm">$12,250</span>
+                    <span className="text-muted-foreground text-sm">KES 12,250</span>
                   </div>
                   <div className="h-2 w-full rounded-full bg-secondary">
                     <div
@@ -554,7 +626,7 @@ export default function FinancePage() {
                     <span className="font-medium text-sm">
                       Ministry Programs
                     </span>
-                    <span className="text-muted-foreground text-sm">$8,000</span>
+                    <span className="text-muted-foreground text-sm">KES 8,000</span>
                   </div>
                   <div className="h-2 w-full rounded-full bg-secondary">
                     <div

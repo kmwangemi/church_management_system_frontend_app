@@ -46,6 +46,14 @@ import {
   Users,
 } from 'lucide-react';
 import { useState } from 'react';
+import {
+  useDeleteAnnouncement,
+  useFetchAnnouncements,
+} from '@/lib/hooks/church/announcement/use-announcement-queries';
+import {
+  useDeleteMessage,
+  useFetchMessages,
+} from '@/lib/hooks/church/message/use-message-queries';
 
 // Mock data
 const messages = [
@@ -165,6 +173,18 @@ export default function CommunicationPage() {
   const [isSendMessageDialogOpen, setIsSendMessageDialogOpen] = useState(false);
   const [isAnnouncementDialogOpen, setIsAnnouncementDialogOpen] = useState(false);
 
+  const { data: annData } = useFetchAnnouncements(1, searchTerm);
+  const { mutate: deleteAnnouncement } = useDeleteAnnouncement();
+
+  const { data: msgData } = useFetchMessages(1, searchTerm);
+  const { mutate: deleteMessage } = useDeleteMessage();
+
+  const serverMessages = (msgData as any)?.messages || (msgData as any)?.data;
+  const activeMessages = serverMessages && serverMessages.length > 0 ? serverMessages : (msgData ? [] : messages);
+
+  const serverAnnouncements = (annData as any)?.announcements || (annData as any)?.data;
+  const activeAnnouncements = serverAnnouncements && serverAnnouncements.length > 0 ? serverAnnouncements : (annData ? [] : announcements);
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'Sent':
@@ -194,13 +214,13 @@ export default function CommunicationPage() {
   };
 
   const stats = {
-    totalMessages: messages.length,
-    sentToday: messages.filter(
-      (m) => m.sentDate === new Date().toISOString().split('T')[0]
+    totalMessages: activeMessages.length,
+    sentToday: activeMessages.filter(
+      (m: any) => (m.sentDate || '').startsWith(new Date().toISOString().split('T')[0])
     ).length,
-    activeAnnouncements: announcements.filter((a) => a.status === 'Published')
+    activeAnnouncements: activeAnnouncements.filter((a: any) => (a.status || '').toLowerCase() === 'published')
       .length,
-    totalRecipients: messages.reduce((sum, m) => sum + m.recipients, 0),
+    totalRecipients: activeMessages.reduce((sum: number, m: any) => sum + (Number(m.recipients) || 0), 0),
   };
 
   return (
@@ -369,8 +389,8 @@ export default function CommunicationPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {messages.map((message) => (
-                      <TableRow className="hover:bg-accent" key={message.id}>
+                    {activeMessages.map((message: any) => (
+                      <TableRow className="hover:bg-accent" key={message.id || message._id}>
                         <TableCell>
                           <div>
                             <div className="font-medium text-foreground">
@@ -412,7 +432,9 @@ export default function CommunicationPage() {
                         </TableCell>
                         <TableCell>
                           <span className="text-sm">
-                            {new Date(message.sentDate).toLocaleDateString()}
+                            {message.sentDate
+                              ? new Date(message.sentDate).toLocaleDateString()
+                              : 'N/A'}
                           </span>
                         </TableCell>
                         <TableCell className="text-right">
@@ -433,7 +455,13 @@ export default function CommunicationPage() {
                                 Duplicate
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-red-600">
+                              <DropdownMenuItem
+                                className="cursor-pointer text-red-600"
+                                onClick={() => {
+                                  const targetId = message._id || message.id;
+                                  if (targetId) deleteMessage(targetId);
+                                }}
+                              >
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 Delete
                               </DropdownMenuItem>
@@ -461,10 +489,10 @@ export default function CommunicationPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {announcements.map((announcement) => (
+                    {activeAnnouncements.map((announcement: any) => (
                       <TableRow
                         className="hover:bg-accent"
-                        key={announcement.id}
+                        key={announcement.id || announcement._id}
                       >
                         <TableCell>
                           <div>
@@ -489,13 +517,6 @@ export default function CommunicationPage() {
                         </TableCell>
                         <TableCell>
                           <Badge
-                            // className={
-                            //   announcement.status === 'Published'
-                            //     ? 'bg-green-100 text-green-800'
-                            //     : announcement.status === 'Expired'
-                            //       ? 'bg-red-100 text-red-800'
-                            //       : 'bg-muted text-foreground'
-                            // }
                             variant={
                               announcement.status === 'Published'
                                 ? 'default'
@@ -508,14 +529,14 @@ export default function CommunicationPage() {
                         <TableCell>
                           <div className="flex items-center space-x-2">
                             <Eye className="h-4 w-4 text-muted-foreground" />
-                            <span>{announcement.views}</span>
+                            <span>{announcement.views || 0}</span>
                           </div>
                         </TableCell>
                         <TableCell>
                           <span className="text-sm">
-                            {new Date(
-                              announcement.publishDate
-                            ).toLocaleDateString()}
+                            {announcement.publishDate
+                              ? new Date(announcement.publishDate).toLocaleDateString()
+                              : 'N/A'}
                           </span>
                         </TableCell>
                         <TableCell className="text-right">
@@ -536,7 +557,13 @@ export default function CommunicationPage() {
                                 Preview
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-red-600">
+                              <DropdownMenuItem
+                                className="cursor-pointer text-red-600"
+                                onClick={() => {
+                                  const targetId = announcement._id || announcement.id;
+                                  if (targetId) deleteAnnouncement(targetId);
+                                }}
+                              >
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 Delete
                               </DropdownMenuItem>

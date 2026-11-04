@@ -148,6 +148,14 @@ export interface UserResponse {
   id?: string;
   membershipNumber?: string;
   memberId?: string;
+  member?: any;
+  user?: any;
+  householdRole?: string;
+  householdId?: string;
+  memberType?: string;
+  joinedAt?: string | Date;
+  membershipDate?: string | Date;
+  membershipStatus?: string;
   firstName: string;
   lastName: string;
   email?: string;

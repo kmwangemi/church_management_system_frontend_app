@@ -58,19 +58,37 @@ export interface UploadResponse {
 
 export type FileType = 'image' | 'document' | 'logo';
 
+export interface ChurchMembership {
+  memberId: string;
+  churchId: string;
+  churchName: string;
+  branchId: string;
+  branchName: string;
+  memberType: string;
+  roles: string[];
+}
+
 export interface AuthUser {
+  id?: string;
   sub: string;
+  memberId?: string;
   churchId: string;
   branchId: string;
+  churchName?: string;
+  branchName?: string;
   role: string;
-  accessLevel: string | null;
+  roles?: string[];
+  platformRole?: string;
+  globalRole?: string;
+  accessLevel?: string | null;
   email?: string;
   name?: string;
   firstName?: string;
   lastName?: string;
-  profilePictureUrl?: string;
   fullName?: string;
-  globalRole?: string;
+  phoneNumber?: string;
+  profilePictureUrl?: string;
+  memberships?: ChurchMembership[];
 }
 
 export interface AuthState {

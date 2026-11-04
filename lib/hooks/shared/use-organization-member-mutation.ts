@@ -50,6 +50,7 @@ export function useAdminAddMember(organizationId?: string) {
       const fullPayload = {
         organizationId: payload.organizationId || organizationId,
         ...payload,
+        branchId: payload.branchId || payload.teamId,
       };
       const response = await apiClient.post('/admin/members', fullPayload);
       return response.data;
@@ -64,8 +65,14 @@ export function useAdminAddMember(organizationId?: string) {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success('Member added successfully');
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to add member');
+    onError: (error: any) => {
+      const detail = error?.response?.data?.detail;
+      const message =
+        (typeof detail === 'string' ? detail : null) ||
+        (Array.isArray(detail) && detail[0]?.msg ? detail[0].msg : null) ||
+        error?.message ||
+        'Failed to add member';
+      toast.error(message);
     },
   });
 }
@@ -74,7 +81,11 @@ export function useAdminUpdateMember(organizationId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: any) => {
-      const response = await apiClient.put(`/admin/members/${payload.userId}`, payload);
+      const userId = payload.userId || payload.id;
+      const body = payload.payload !== undefined ? payload.payload : payload;
+      const response = await apiClient.put(`/admin/members/${userId}`, body, {
+        params: { organizationId },
+      });
       return response.data;
     },
     onSuccess: (data, variables) => {
@@ -82,8 +93,14 @@ export function useAdminUpdateMember(organizationId: string) {
       queryClient.invalidateQueries({ queryKey: ['organization-members', { organizationId }] });
       toast.success('Member updated successfully');
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to update member');
+    onError: (error: any) => {
+      const detail = error?.response?.data?.detail;
+      const message =
+        (typeof detail === 'string' ? detail : null) ||
+        (Array.isArray(detail) && detail[0]?.msg ? detail[0].msg : null) ||
+        error?.message ||
+        'Failed to update member';
+      toast.error(message);
     },
   });
 }
@@ -100,8 +117,14 @@ export function useAdminRemoveMember(organizationId: string) {
       queryClient.invalidateQueries({ queryKey: ['member-statistics', organizationId] });
       toast.success('Member removed successfully');
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to remove member');
+    onError: (error: any) => {
+      const detail = error?.response?.data?.detail;
+      const message =
+        (typeof detail === 'string' ? detail : null) ||
+        (Array.isArray(detail) && detail[0]?.msg ? detail[0].msg : null) ||
+        error?.message ||
+        'Failed to remove member';
+      toast.error(message);
     },
   });
 }

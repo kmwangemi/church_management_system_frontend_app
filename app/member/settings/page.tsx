@@ -121,9 +121,9 @@ export default function MemberSettingsPage() {
   const appPreferences = {
     theme: 'system', // light, dark, system
     language: 'en',
-    timezone: 'America/New_York',
+    timezone: 'Africa/Nairobi',
     dateFormat: 'MM/DD/YYYY',
-    currency: 'USD',
+    currency: 'KES',
     dashboardLayout: 'default',
   };
 
@@ -817,6 +817,7 @@ export default function MemberSettingsPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="KES">KES (KSh)</SelectItem>
                       <SelectItem value="USD">USD ($)</SelectItem>
                       <SelectItem value="EUR">EUR (€)</SelectItem>
                       <SelectItem value="GBP">GBP (£)</SelectItem>

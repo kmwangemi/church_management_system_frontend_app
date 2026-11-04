@@ -145,8 +145,8 @@ export default function SettingsPage() {
     phone: '+1 (555) 123-4567',
     email: 'info@gracechurch.com',
     website: 'www.gracechurch.com',
-    timezone: 'America/New_York',
-    currency: 'USD',
+    timezone: 'Africa/Nairobi',
+    currency: 'KES',
     dateFormat: 'MM/DD/YYYY',
     emailNotifications: true,
     smsNotifications: false,
@@ -355,6 +355,7 @@ export default function SettingsPage() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="KES">Kenyan Shilling (KES)</SelectItem>
                           <SelectItem value="USD">US Dollar (USD)</SelectItem>
                           <SelectItem value="CAD">
                             Canadian Dollar (CAD)

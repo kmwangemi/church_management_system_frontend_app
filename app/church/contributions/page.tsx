@@ -43,12 +43,19 @@ import {
   DollarSign,
   Gift,
   Heart,
+  Loader2,
   Plus,
   Search,
+  Trash2,
   TrendingUp,
   Users,
 } from 'lucide-react';
 import { useState } from 'react';
+import {
+  useDeletePledge,
+  useFetchPledges,
+  useRegisterPledge,
+} from '@/lib/hooks/church/pledge/use-pledge-queries';
 
 // Mock data for contributions
 const contributions = [
@@ -125,12 +132,34 @@ export default function ContributionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
-  const filteredContributions = contributions.filter((contribution) => {
+  const [isNewOpen, setIsNewOpen] = useState(false);
+  const [eventTitle, setEventTitle] = useState('');
+  const [eventType, setEventType] = useState('wedding');
+  const [targetAmount, setTargetAmount] = useState('');
+  const [eventDesc, setEventDesc] = useState('');
+
+  const { data: pledgesData } = useFetchPledges(1, searchTerm);
+  const { mutate: registerPledge, isPending: isRegisteringPledge } = useRegisterPledge();
+  const { mutate: deletePledge } = useDeletePledge();
+
+  const serverPledges = (pledgesData as any)?.pledges || (pledgesData as any)?.data;
+  const activeContributions = serverPledges && serverPledges.length > 0 ? serverPledges.map((p: any) => ({
+    id: p.id || p._id,
+    type: p.type || 'Pledge',
+    event: p.purpose || 'Special Contribution',
+    date: p.dueDate || new Date().toISOString().split('T')[0],
+    amount: Number(p.amount) || 0,
+    contributors: 1,
+    status: p.status || 'Active',
+    description: p.notes || p.purpose || 'Fundraising',
+  })) : (pledgesData ? [] : contributions);
+
+  const filteredContributions = activeContributions.filter((contribution: any) => {
     const matchesSearch =
-      contribution.event.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contribution.type.toLowerCase().includes(searchTerm.toLowerCase());
+      (contribution.event || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (contribution.type || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType =
-      selectedType === 'all' || contribution.type === selectedType;
+      selectedType === 'all' || (contribution.type || '').toLowerCase() === selectedType.toLowerCase();
     const matchesStatus =
       selectedStatus === 'all' || contribution.status === selectedStatus;
     return matchesSearch && matchesType && matchesStatus;
@@ -144,7 +173,7 @@ export default function ContributionsPage() {
             Manage special event contributions and fundraising
           </p>
         </div>
-        <Dialog>
+        <Dialog onOpenChange={setIsNewOpen} open={isNewOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
@@ -163,13 +192,19 @@ export default function ContributionsPage() {
                 <Label className="text-right" htmlFor="event">
                   Event
                 </Label>
-                <Input className="col-span-3" id="event" />
+                <Input
+                  className="col-span-3"
+                  id="event"
+                  onChange={(e) => setEventTitle(e.target.value)}
+                  placeholder="e.g. Youth Camp Fundraiser"
+                  value={eventTitle}
+                />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right" htmlFor="type">
                   Type
                 </Label>
-                <Select>
+                <Select onValueChange={setEventType} value={eventType}>
                   <SelectTrigger className="col-span-3">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
@@ -188,17 +223,64 @@ export default function ContributionsPage() {
                 <Label className="text-right" htmlFor="target">
                   Target Amount
                 </Label>
-                <Input className="col-span-3" id="target" type="number" />
+                <Input
+                  className="col-span-3"
+                  id="target"
+                  onChange={(e) => setTargetAmount(e.target.value)}
+                  placeholder="KES"
+                  type="number"
+                  value={targetAmount}
+                />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right" htmlFor="description">
                   Description
                 </Label>
-                <Textarea className="col-span-3" id="description" />
+                <Textarea
+                  className="col-span-3"
+                  id="description"
+                  onChange={(e) => setEventDesc(e.target.value)}
+                  placeholder="Campaign details..."
+                  value={eventDesc}
+                />
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit">Create Contribution</Button>
+              <Button onClick={() => setIsNewOpen(false)} variant="outline">
+                Cancel
+              </Button>
+              <Button
+                disabled={isRegisteringPledge || !eventTitle}
+                onClick={() => {
+                  registerPledge(
+                    {
+                      memberId: '',
+                      amount: targetAmount,
+                      purpose: eventTitle,
+                      dueDate: new Date(
+                        Date.now() + 30 * 24 * 60 * 60 * 1000
+                      )
+                        .toISOString()
+                        .split('T')[0],
+                      paymentSchedule: 'one-time',
+                      notes: eventDesc,
+                    },
+                    {
+                      onSuccess: () => {
+                        setIsNewOpen(false);
+                        setEventTitle('');
+                        setTargetAmount('');
+                        setEventDesc('');
+                      },
+                    }
+                  );
+                }}
+              >
+                {isRegisteringPledge && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Create Contribution
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -214,7 +296,7 @@ export default function ContributionsPage() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">
-              ${contributionStats.totalContributions.toLocaleString()}
+              KES {contributionStats.totalContributions.toLocaleString()}
             </div>
             <p className="text-muted-foreground text-xs">
               +12% from last month
@@ -254,7 +336,7 @@ export default function ContributionsPage() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">
-              ${contributionStats.thisMonthContributions.toLocaleString()}
+              KES {contributionStats.thisMonthContributions.toLocaleString()}
             </div>
             <p className="text-muted-foreground text-xs">+8% from last month</p>
           </CardContent>
@@ -327,7 +409,7 @@ export default function ContributionsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredContributions.map((contribution) => (
+                  {filteredContributions.map((contribution: any) => (
                     <TableRow key={contribution.id}>
                       <TableCell>
                         <div>
@@ -346,7 +428,7 @@ export default function ContributionsPage() {
                         {new Date(contribution.date).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="font-medium">
-                        ${contribution.amount.toLocaleString()}
+                        KES {contribution.amount.toLocaleString()}
                       </TableCell>
                       <TableCell>{contribution.contributors}</TableCell>
                       <TableCell>
@@ -363,9 +445,22 @@ export default function ContributionsPage() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Button size="sm" variant="outline">
-                          View Details
-                        </Button>
+                        <div className="flex items-center space-x-2">
+                          <Button size="sm" variant="outline">
+                            View Details
+                          </Button>
+                          <Button
+                            className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                            onClick={() => {
+                              const targetId = contribution.id || contribution._id;
+                              if (targetId) deletePledge(targetId);
+                            }}
+                            size="sm"
+                            variant="ghost"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -384,19 +479,19 @@ export default function ContributionsPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">January 2024</span>
-                    <span className="font-bold">$5,650</span>
+                    <span className="font-bold">KES 5,650</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">December 2023</span>
-                    <span className="font-bold">$4,200</span>
+                    <span className="font-bold">KES 4,200</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">November 2023</span>
-                    <span className="font-bold">$3,800</span>
+                    <span className="font-bold">KES 3,800</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Average per Month</span>
-                    <span className="font-bold text-green-600">$4,550</span>
+                    <span className="font-bold text-green-600">KES 4,550</span>
                   </div>
                 </div>
               </CardContent>
@@ -409,19 +504,19 @@ export default function ContributionsPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Johnson Family</span>
-                    <span className="font-bold">$1,200</span>
+                    <span className="font-bold">KES 1,200</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Smith Foundation</span>
-                    <span className="font-bold">$2,500</span>
+                    <span className="font-bold">KES 2,500</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Davis Group</span>
-                    <span className="font-bold">$800</span>
+                    <span className="font-bold">KES 800</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Anonymous</span>
-                    <span className="font-bold">$1,500</span>
+                    <span className="font-bold">KES 1,500</span>
                   </div>
                 </div>
               </CardContent>
@@ -442,7 +537,7 @@ export default function ContributionsPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="font-bold text-2xl">
-                      ${type.total.toLocaleString()}
+                      KES {type.total.toLocaleString()}
                     </div>
                     <p className="text-muted-foreground text-xs">
                       {type.count} events

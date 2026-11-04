@@ -123,7 +123,7 @@ export default function MemberGiving() {
   const handleGive = () => {
     const amount = customAmount || selectedAmount;
     // biome-ignore lint/suspicious/noConsole: ignore log
-    console.log(`Processing gift of $${amount} for ${givingType}`);
+    console.log(`Processing gift of KES ${amount} for ${givingType}`);
     // Process payment
   };
 
@@ -138,7 +138,7 @@ export default function MemberGiving() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">
-              ${givingStats.totalThisYear.toLocaleString()}
+              KES {givingStats.totalThisYear.toLocaleString()}
             </div>
             <p className="text-muted-foreground text-xs">+12% from last year</p>
           </CardContent>
@@ -153,7 +153,7 @@ export default function MemberGiving() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">
-              ${givingStats.averageMonthly}
+              KES {givingStats.averageMonthly}
             </div>
             <p className="text-muted-foreground text-xs">Based on 12 months</p>
           </CardContent>
@@ -179,7 +179,7 @@ export default function MemberGiving() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">
-              ${givingStats.totalLifetime.toLocaleString()}
+              KES {givingStats.totalLifetime.toLocaleString()}
             </div>
             <p className="text-muted-foreground text-xs">
               Since {new Date().getFullYear() - 4}
@@ -323,7 +323,7 @@ export default function MemberGiving() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold">${gift.amount}</p>
+                      <p className="font-semibold">KES {gift.amount}</p>
                       <Badge
                         className="bg-green-100 text-green-800"
                         variant="secondary"
@@ -351,7 +351,7 @@ export default function MemberGiving() {
                         <span>{pledge.name}</span>
                       </CardTitle>
                       <CardDescription>
-                        Goal: ${pledge.goal.toLocaleString()} • Due:{' '}
+                        Goal: KES {pledge.goal.toLocaleString()} • Due:{' '}
                         {new Date(pledge.deadline).toLocaleDateString()}
                       </CardDescription>
                     </div>
@@ -364,7 +364,7 @@ export default function MemberGiving() {
                       <div className="mb-2 flex justify-between text-sm">
                         <span>Progress</span>
                         <span>
-                          ${pledge.current.toLocaleString()} of $
+                          KES {pledge.current.toLocaleString()} of KES{' '}
                           {pledge.goal.toLocaleString()}
                         </span>
                       </div>
@@ -420,7 +420,7 @@ export default function MemberGiving() {
                     <div>
                       <p className="font-medium">{year} Annual Statement</p>
                       <p className="text-muted-foreground text-sm">
-                        Total contributions: $
+                        Total contributions: KES{' '}
                         {(
                           givingStats.totalThisYear * (year === 2023 ? 1 : 0.8)
                         ).toLocaleString()}

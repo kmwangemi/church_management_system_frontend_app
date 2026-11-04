@@ -136,3 +136,22 @@ export const useGetMessageMembers = () => {
     mutationFn: getMessageMembers,
   });
 };
+
+const deleteMessage = async (id: string | number) => {
+  const { data } = await apiClient.delete(`/church/messages/${id}`);
+  return data;
+};
+
+export const useDeleteMessage = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteMessage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages'] });
+      toast.success('Message deleted successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+

@@ -101,6 +101,9 @@ export const capitalizeFirstLetter = (str: string) => {
   if (typeof str !== 'string' || str.length === 0) {
     return '';
   }
+  const trimmed = str.trim();
+  if (trimmed.toUpperCase() === 'N/A') return 'N/A';
+  if (trimmed.toLowerCase() === 'not provided') return 'Not Provided';
   return str.charAt(0).toUpperCase() + str.substring(1);
 };
 
@@ -111,13 +114,27 @@ export const getFirstLetter = (str: string) => {
 
 export function capitalizeFirstLetterOfEachWord(str: string) {
   if (typeof str !== 'string' || str.length === 0) return '';
+  const trimmed = str.trim();
+  if (trimmed.toUpperCase() === 'N/A') return 'N/A';
+  if (trimmed.toLowerCase() === 'not provided') return 'Not Provided';
   const words = str.split(' ');
   for (let i = 0; i < words.length; i++) {
-    words[i] =
-      words[i].charAt(0).toUpperCase() + words[i].slice(1).toLowerCase();
+    if (words[i].toUpperCase() === 'N/A') {
+      words[i] = 'N/A';
+    } else {
+      words[i] =
+        words[i].charAt(0).toUpperCase() + words[i].slice(1).toLowerCase();
+    }
   }
   return words.join(' ');
 }
+
+export const formatCurrency = (amount?: number | string | null, currency = 'KES'): string => {
+  if (amount === undefined || amount === null) return `${currency} 0`;
+  const num = typeof amount === 'string' ? parseFloat(amount) : amount;
+  if (isNaN(num)) return `${currency} 0`;
+  return `${currency} ${num.toLocaleString()}`;
+};
 
 export const addCommasToNumber = (input: string | number): string => {
   // Convert the input to a number if it's a string
@@ -534,6 +551,19 @@ export const DISCIPLE_LEVEL_OPTIONS = [
 export const GENDER_OPTIONS = [
   { value: 'MALE', label: 'Male' },
   { value: 'FEMALE', label: 'Female' },
+];
+
+export const MEMBER_TYPE_OPTIONS = [
+  { value: 'MEMBER', label: 'Member' },
+  { value: 'VISITOR', label: 'Visitor' },
+  { value: 'CHILD', label: 'Child' },
+];
+
+export const HOUSEHOLD_ROLE_OPTIONS = [
+  { value: 'HEAD', label: 'Head of Household' },
+  { value: 'SPOUSE', label: 'Spouse' },
+  { value: 'CHILD', label: 'Child / Dependent' },
+  { value: 'OTHER', label: 'Other Family Member' },
 ];
 
 export const MARITAL_STATUS_OPTIONS = [

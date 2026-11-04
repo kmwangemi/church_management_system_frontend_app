@@ -187,3 +187,46 @@ export const useFetchPrayerRequestStats = () => {
     staleTime: 1000 * 60 * 15, // 15 minutes
   });
 };
+
+const deletePrayerRequest = async (id: string | number) => {
+  const { data } = await apiClient.delete(`/church/prayer-requests/${id}`);
+  return data;
+};
+
+export const useDeletePrayerRequest = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deletePrayerRequest,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['prayer-requests'] });
+      toast.success('Prayer request deleted successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
+const updatePrayerRequest = async ({
+  id,
+  payload,
+}: {
+  id: string | number;
+  payload: Partial<AddPrayerRequestPayload>;
+}) => {
+  const { data } = await apiClient.put(`/church/prayer-requests/${id}`, payload);
+  return data;
+};
+
+export const useUpdatePrayerRequest = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updatePrayerRequest,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['prayer-requests'] });
+      toast.success('Prayer request updated successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
