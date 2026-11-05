@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useFetchPrayerRequests } from '@/lib/hooks/church/prayer-request/use-prayer-request-queries';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -53,8 +54,32 @@ export default function MemberPrayerPage() {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [isAddRequestOpen, setIsAddRequestOpen] = useState(false);
 
+  const { data: prayersData } = useFetchPrayerRequests({ search: searchTerm });
+  const serverPrayers =
+    (prayersData as any)?.data?.prayerRequests ||
+    (prayersData as any)?.prayerRequests ||
+    [];
+
+  const prayerRequests = (
+    Array.isArray(serverPrayers) ? serverPrayers : []
+  ).map((p: any) => ({
+    id: String(p.id || p._id || ''),
+    title: String(p.title || ''),
+    description: String(p.description || ''),
+    category: String(p.category || 'General'),
+    priority: String(p.priority || 'normal').toLowerCase(),
+    status: String(p.status || 'active').toLowerCase(),
+    isPrivate: Boolean(p.isAnonymous || p.isPrivate),
+    author: String(p.requester || 'Church Member'),
+    authorImage: String(p.requesterAvatar || '/placeholder.svg?height=40&width=40'),
+    dateSubmitted: String(p.dateSubmitted || ''),
+    prayerCount: Number(p.prayerCount || 0),
+    comments: 0,
+    isAnswered: String(p.status || '').toLowerCase() === 'answered',
+  }));
+
   // Mock data for prayer requests
-  const prayerRequests = [
+  const _unusedPrayerRequests = [
     {
       id: 1,
       title: 'Healing for My Mother',

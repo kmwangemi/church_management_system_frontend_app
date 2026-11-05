@@ -19,7 +19,9 @@ import {
 } from '@/components/ui/sheet';
 import { useLogout } from '@/hooks/api/use-auth';
 import type { AuthUser as IUser } from '@/lib/hooks/auth/use-auth-queries';
+import { useAuth } from '@/lib/use-auth';
 import { Bell, BookOpen, LogOut, Menu, Settings, User } from 'lucide-react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type React from 'react';
 import { useState } from 'react';
@@ -27,12 +29,14 @@ import { MemberNavigation } from './member-navigation';
 import { MemberSidebar } from './member-sidebar';
 
 export function MemberClient({
-  user,
+  user: propUser,
   children,
 }: {
   user: IUser;
   children: React.ReactNode;
 }) {
+  const { user: authUser } = useAuth();
+  const user = (authUser || propUser) as IUser;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const pathname = usePathname();

@@ -47,6 +47,10 @@ import {
   Video,
 } from 'lucide-react';
 import { useState } from 'react';
+import {
+  useDeleteContent,
+  useFetchContent,
+} from '@/lib/hooks/church/content/use-content-queries';
 
 // Mock data
 const content = [
@@ -143,11 +147,37 @@ export default function ContentPage() {
   const [selectedTab, setSelectedTab] = useState('all');
   const [isAddContentDialogOpen, setIsAddContentDialogOpen] = useState(false);
 
-  const filteredContent = content.filter(
-    (item) =>
-      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchTerm.toLowerCase())
+  const { data: contentData } = useFetchContent({ search: searchTerm });
+  const { mutate: deleteContent } = useDeleteContent();
+  const serverContent =
+    (contentData as any)?.data?.content ||
+    (contentData as any)?.content ||
+    [];
+  const activeContent = (Array.isArray(serverContent) ? serverContent : []).map(
+    (item: any) => ({
+      ...item,
+      id: item.id || item._id,
+      dateCreated:
+        item.dateCreated ||
+        (item.createdAt ? new Date(item.createdAt).toLocaleDateString() : ''),
+      views: Number(item.views ?? item.viewCount ?? 0),
+      downloads: Number(item.downloads ?? item.downloadCount ?? 0),
+      fileSize: String(item.formattedFileSize || item.fileSize || 'N/A'),
+      duration: String(item.duration || 'N/A'),
+      tags: (Array.isArray(item.tags) ? item.tags : []) as string[],
+      status: String(
+        item.status
+          ? item.status.charAt(0).toUpperCase() + item.status.slice(1)
+          : 'Published'
+      ),
+    })
+  );
+
+  const filteredContent = activeContent.filter(
+    (item: any) =>
+      (item.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.author || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.category || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getTypeIcon = (type: string) => {
@@ -176,10 +206,18 @@ export default function ContentPage() {
   // };
 
   const stats = {
-    totalContent: content.length,
-    published: content.filter((c) => c.status === 'Published').length,
-    totalViews: content.reduce((sum, c) => sum + c.views, 0),
-    totalDownloads: content.reduce((sum, c) => sum + c.downloads, 0),
+    totalContent: activeContent.length,
+    published: activeContent.filter(
+      (c: any) => (c.status || '').toLowerCase() === 'published'
+    ).length,
+    totalViews: activeContent.reduce(
+      (sum: number, c: any) => sum + Number(c.views || 0),
+      0
+    ),
+    totalDownloads: activeContent.reduce(
+      (sum: number, c: any) => sum + Number(c.downloads || 0),
+      0
+    ),
   };
 
   return (
@@ -375,7 +413,7 @@ export default function ContentPage() {
                               {item.description}
                             </div>
                             <div className="flex flex-wrap gap-1">
-                              {item.tags.slice(0, 2).map((tag, index) => (
+                              {item.tags.slice(0, 2).map((tag: string, index: number) => (
                                 <Badge
                                   className="text-xs"
                                   key={index}

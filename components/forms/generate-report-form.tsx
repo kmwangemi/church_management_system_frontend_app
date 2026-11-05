@@ -61,15 +61,16 @@ export function GenerateReportForm({ onCloseDialog }: GenerateReportFormProps) {
   const reportDepartmentGroups = departmentsData?.data?.groups || [];
   const form = useForm<AddReportPayload>({
     resolver: zodResolver(AddReportSchema),
+    mode: 'onChange',
     defaultValues: {
       name: '',
       type: '',
       description: '',
-      dateRange: '',
-      format: 'pdf',
+      dateRange: 'last30days',
+      format: 'csv',
       includeCharts: true,
       includeComparisons: false,
-      departments: [],
+      departments: ['all'],
       customStartDate: '',
       customEndDate: '',
     },
@@ -426,7 +427,7 @@ export function GenerateReportForm({ onCloseDialog }: GenerateReportFormProps) {
               Cancel
             </Button>
             <Button
-              disabled={!form.formState.isValid || isPending}
+              disabled={isPending}
               type="submit"
             >
               {isPending ? (

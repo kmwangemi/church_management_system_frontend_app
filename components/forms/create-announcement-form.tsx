@@ -169,23 +169,35 @@ export function CreateAnnouncementForm({
                     </FormItem>
                   )}
                 />
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label className="text-right" htmlFor="targetAudience">
-                    Audience
-                  </Label>
-                  <Select>
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Select audience" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Members</SelectItem>
-                      <SelectItem value="youth">Youth & Parents</SelectItem>
-                      <SelectItem value="adults">Adults</SelectItem>
-                      <SelectItem value="volunteers">Volunteers</SelectItem>
-                      <SelectItem value="leaders">Leaders</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="targetAudience"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Audience <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="cursor-pointer">
+                            <SelectValue placeholder="Select audience" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="all">All Members</SelectItem>
+                          <SelectItem value="youth">Youth & Parents</SelectItem>
+                          <SelectItem value="adults">Adults</SelectItem>
+                          <SelectItem value="volunteers">Volunteers</SelectItem>
+                          <SelectItem value="leaders">Leaders</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="priority"
@@ -305,10 +317,23 @@ export function CreateAnnouncementForm({
                   )}
                 />
               </div>
-              <div className="flex items-center space-x-2">
-                <Switch id="isPinned" />
-                <Label htmlFor="isPinned">Pin this announcement</Label>
-              </div>
+              <FormField
+                control={form.control}
+                name="isPinned"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Pin this announcement
+                    </FormLabel>
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
           <div className="flex justify-end space-x-4">
@@ -320,7 +345,7 @@ export function CreateAnnouncementForm({
               Cancel
             </Button>
             <Button
-              disabled={!form.formState.isValid || isPending}
+              disabled={isPending}
               type="submit"
             >
               {isPending ? (

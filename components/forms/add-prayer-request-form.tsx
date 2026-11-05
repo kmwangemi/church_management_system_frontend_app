@@ -54,12 +54,13 @@ export function AddPrayerRequestForm({
   } = useCreatePrayerRequest();
   const form = useForm<AddPrayerRequestPayload>({
     resolver: zodResolver(AddPrayerRequestSchema),
+    mode: 'onChange',
     defaultValues: {
       memberId: '',
       title: '',
       description: '',
       category: '',
-      priority: '',
+      priority: 'medium',
       isAnonymous: false,
       isPublic: true,
     },
@@ -260,9 +261,9 @@ export function AddPrayerRequestForm({
                       <FormControl>
                         <UserCombobox
                           className="w-full"
-                          onValueChange={field.onChange} // Use onValueChange for ID
+                          onValueChange={(val) => field.onChange(val || '')}
                           placeholder="Search and select a member"
-                          value={field.value} // Pass the ID directly
+                          value={field.value}
                         />
                       </FormControl>
                       <FormMessage />
@@ -281,7 +282,7 @@ export function AddPrayerRequestForm({
               Cancel
             </Button>
             <Button
-              disabled={!form.formState.isValid || isPending}
+              disabled={isPending}
               type="submit"
             >
               {isPending ? (

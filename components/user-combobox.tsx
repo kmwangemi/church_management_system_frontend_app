@@ -46,7 +46,7 @@ export function normalizeMember(item: any): ComboboxMemberItem {
       item.name ||
       `${capitalizeFirstLetter(item.firstName || '')} ${capitalizeFirstLetter(item.lastName || '')}`.trim() ||
       'Member';
-    const id = u.id || u._id || item.id || item._id;
+    const id = item.id || item._id || u.id || u._id;
     const memberId =
       u.membershipNumber ||
       u.memberId ||

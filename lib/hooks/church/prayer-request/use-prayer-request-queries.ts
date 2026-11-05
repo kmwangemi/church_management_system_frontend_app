@@ -9,9 +9,65 @@ import type { AddPrayerRequestPayload } from '@/lib/validations/prayer-request';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
+export interface CounselorItem {
+  id: string;
+  _id?: string;
+  memberId?: string | null;
+  name: string;
+  email: string;
+  phone: string;
+  specialization: string[];
+  currentCases: number;
+  maxCapacity: number;
+  status: 'Available' | 'Full' | 'Unavailable' | string;
+  experience: string;
+  avatar?: string;
+  assignedCases?: Array<{
+    id: string;
+    title: string;
+    category: string;
+    priority: string;
+    status: string;
+    requester: string;
+    dateSubmitted: string;
+  }>;
+}
+
+export interface PrayerStatsData {
+  totalRequests: number;
+  activeRequests: number;
+  inProgressRequests: number;
+  answeredRequests: number;
+  closedRequests: number;
+  totalPrayers: number;
+  activeCounselors: number;
+  totalCounselors: number;
+  categories: Array<{
+    slug: string;
+    name: string;
+    count: number;
+    activeCount: number;
+    answeredCount: number;
+    percentage: number;
+  }>;
+  priorities: Array<{
+    priority: string;
+    count: number;
+    percentage: number;
+  }>;
+  counselorWorkload: Array<{
+    id: string;
+    name: string;
+    currentCases: number;
+    maxCapacity: number;
+    status: string;
+    percentage: number;
+  }>;
+}
+
 // Create Prayer Request
 const createPrayerRequest = async (
-  payload: AddPrayerRequestPayload
+  payload: AddPrayerRequestPayload & { counselorId?: string }
 ): Promise<PrayerRequestAddResponse> => {
   const { data } = await apiClient.post('/church/prayer-requests', payload);
   return data;
@@ -23,6 +79,8 @@ export const useCreatePrayerRequest = () => {
     mutationFn: createPrayerRequest,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['prayer-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['prayer-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['prayer-counselors'] });
       toast.success('Prayer request has been submitted successfully.', {
         style: successToastStyle,
       });
@@ -31,7 +89,7 @@ export const useCreatePrayerRequest = () => {
 };
 
 // Fetch Prayer Requests with filters
-interface FetchPrayerRequestsParams {
+export interface FetchPrayerRequestsParams {
   page?: number;
   search?: string;
   category?: string;
@@ -39,6 +97,7 @@ interface FetchPrayerRequestsParams {
   status?: string;
   isPublic?: boolean;
   memberId?: string;
+  counselorId?: string;
   limit?: number;
 }
 
@@ -53,18 +112,20 @@ const fetchPrayerRequests = async (
     status = '',
     isPublic,
     memberId = '',
-    limit = 10,
+    counselorId = '',
+    limit = 50,
   } = params;
   const queryParams = new URLSearchParams();
   queryParams.append('page', page.toString());
   queryParams.append('limit', limit.toString());
   if (search) queryParams.append('search', search);
-  if (category) queryParams.append('category', category);
-  if (priority) queryParams.append('priority', priority);
-  if (status) queryParams.append('status', status);
+  if (category && category !== 'all') queryParams.append('category', category);
+  if (priority && priority !== 'all') queryParams.append('priority', priority);
+  if (status && status !== 'all') queryParams.append('status', status);
   if (isPublic !== undefined)
     queryParams.append('isPublic', isPublic.toString());
   if (memberId) queryParams.append('memberId', memberId);
+  if (counselorId) queryParams.append('counselorId', counselorId);
   const { data } = await apiClient.get(
     `/church/prayer-requests?${queryParams.toString()}`
   );
@@ -77,7 +138,6 @@ export const useFetchPrayerRequests = (
   return useQuery({
     queryKey: ['prayer-requests', params],
     queryFn: () => fetchPrayerRequests(params),
-    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
 
@@ -95,25 +155,9 @@ export const useUpdatePrayerCount = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updatePrayerCount,
-    onSuccess: (data) => {
-      // Update the specific prayer request in the cache
-      queryClient.setQueriesData(
-        { queryKey: ['prayer-requests'] },
-        (oldData: any) => {
-          if (!oldData?.data?.prayerRequests) return oldData;
-          return {
-            ...oldData,
-            data: {
-              ...oldData.data,
-              prayerRequests: oldData.data.prayerRequests.map((request: any) =>
-                request._id === data.data.prayerRequestId
-                  ? { ...request, prayerCount: data.data.prayerCount }
-                  : request
-              ),
-            },
-          };
-        }
-      );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['prayer-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['prayer-stats'] });
       toast.success('Thank you for praying! 🙏', {
         style: successToastStyle,
       });
@@ -121,37 +165,34 @@ export const useUpdatePrayerCount = () => {
   });
 };
 
-// Fetch Prayer Requests by Category (for dashboard widgets)
+// Fetch Prayer Requests by Category
 export const useFetchPrayerRequestsByCategory = (category: string) => {
   return useQuery({
     queryKey: ['prayer-requests', 'category', category],
     queryFn: () => fetchPrayerRequests({ category, status: 'active' }),
     enabled: !!category,
-    staleTime: 1000 * 60 * 10, // 10 minutes
   });
 };
 
-// Fetch Prayer Requests by Priority (for urgent requests)
+// Fetch Urgent Prayer Requests
 export const useFetchUrgentPrayerRequests = () => {
   return useQuery({
     queryKey: ['prayer-requests', 'urgent'],
     queryFn: () =>
-      fetchPrayerRequests({ priority: 'urgent', status: 'active' }),
-    staleTime: 1000 * 60 * 2, // 2 minutes for urgent requests
+      fetchPrayerRequests({ priority: 'high', status: 'active' }),
   });
 };
 
-// Fetch My Prayer Requests (for current user)
+// Fetch My Prayer Requests
 export const useFetchMyPrayerRequests = (userId?: string) => {
   return useQuery({
     queryKey: ['prayer-requests', 'my-requests', userId],
     queryFn: () => fetchPrayerRequests({ memberId: userId }),
     enabled: !!userId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
 
-// Fetch Public Prayer Requests (for community prayer wall)
+// Fetch Public Prayer Requests
 export const useFetchPublicPrayerRequests = (page = 1, limit = 20) => {
   return useQuery({
     queryKey: ['prayer-requests', 'public', page, limit],
@@ -162,32 +203,26 @@ export const useFetchPublicPrayerRequests = (page = 1, limit = 20) => {
         page,
         limit,
       }),
-    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
 
-// Fetch Prayer Request Statistics (for dashboard)
-const fetchPrayerRequestStats = async () => {
-  const [active, answered, total] = await Promise.all([
-    fetchPrayerRequests({ status: 'active', limit: 1 }),
-    fetchPrayerRequests({ status: 'answered', limit: 1 }),
-    fetchPrayerRequests({ limit: 1 }),
-  ]);
-  return {
-    active: active.data.pagination.total,
-    answered: answered.data.pagination.total,
-    total: total.data.pagination.total,
-  };
+// Fetch Prayer Request Statistics
+const fetchPrayerRequestStats = async (): Promise<{
+  success: boolean;
+  data: PrayerStatsData;
+}> => {
+  const { data } = await apiClient.get('/church/prayer-requests/stats');
+  return data;
 };
 
 export const useFetchPrayerRequestStats = () => {
   return useQuery({
-    queryKey: ['prayer-requests', 'stats'],
+    queryKey: ['prayer-stats'],
     queryFn: fetchPrayerRequestStats,
-    staleTime: 1000 * 60 * 15, // 15 minutes
   });
 };
 
+// Delete Prayer Request
 const deletePrayerRequest = async (id: string | number) => {
   const { data } = await apiClient.delete(`/church/prayer-requests/${id}`);
   return data;
@@ -199,6 +234,8 @@ export const useDeletePrayerRequest = () => {
     mutationFn: deletePrayerRequest,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['prayer-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['prayer-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['prayer-counselors'] });
       toast.success('Prayer request deleted successfully.', {
         style: successToastStyle,
       });
@@ -206,14 +243,23 @@ export const useDeletePrayerRequest = () => {
   });
 };
 
+// Update Prayer Request
 const updatePrayerRequest = async ({
   id,
   payload,
 }: {
   id: string | number;
-  payload: Partial<AddPrayerRequestPayload>;
+  payload: Partial<
+    AddPrayerRequestPayload & {
+      status?: string;
+      counselorId?: string | null;
+    }
+  >;
 }) => {
-  const { data } = await apiClient.put(`/church/prayer-requests/${id}`, payload);
+  const { data } = await apiClient.put(
+    `/church/prayer-requests/${id}`,
+    payload
+  );
   return data;
 };
 
@@ -223,6 +269,8 @@ export const useUpdatePrayerRequest = () => {
     mutationFn: updatePrayerRequest,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['prayer-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['prayer-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['prayer-counselors'] });
       toast.success('Prayer request updated successfully.', {
         style: successToastStyle,
       });
@@ -230,3 +278,147 @@ export const useUpdatePrayerRequest = () => {
   });
 };
 
+// Add Update Note to Prayer Request
+const addPrayerRequestUpdate = async ({
+  id,
+  message,
+  status,
+}: {
+  id: string | number;
+  message: string;
+  status?: string;
+}) => {
+  const { data } = await apiClient.post(
+    `/church/prayer-requests/${id}/updates`,
+    {
+      message,
+      status,
+    }
+  );
+  return data;
+};
+
+export const useAddPrayerRequestUpdate = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: addPrayerRequestUpdate,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['prayer-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['prayer-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['prayer-counselors'] });
+      toast.success('Prayer request update added.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
+// Counselors Hooks
+const fetchCounselors = async (): Promise<{
+  success: boolean;
+  data: {
+    counselors: CounselorItem[];
+    total: number;
+  };
+  counselors: CounselorItem[];
+}> => {
+  const { data } = await apiClient.get('/church/prayer-requests/counselors');
+  return data;
+};
+
+export const useFetchCounselors = () => {
+  return useQuery({
+    queryKey: ['prayer-counselors'],
+    queryFn: fetchCounselors,
+  });
+};
+
+const createCounselor = async (payload: {
+  memberId?: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  specialization?: string[] | string;
+  maxCapacity?: number;
+  experience?: string;
+  status?: string;
+}) => {
+  const { data } = await apiClient.post(
+    '/church/prayer-requests/counselors',
+    payload
+  );
+  return data;
+};
+
+export const useCreateCounselor = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createCounselor,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['prayer-counselors'] });
+      queryClient.invalidateQueries({ queryKey: ['prayer-stats'] });
+      toast.success('Counselor added successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
+const updateCounselor = async ({
+  counselorId,
+  payload,
+}: {
+  counselorId: string;
+  payload: Partial<{
+    name: string;
+    email: string;
+    phone: string;
+    specialization: string[] | string;
+    maxCapacity: number;
+    experience: string;
+    status: string;
+  }>;
+}) => {
+  const { data } = await apiClient.patch(
+    `/church/prayer-requests/counselors/${counselorId}`,
+    payload
+  );
+  return data;
+};
+
+export const useUpdateCounselor = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateCounselor,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['prayer-counselors'] });
+      queryClient.invalidateQueries({ queryKey: ['prayer-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['prayer-stats'] });
+      toast.success('Counselor updated successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
+const deleteCounselor = async (counselorId: string) => {
+  const { data } = await apiClient.delete(
+    `/church/prayer-requests/counselors/${counselorId}`
+  );
+  return data;
+};
+
+export const useDeleteCounselor = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteCounselor,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['prayer-counselors'] });
+      queryClient.invalidateQueries({ queryKey: ['prayer-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['prayer-stats'] });
+      toast.success('Counselor removed successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};

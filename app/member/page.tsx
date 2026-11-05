@@ -25,62 +25,62 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { useFetchAnnouncements } from '@/lib/hooks/church/announcement/use-announcement-queries';
+import { useFetchEvents } from '@/lib/hooks/church/event/use-event-queries';
+import { useFetchOfferings } from '@/lib/hooks/church/offering/use-offering-queries';
+import { useFetchPrayerRequests } from '@/lib/hooks/church/prayer-request/use-prayer-request-queries';
+import { useAuth } from '@/lib/use-auth';
 
 export default function MemberDashboard() {
+  const { user } = useAuth();
+  const { data: eventsData } = useFetchEvents(1, '');
+  const { data: announcementsData } = useFetchAnnouncements(1, '');
+  const { data: offeringsData } = useFetchOfferings();
+  const { data: prayersData } = useFetchPrayerRequests({});
+
+  const serverEvents = (eventsData as any)?.events || (eventsData as any)?.data || [];
+  const serverAnnouncements =
+    (announcementsData as any)?.announcements ||
+    (announcementsData as any)?.data ||
+    [];
+  const serverOfferings =
+    (offeringsData as any)?.data?.offerings ||
+    (offeringsData as any)?.offerings ||
+    [];
+  const serverPrayers =
+    (prayersData as any)?.data?.prayerRequests ||
+    (prayersData as any)?.prayerRequests ||
+    [];
+
+  const totalGiving = Array.isArray(serverOfferings)
+    ? serverOfferings.reduce((sum: number, o: any) => sum + Number(o.amount || 0), 0)
+    : 0;
+
   const memberStats = {
-    totalGiving: 2450,
+    totalGiving,
     attendanceRate: 85,
-    eventsAttended: 12,
-    prayerRequests: 3,
+    eventsAttended: Array.isArray(serverEvents) ? serverEvents.length : 0,
+    prayerRequests: Array.isArray(serverPrayers) ? serverPrayers.length : 0,
     smallGroups: 2,
     volunteerHours: 24,
   };
 
-  const upcomingEvents = [
-    {
-      id: 1,
-      title: 'Sunday Service',
-      date: '2024-01-07',
-      time: '10:00 AM',
-      location: 'Main Sanctuary',
-      registered: true,
-    },
-    {
-      id: 2,
-      title: 'Bible Study Group',
-      date: '2024-01-09',
-      time: '7:00 PM',
-      location: 'Room 201',
-      registered: true,
-    },
-    {
-      id: 3,
-      title: 'Youth Fellowship',
-      date: '2024-01-12',
-      time: '6:00 PM',
-      location: 'Youth Hall',
-      registered: false,
-    },
-  ];
+  const upcomingEvents = (Array.isArray(serverEvents) ? serverEvents : []).slice(0, 3).map((e: any) => ({
+    id: e.id || e._id,
+    title: e.title || e.name || 'Church Event',
+    date: e.startDate ? new Date(e.startDate).toLocaleDateString() : e.date || '',
+    time: e.startTime || e.time || '09:00 AM',
+    location: e.location || 'Main Sanctuary',
+    registered: true,
+  }));
 
-  const recentAnnouncements = [
-    {
-      id: 1,
-      title: 'New Year Prayer Week',
-      content:
-        'Join us for a week of prayer and fasting starting January 8th...',
-      date: '2024-01-05',
-      priority: 'high',
-    },
-    {
-      id: 2,
-      title: 'Volunteer Opportunity',
-      content:
-        'We need volunteers for the upcoming community outreach program...',
-      date: '2024-01-04',
-      priority: 'medium',
-    },
-  ];
+  const recentAnnouncements = (Array.isArray(serverAnnouncements) ? serverAnnouncements : []).slice(0, 3).map((a: any) => ({
+    id: a.id || a._id,
+    title: a.title || 'Announcement',
+    content: a.content || '',
+    date: a.publishDate ? new Date(a.publishDate).toLocaleDateString() : '',
+    priority: (a.priority || 'medium').toLowerCase(),
+  }));
 
   const spiritualMilestones = [
     { title: 'Baptism', date: '2020-06-15', completed: true },
@@ -95,7 +95,9 @@ export default function MemberDashboard() {
       <div className="rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="mb-2 font-bold text-2xl">Welcome back, John!</h1>
+            <h1 className="mb-2 font-bold text-2xl">
+              Welcome back, {user?.firstName || user?.name?.split(' ')[0] || 'Member'}!
+            </h1>
             <p className="text-blue-100">
               {"Here's what's happening in your spiritual journey"}
             </p>

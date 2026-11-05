@@ -61,7 +61,12 @@ export const useAuthStatus = () => {
 // -------------
 
 const logoutRequest = async (): Promise<void> => {
-  await apiClient.post('/auth/logout');
+  const refreshToken = useAuthStore.getState().refreshToken;
+  try {
+    await apiClient.post('/auth/logout', { refresh_token: refreshToken });
+  } finally {
+    useAuthStore.getState().logout();
+  }
 };
 
 export const useLogout = () => {

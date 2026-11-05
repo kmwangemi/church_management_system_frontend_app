@@ -21,7 +21,7 @@ export const authService = {
     try {
       const refreshToken = useAuthStore.getState().refreshToken;
       if (refreshToken) {
-        await apiClient.post(`/auth/logout?refresh_token=${refreshToken}`);
+        await apiClient.post('/auth/logout', { refresh_token: refreshToken });
       }
     } finally {
       useAuthStore.getState().logout();

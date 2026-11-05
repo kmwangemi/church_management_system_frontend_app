@@ -141,7 +141,7 @@ export function AddDiscipleForm({ onCloseDialog }: AddDiscipleFormProps) {
                         <DatePicker
                           format="long"
                           maxDate={getRelativeYear(2)}
-                          minDate={new Date()}
+                          minDate={getRelativeYear(-5)}
                           onChange={(date) =>
                             field.onChange(date ? date.toISOString() : '')
                           }

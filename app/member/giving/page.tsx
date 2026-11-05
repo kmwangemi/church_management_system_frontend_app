@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { useFetchOfferings } from '@/lib/hooks/church/offering/use-offering-queries';
+import { useFetchPledges } from '@/lib/hooks/church/pledge/use-pledge-queries';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -46,17 +48,54 @@ export default function MemberGiving() {
   const [customAmount, setCustomAmount] = useState('');
   const [givingType, setGivingType] = useState('tithe');
 
+  const { data: offeringsData } = useFetchOfferings();
+  const { data: pledgesData } = useFetchPledges();
+  const serverOfferings =
+    (offeringsData as any)?.data?.offerings ||
+    (offeringsData as any)?.offerings ||
+    [];
+  const serverPledges =
+    (pledgesData as any)?.data?.pledges ||
+    (pledgesData as any)?.pledges ||
+    [];
+
+  const recentGifts = (Array.isArray(serverOfferings) ? serverOfferings : []).map(
+    (o: any) => ({
+      id: o.id || o._id,
+      date: o.date ? new Date(o.date).toLocaleDateString() : '',
+      amount: Number(o.amount || 0),
+      type: o.type || 'Offering',
+      method: o.method || 'M-Pesa',
+      status: o.status || 'Completed',
+    })
+  );
+
+  const pledges = (Array.isArray(serverPledges) ? serverPledges : []).map(
+    (p: any) => ({
+      id: p.id || p._id,
+      name: p.purpose || p.notes || 'Pledge Commitment',
+      goal: Number(p.amount || 0),
+      current: Number(p.paidAmount || 0),
+      deadline: p.dueDate ? new Date(p.dueDate).toLocaleDateString() : '',
+      frequency: 'Flexible',
+    })
+  );
+
+  const totalGivingThisYear = recentGifts.reduce((s, g) => s + g.amount, 0);
+  const totalPledgeGoal = pledges.reduce((s, p) => s + p.goal, 0);
+  const totalPledgePaid = pledges.reduce((s, p) => s + p.current, 0);
+
   const givingStats = {
-    totalThisYear: 2450,
-    totalLifetime: 8750,
-    averageMonthly: 204,
-    lastGift: '2024-01-01',
-    streak: 12,
-    pledgeGoal: 3000,
-    pledgeProgress: 2450,
+    totalThisYear: totalGivingThisYear,
+    totalLifetime: totalGivingThisYear,
+    averageMonthly: Math.round(totalGivingThisYear / 12),
+    lastGift: recentGifts[0]?.date || 'N/A',
+    streak: recentGifts.length,
+    pledgeGoal: totalPledgeGoal,
+    pledgeProgress: totalPledgePaid,
   };
 
-  const recentGifts = [
+  const _unusedRecentGifts = [
     {
       id: 1,
       date: '2024-01-01',
@@ -101,7 +140,7 @@ export default function MemberGiving() {
 
   const quickAmounts = [25, 50, 100, 250, 500];
 
-  const pledges = [
+  const _unusedPledges = [
     {
       id: 1,
       name: 'Annual Tithe Commitment',
