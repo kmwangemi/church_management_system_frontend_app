@@ -18,6 +18,7 @@ import {
 
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { useFetchEvents } from '@/lib/hooks/church/event/use-event-queries';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -50,7 +51,29 @@ export default function MemberEvents() {
   const [filterCategory, setFilterCategory] = useState('all');
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
-  const events = [
+  const { data: eventsData } = useFetchEvents(1, searchTerm);
+  const serverEvents =
+    (eventsData as any)?.events || (eventsData as any)?.data || [];
+
+  const events = (Array.isArray(serverEvents) ? serverEvents : []).map(
+    (e: any) => ({
+      id: e.id || e._id,
+      title: e.title || e.name || 'Church Event',
+      description: e.description || '',
+      date: e.startDate ? new Date(e.startDate).toISOString().split('T')[0] : e.date || '',
+      time: e.startTime || e.time || '09:00 AM',
+      endTime: e.endTime || '11:00 AM',
+      location: e.location || 'Main Sanctuary',
+      category: e.category || e.type || 'Worship',
+      capacity: Number(e.maxAttendees || e.capacity || 100),
+      registered: Number(e.currentAttendees || e.registered || 0),
+      registrationStatus: 'available',
+      icon: Calendar,
+      color: 'bg-blue-100 text-blue-800',
+    })
+  );
+
+  const _unusedMockEvents = [
     {
       id: 1,
       title: 'Sunday Morning Service',

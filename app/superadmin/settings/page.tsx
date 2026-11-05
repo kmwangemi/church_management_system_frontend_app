@@ -47,6 +47,35 @@ export default function GlobalSettingsPage() {
     'idle' | 'saving' | 'saved' | 'error'
   >('idle');
 
+  const [systemSettings, setSystemSettings] = useState({
+    siteName: 'ChurchHub Global',
+    siteUrl: 'https://ChurchHub.com',
+    adminEmail: 'admin@ChurchHub.com',
+    timezone: 'America/New_York',
+    language: 'en',
+    maintenanceMode: false,
+    registrationEnabled: true,
+    emailVerificationRequired: true,
+    maxChurchesPerUser: 5,
+    sessionTimeout: 30,
+    backupFrequency: 'daily',
+  });
+
+  useEffect(() => {
+    const raw = (settingsData as any)?.data || settingsData;
+    if (raw && typeof raw === 'object') {
+      setSystemSettings((prev) => ({
+        ...prev,
+        siteName: raw.siteName ?? prev.siteName,
+        adminEmail: raw.supportEmail ?? raw.adminEmail ?? prev.adminEmail,
+        maintenanceMode: Boolean(raw.maintenanceMode ?? prev.maintenanceMode),
+        registrationEnabled: Boolean(
+          raw.allowNewRegistrations ?? raw.registrationEnabled ?? prev.registrationEnabled
+        ),
+      }));
+    }
+  }, [settingsData]);
+
   const handleSave = async () => {
     setIsLoading(true);
     setSaveStatus('saving');
@@ -66,21 +95,6 @@ export default function GlobalSettingsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-
-  const systemSettings = {
-    siteName: 'ChurchHub Global',
-    siteUrl: 'https://ChurchHub.com',
-    adminEmail: 'admin@ChurchHub.com',
-    timezone: 'America/New_York',
-    language: 'en',
-    maintenanceMode: false,
-    registrationEnabled: true,
-    emailVerificationRequired: true,
-    maxChurchesPerUser: 5,
-    sessionTimeout: 30,
-    backupFrequency: 'daily',
   };
 
   const securitySettings = {
@@ -196,17 +210,29 @@ export default function GlobalSettingsPage() {
                 <div className="space-y-2">
                   <Label htmlFor="siteName">Site Name</Label>
                   <Input
-                    defaultValue={systemSettings.siteName}
                     id="siteName"
+                    onChange={(e) =>
+                      setSystemSettings((prev) => ({
+                        ...prev,
+                        siteName: e.target.value,
+                      }))
+                    }
                     placeholder="Enter site name"
+                    value={systemSettings.siteName}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="siteUrl">Site URL</Label>
                   <Input
-                    defaultValue={systemSettings.siteUrl}
                     id="siteUrl"
+                    onChange={(e) =>
+                      setSystemSettings((prev) => ({
+                        ...prev,
+                        siteUrl: e.target.value,
+                      }))
+                    }
                     placeholder="https://example.com"
+                    value={systemSettings.siteUrl}
                   />
                 </div>
               </div>
@@ -215,10 +241,16 @@ export default function GlobalSettingsPage() {
                 <div className="space-y-2">
                   <Label htmlFor="adminEmail">Admin Email</Label>
                   <Input
-                    defaultValue={systemSettings.adminEmail}
                     id="adminEmail"
+                    onChange={(e) =>
+                      setSystemSettings((prev) => ({
+                        ...prev,
+                        adminEmail: e.target.value,
+                      }))
+                    }
                     placeholder="admin@example.com"
                     type="email"
+                    value={systemSettings.adminEmail}
                   />
                 </div>
                 <div className="space-y-2">

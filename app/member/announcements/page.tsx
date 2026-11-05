@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useFetchAnnouncements } from '@/lib/hooks/church/announcement/use-announcement-queries';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -37,7 +38,31 @@ export default function MemberAnnouncements() {
   const [filterPriority, setFilterPriority] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
 
-  const announcements = [
+  const { data: announcementsData } = useFetchAnnouncements(1, searchTerm);
+  const serverAnnouncements =
+    (announcementsData as any)?.announcements ||
+    (announcementsData as any)?.data ||
+    [];
+
+  const announcements = (
+    Array.isArray(serverAnnouncements) ? serverAnnouncements : []
+  ).map((a: any) => ({
+    id: String(a.id || a._id || ''),
+    title: String(a.title || ''),
+    content: String(a.content || ''),
+    author: String(a.author || 'Church Admin'),
+    authorRole: String(a.authorRole || 'Admin'),
+    date: String(a.publishDate || a.createdAt || new Date().toISOString()),
+    priority: String(a.priority || 'medium').toLowerCase(),
+    category: String(a.category || 'General'),
+    pinned: Boolean(a.isPinned || a.pinned),
+    likes: Number(a.likes || 0),
+    comments: Number(a.comments || 0),
+    tags: (Array.isArray(a.tags) ? a.tags : [String(a.category || 'General')]) as string[],
+    readStatus: 'unread',
+  }));
+
+  const _unusedMockAnnouncements = [
     {
       id: 1,
       title: 'New Year Prayer Week - Join Us for 7 Days of Prayer',

@@ -64,10 +64,14 @@ export const useFetchUsers = (
 
 /* ========== FETCH USER BY ID ========== */
 const fetchUserById = async (userId: string): Promise<UserResponse> => {
-  const {
-    data: { user },
-  } = await apiClient.get(`/church/users/${userId}`);
-  return user;
+  const { data } = await apiClient.get(`/church/users/${userId}`);
+  if (data && typeof data === 'object' && 'user' in data) {
+    return {
+      ...(data.user || {}),
+      ...data,
+    };
+  }
+  return data;
 };
 
 export const useFetchUserById = (userId: string) => {

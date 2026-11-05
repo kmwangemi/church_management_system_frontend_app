@@ -1,7 +1,6 @@
 'use client';
 
 import RenderApiError from '@/components/api-error';
-import { NumberInput } from '@/components/number-input';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -10,15 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -27,192 +19,201 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { useCreateMilestone } from '@/lib/hooks/church/milestone/use-milestone-queries';
-import { MILESTONE_CATEGORY_OPTIONS } from '@/lib/utils';
-import {
-  type AddMilestonePayload,
-  AddMilestoneSchema,
-} from '@/lib/validations/milestone';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { UserCombobox, normalizeMember } from '@/components/user-combobox';
+import { useCreateMentor } from '@/lib/hooks/church/disciple/use-disciple-queries';
 import { Award, Loader2 } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useState } from 'react';
 
 interface AddMentorFormProps {
   onCloseDialog: () => void;
 }
 
+const SPECIALIZATION_OPTIONS = [
+  'New Converts',
+  'Youth Ministry',
+  "Women's Ministry",
+  "Men's Ministry",
+  'Leadership Development',
+  'Marriage & Family',
+  'Bible Study & Foundations',
+];
+
 export function AddMentorForm({ onCloseDialog }: AddMentorFormProps) {
   const {
-    mutateAsync: registerMentorMutation,
+    mutateAsync: createMentorMutation,
     isPending,
     isError,
     error,
-  } = useCreateMilestone();
-  const form = useForm<AddMilestonePayload>({
-    resolver: zodResolver(AddMilestoneSchema),
-    defaultValues: {
-      name: '',
-      description: '',
-      category: '',
-      points: '',
-      requirements: '',
-    },
-  });
-  const { reset } = form;
-  // Handle form submission
-  const onSubmit = async (payload: AddMilestonePayload) => {
-    await registerMentorMutation(payload);
+  } = useCreateMentor();
+
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [experience, setExperience] = useState('3 years');
+  const [specialization, setSpecialization] = useState('New Converts');
+  const [maxCapacity, setMaxCapacity] = useState('5');
+  const [notes, setNotes] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() && !selectedMemberId) return;
+
+    await createMentorMutation({
+      memberId: selectedMemberId || undefined,
+      name: name.trim() || undefined,
+      email: email.trim() || undefined,
+      phone: phone.trim() || undefined,
+      experience: experience.trim() || '3 years',
+      specialization,
+      maxCapacity: parseInt(maxCapacity, 10) || 5,
+      notes: notes.trim() || undefined,
+    });
     onCloseDialog();
-    reset();
   };
-  const handleCancelDialog = () => {
-    onCloseDialog();
-    reset();
-  };
+
   return (
     <>
       {isError && <RenderApiError error={error} />}
-      <Form {...form}>
-        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Award className="h-5 w-5" />
-                <span>Milestone Details</span>
-              </CardTitle>
-              <CardDescription>
-                Create a new discipleship milestone
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Milestone Name <span className="text-red-500">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter milestone name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+      <form className="space-y-6" onSubmit={handleSubmit}>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Award className="h-5 w-5" />
+              <span>Mentor Information</span>
+            </CardTitle>
+            <CardDescription>
+              Select an existing church member or enter mentor details below
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>Select Church Member (Optional)</Label>
+              <UserCombobox
+                onChange={(memberRaw) => {
+                  if (memberRaw) {
+                    const norm = normalizeMember(memberRaw);
+                    setSelectedMemberId(norm.id);
+                    setName(norm.fullName || '');
+                    setEmail(norm.email || '');
+                    setPhone(
+                      (memberRaw as any)?.phoneNumber ||
+                        (memberRaw as any)?.phone ||
+                        ''
+                    );
+                  } else {
+                    setSelectedMemberId(null);
+                  }
+                }}
+                placeholder="Search and select a member to be a mentor..."
+                value={selectedMemberId}
               />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Description <span className="text-red-500">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Describe the milestone..."
-                        rows={3}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="category"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Category <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="cursor-pointer">
-                            <SelectValue placeholder="Select category" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="max-h-[400px] overflow-y-auto">
-                          {MILESTONE_CATEGORY_OPTIONS.map((option) => (
-                            <SelectItem
-                              className="cursor-pointer"
-                              key={option.value}
-                              value={option.value}
-                            >
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="points"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Points Value
-                        <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <NumberInput placeholder="10" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="mentorName">
+                  Mentor Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="mentorName"
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Full name"
+                  required
+                  value={name}
                 />
               </div>
-              <FormField
-                control={form.control}
-                name="requirements"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Requirements (Optional)</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="List any requirements to achieve this milestone..."
-                        rows={3}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <div className="space-y-2">
+                <Label htmlFor="mentorEmail">Email</Label>
+                <Input
+                  id="mentorEmail"
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="mentor@church.org"
+                  type="email"
+                  value={email}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="space-y-2">
+                <Label htmlFor="mentorPhone">Phone</Label>
+                <Input
+                  id="mentorPhone"
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+254..."
+                  value={phone}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="mentorExperience">Experience</Label>
+                <Input
+                  id="mentorExperience"
+                  onChange={(e) => setExperience(e.target.value)}
+                  placeholder="e.g., 5 years"
+                  value={experience}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="mentorCapacity">Max Mentees</Label>
+                <Input
+                  id="mentorCapacity"
+                  min="1"
+                  onChange={(e) => setMaxCapacity(e.target.value)}
+                  type="number"
+                  value={maxCapacity}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Specialization</Label>
+              <Select onValueChange={setSpecialization} value={specialization}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select specialization" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SPECIALIZATION_OPTIONS.map((spec) => (
+                    <SelectItem key={spec} value={spec}>
+                      {spec}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="mentorNotes">Notes / Bio (Optional)</Label>
+              <Textarea
+                id="mentorNotes"
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Background in discipleship and mentoring..."
+                rows={3}
+                value={notes}
               />
-            </CardContent>
-          </Card>
-          <div className="flex justify-end space-x-4">
-            <Button
-              onClick={handleCancelDialog}
-              type="button"
-              variant="outline"
-            >
-              Cancel
-            </Button>
-            <Button
-              disabled={!form.formState.isValid || isPending}
-              type="submit"
-            >
-              {isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating Milestone...
-                </>
-              ) : (
-                'Create Milestone'
-              )}
-            </Button>
-          </div>
-        </form>
-      </Form>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-end space-x-4">
+          <Button onClick={onCloseDialog} type="button" variant="outline">
+            Cancel
+          </Button>
+          <Button
+            disabled={isPending || (!name.trim() && !selectedMemberId)}
+            type="submit"
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Adding Mentor...
+              </>
+            ) : (
+              'Add Mentor'
+            )}
+          </Button>
+        </div>
+      </form>
     </>
   );
 }

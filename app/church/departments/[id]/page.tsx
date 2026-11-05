@@ -217,7 +217,10 @@ export default function DepartmentDetailsPage({
       const formData: any = {
         departmentName: capitalizeFirstLetter(department?.departmentName || ''),
         category: department?.category || '',
-        leaderId: department?.leaderId || '',
+        leaderId:
+          typeof department?.leaderId === 'object' && department?.leaderId
+            ? department.leaderId._id || ''
+            : (department?.leaderId as unknown as string) || '',
         location: capitalizeFirstLetter(department?.location || ''),
         totalBudget: department?.totalBudget || '',
         meetingDay: department?.meetingDay || [],
@@ -798,64 +801,111 @@ export default function DepartmentDetailsPage({
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      {departmentMembers?.data?.members?.map((member) => (
-                        <React.Fragment key={member._id}>
-                          {member?.role === 'leader' && (
-                            <>
-                              <div className="flex items-center space-x-4">
-                                <Avatar className="h-16 w-16">
-                                  <AvatarImage
-                                    alt={member?.userId?.firstName || 'Member'}
-                                    src={
-                                      member?.userId?.profilePictureUrl || ''
-                                    }
-                                  />
-                                  <AvatarFallback>{`${getFirstLetter(
-                                    member?.userId?.firstName || ''
-                                  )}${getFirstLetter(member?.userId?.lastName || '')}`}</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <h3 className="font-semibold">{`${capitalizeFirstLetter(
-                                    member?.userId?.firstName || ''
-                                  )} ${capitalizeFirstLetter(member?.userId?.lastName || '')}`}</h3>
-                                  <p className="text-muted-foreground text-sm">
-                                    {capitalizeFirstLetter(member?.role)}
-                                  </p>
-                                  <Badge variant="outline">
-                                    {member?.isActive ? 'Active' : 'Inactive'}
-                                  </Badge>
-                                </div>
+                      {(() => {
+                        const leaderMember = (
+                          departmentMembers?.data?.members ?? []
+                        ).find((m) => m?.role?.toLowerCase() === 'leader');
+
+                        const leaderInfo = leaderMember
+                          ? {
+                              firstName:
+                                leaderMember?.userId?.firstName || '',
+                              lastName:
+                                leaderMember?.userId?.lastName || '',
+                              role: leaderMember?.role || 'Leader',
+                              isActive: leaderMember?.isActive ?? true,
+                              phoneNumber:
+                                leaderMember?.userId?.phoneNumber ||
+                                'Not Provided',
+                              email:
+                                leaderMember?.userId?.email || 'Not Provided',
+                              profilePictureUrl:
+                                leaderMember?.userId?.profilePictureUrl || '',
+                              leadingSince: leaderMember?.joinedDate,
+                            }
+                          : department?.leaderId?.firstName
+                          ? {
+                              firstName: department.leaderId.firstName,
+                              lastName: department.leaderId.lastName || '',
+                              role: 'Leader',
+                              isActive: department.isActive ?? true,
+                              phoneNumber:
+                                department.leaderId.phoneNumber ||
+                                'Not Provided',
+                              email:
+                                department.leaderId.email || 'Not Provided',
+                              profilePictureUrl:
+                                department.leaderId.profilePictureUrl || '',
+                              leadingSince:
+                                department.establishedDate ||
+                                department.createdAt,
+                            }
+                          : null;
+
+                        if (!leaderInfo) {
+                          return (
+                            <p className="text-muted-foreground text-sm">
+                              Not Assigned
+                            </p>
+                          );
+                        }
+
+                        return (
+                          <>
+                            <div className="flex items-center space-x-4">
+                              <Avatar className="h-16 w-16">
+                                <AvatarImage
+                                  alt={leaderInfo.firstName || 'Member'}
+                                  src={leaderInfo.profilePictureUrl}
+                                />
+                                <AvatarFallback>{`${getFirstLetter(
+                                  leaderInfo.firstName
+                                )}${getFirstLetter(
+                                  leaderInfo.lastName
+                                )}`}</AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <h3 className="font-semibold">{`${capitalizeFirstLetter(
+                                  leaderInfo.firstName
+                                )} ${capitalizeFirstLetter(
+                                  leaderInfo.lastName
+                                )}`}</h3>
+                                <p className="text-muted-foreground text-sm">
+                                  {capitalizeFirstLetter(leaderInfo.role)}
+                                </p>
+                                <Badge variant="outline">
+                                  {leaderInfo.isActive ? 'Active' : 'Inactive'}
+                                </Badge>
                               </div>
-                              <div className="space-y-2">
-                                <div className="flex items-center space-x-2">
-                                  <Phone className="h-4 w-4 text-muted-foreground" />
-                                  <span className="text-sm">
-                                    {member?.userId?.phoneNumber ??
-                                      'Not Provided'}
-                                  </span>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <Mail className="h-4 w-4 text-muted-foreground" />
-                                  <span className="text-sm">
-                                    {member?.userId?.email ?? 'Not Provided'}
-                                  </span>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                                  <span className="text-sm">
-                                    Leading since{' '}
-                                    {new Date(
-                                      member?.joinedDate
-                                    ).toLocaleDateString()}
-                                  </span>
-                                </div>
+                            </div>
+                            <div className="space-y-2">
+                              <div className="flex items-center space-x-2">
+                                <Phone className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm">
+                                  {leaderInfo.phoneNumber}
+                                </span>
                               </div>
-                            </>
-                          )}
-                        </React.Fragment>
-                      ))}
-                      {departmentMembers?.data?.members?.length === 0 &&
-                        'Not Assigned'}
+                              <div className="flex items-center space-x-2">
+                                <Mail className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm">
+                                  {leaderInfo.email}
+                                </span>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Calendar className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm">
+                                  Leading since{' '}
+                                  {leaderInfo.leadingSince
+                                    ? new Date(
+                                        leaderInfo.leadingSince
+                                      ).toLocaleDateString()
+                                    : 'Not Provided'}
+                                </span>
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
                     </CardContent>
                   </Card>
                 </div>

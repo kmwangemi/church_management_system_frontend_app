@@ -13,8 +13,9 @@ import {
   Save,
   Users,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuth } from '@/lib/use-auth';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -38,21 +39,37 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 
 export default function MemberProfile() {
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@email.com',
-    phone: '+1 (555) 123-4567',
-    address: '123 Main St, Anytown, ST 12345',
+    firstName: 'Member',
+    lastName: '',
+    email: '',
+    phone: '',
+    address: '',
     dateOfBirth: '1985-06-15',
     maritalStatus: 'Married',
-    occupation: 'Software Engineer',
-    emergencyContact: 'Jane Doe - (555) 987-6543',
-    bio: 'Passionate about serving God and the community. Love spending time with family and volunteering at church events.',
+    occupation: '',
+    emergencyContact: '',
+    bio: 'Passionate about serving God and the community.',
     interests: ['Bible Study', 'Youth Ministry', 'Music', 'Community Service'],
     skills: ['Teaching', 'Music', 'Technology', 'Leadership'],
   });
+
+  useEffect(() => {
+    if (user) {
+      setProfileData((prev) => ({
+        ...prev,
+        firstName: user.firstName || user.name?.split(' ')[0] || prev.firstName,
+        lastName:
+          user.lastName ||
+          user.name?.split(' ').slice(1).join(' ') ||
+          prev.lastName,
+        email: user.email || prev.email,
+        phone: (user as any).phoneNumber || prev.phone,
+      }));
+    }
+  }, [user]);
 
   const membershipInfo = {
     memberSince: '2020-03-15',

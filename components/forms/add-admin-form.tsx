@@ -31,6 +31,10 @@ import {
 } from '@/components/ui/select';
 import { useFetchBranches } from '@/lib/hooks/church/branch/use-branch-queries';
 import {
+  useCreateChurchAdmin,
+  useFetchChurchRoles,
+} from '@/lib/hooks/church/settings/use-settings-queries';
+import {
   ADMIN_ACCESS_LEVEL_OPTIONS,
   CHURCH_ROLE_OPTIONS,
   capitalizeFirstLetter,
@@ -42,7 +46,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { MultiSelect } from '../multi-select';
-import { useCreateSuperAdminUser } from '@/hooks/api/use-superadmin';
+import { useCreateSuperAdminUser, useSuperAdminBranches } from '@/hooks/api/use-superadmin';
 
 const adminSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -66,21 +70,45 @@ const adminSchema = z.object({
   }),
   role: z.string().min(1, 'Please select a role'),
   accessLevel: z.string().min(1, 'Please select an access level'),
-  branchIds: z.array(z.string()).min(1, 'Please select at least one branch'),
-  primaryBranchId: z.string().min(1, 'Please select a primary branch'),
+  branchIds: z.array(z.string()).optional(),
+  primaryBranchId: z.string().optional(),
 });
 
 type AdminForm = z.infer<typeof adminSchema>;
 
 interface AddAdminFormProps {
   onCloseDialog: () => void;
+  scope?: 'church' | 'superadmin';
 }
 
-export function AddAdminForm({ onCloseDialog }: AddAdminFormProps) {
+export function AddAdminForm({
+  onCloseDialog,
+  scope = 'superadmin',
+}: AddAdminFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-  // Fetch branches with search term
-  const { data, isLoading: isLoadingBranches } = useFetchBranches(1, '');
-  const branches = data?.teams || [];
+  const isChurchScope = scope === 'church';
+
+  const { data: superAdminBranchesData } = useSuperAdminBranches();
+  const { data: churchBranchesData } = useFetchBranches(1, '');
+  const { data: churchRolesData } = useFetchChurchRoles();
+
+  const branches = isChurchScope
+    ? (churchBranchesData as any)?.branches ||
+      (churchBranchesData as any)?.data ||
+      []
+    : (superAdminBranchesData as any)?.data ||
+      (superAdminBranchesData as any)?.branches ||
+      [];
+
+  const roleOptions =
+    isChurchScope && churchRolesData?.roles?.length
+      ? churchRolesData.roles
+          .filter((r) => !['MEMBER', 'VISITOR'].includes(r.name.toUpperCase()))
+          .map((r) => ({
+            value: r.name,
+            label: r.displayName || r.name,
+          }))
+      : CHURCH_ROLE_OPTIONS;
 
   const form = useForm<AdminForm>({
     resolver: zodResolver(adminSchema),
@@ -89,8 +117,8 @@ export function AddAdminForm({ onCloseDialog }: AddAdminFormProps) {
       lastName: '',
       phoneNumber: '',
       gender: 'male',
-      role: '',
-      accessLevel: '',
+      role: 'ADMIN',
+      accessLevel: 'BRANCH',
       email: '',
       address: {
         street: '',
@@ -108,20 +136,51 @@ export function AddAdminForm({ onCloseDialog }: AddAdminFormProps) {
       sendWelcomeEmail: false,
     },
   });
-  const { mutateAsync: createUserMutation } = useCreateSuperAdminUser();
-
+  const { mutateAsync: createSuperAdminUserMutation } = useCreateSuperAdminUser();
+  const { mutateAsync: createChurchAdminMutation } = useCreateChurchAdmin();
 
   const onSubmit = async (data: AdminForm) => {
     setIsLoading(true);
     try {
-      await createUserMutation({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phoneNumber: data.phoneNumber,
-        role: data.role || 'ADMIN',
-        password: data.password || 'User@123',
-      });
+      const selectedBranchId =
+        data.primaryBranchId || data.branchIds?.[0] || '';
+      if (isChurchScope) {
+        await createChurchAdminMutation({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          phoneNumber: data.phoneNumber,
+          gender: data.gender,
+          role: data.role || 'ADMIN',
+          accessLevel: data.accessLevel || 'BRANCH',
+          branchId: selectedBranchId || undefined,
+          branchIds: data.branchIds,
+          primaryBranchId: data.primaryBranchId || undefined,
+          address: data.address,
+          isMember: data.isMember,
+          isStaff: data.isStaff,
+          isVolunteer: data.isVolunteer,
+          password: data.password || 'User@123',
+          sendWelcomeEmail: data.sendWelcomeEmail,
+        });
+      } else {
+        const matchedBranch = branches.find(
+          (b: any) => (b.id || b._id) === selectedBranchId
+        );
+        await createSuperAdminUserMutation({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          phoneNumber: data.phoneNumber,
+          role: data.role || 'ADMIN',
+          branchId: selectedBranchId || undefined,
+          churchId:
+            matchedBranch?.churchId ||
+            matchedBranch?.organizationId ||
+            undefined,
+          password: data.password || 'User@123',
+        } as any);
+      }
       onCloseDialog();
     } catch (error) {
       console.error('Error adding user:', error);
@@ -341,7 +400,7 @@ export function AddAdminForm({ onCloseDialog }: AddAdminFormProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="max-h-[400px] overflow-y-auto">
-                          {CHURCH_ROLE_OPTIONS.map((option) => (
+                          {roleOptions.map((option) => (
                             <SelectItem
                               className="cursor-pointer"
                               key={option.value}
@@ -394,19 +453,19 @@ export function AddAdminForm({ onCloseDialog }: AddAdminFormProps) {
                   name="branchIds"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        Branches <span className="text-red-500">*</span>
-                      </FormLabel>
+                      <FormLabel>Branches</FormLabel>
                       <FormControl>
                         <MultiSelect
                           onChange={field.onChange}
                           options={
                             branches?.map((branch: any) => ({
-                              label: capitalizeFirstLetter(branch?.branchName),
-                              value: branch?._id,
+                              label: capitalizeFirstLetter(
+                                branch?.name || branch?.branchName || ''
+                              ),
+                              value: branch?.id || branch?._id || '',
                             })) || []
                           }
-                          placeholder="Select branche(s)"
+                          placeholder="Select branch(es)"
                           selected={field.value || []}
                         />
                       </FormControl>
@@ -419,17 +478,30 @@ export function AddAdminForm({ onCloseDialog }: AddAdminFormProps) {
                   name="primaryBranchId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        Primary Branch <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <BranchCombobox
-                          className="w-full"
-                          onChange={field.onChange}
-                          placeholder="Search and select primary branch"
-                          value={field.value}
-                        />
-                      </FormControl>
+                      <FormLabel>Primary Branch</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value || ''}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="cursor-pointer">
+                            <SelectValue placeholder="Select primary branch" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="max-h-[400px] overflow-y-auto">
+                          {branches?.map((branch: any) => (
+                            <SelectItem
+                              className="cursor-pointer"
+                              key={branch?.id || branch?._id}
+                              value={branch?.id || branch?._id}
+                            >
+                              {capitalizeFirstLetter(
+                                branch?.name || branch?.branchName || ''
+                              )}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -505,7 +577,6 @@ export function AddAdminForm({ onCloseDialog }: AddAdminFormProps) {
                       <FormLabel>Temporary Password</FormLabel>
                       <FormControl>
                         <PasswordInput
-                          disabled
                           placeholder="Enter temporary password"
                           {...field}
                         />

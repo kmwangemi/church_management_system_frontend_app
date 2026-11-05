@@ -40,6 +40,7 @@ import {
   Users,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useFetchGroups } from '@/lib/hooks/church/group/use-group-queries';
 
 interface SmallGroup {
   id: string;
@@ -81,154 +82,49 @@ export default function SmallGroupsPage() {
   const [dayFilter, setDayFilter] = useState('all');
   // const [selectedGroup, setSelectedGroup] = useState<SmallGroup | null>(null);
   const [loading, setLoading] = useState(true);
+  const { data: groupsData, isLoading: isFetchingGroups } = useFetchGroups(
+    1,
+    searchTerm
+  );
 
   useEffect(() => {
-    // Mock data - in real app, fetch from API
-    const mockGroups: SmallGroup[] = [
-      {
-        id: '1',
-        name: 'Young Adults Bible Study',
-        description:
-          "A vibrant community of young adults exploring God's word together through interactive discussions and fellowship.",
-        category: 'Bible Study',
+    const serverGroups =
+      (groupsData as any)?.groups || (groupsData as any)?.data || [];
+    if (Array.isArray(serverGroups)) {
+      const mapped: SmallGroup[] = serverGroups.map((g: any) => ({
+        id: g.id || g._id,
+        name: g.groupName || g.name || 'Small Group',
+        description: g.description || '',
+        category: g.category || 'Small Group',
         leader: {
-          name: 'Sarah Johnson',
-          avatar: '/placeholder.svg?height=40&width=40',
-          phone: '+1 (555) 123-4567',
-          email: 'sarah.j@email.com',
+          name:
+            g.leaderId?.name ||
+            `${g.leaderId?.firstName || ''} ${g.leaderId?.lastName || ''}`.trim() ||
+            'Group Leader',
+          avatar: g.leaderId?.profilePictureUrl || '/placeholder.svg?height=40&width=40',
+          phone: g.leaderId?.phoneNumber || '',
+          email: g.leaderId?.email || '',
         },
-        meetingDay: 'Wednesday',
-        meetingTime: '7:00 PM',
-        location: 'Room 201, Main Building',
-        currentStudy: 'Book of Romans',
-        capacity: 15,
-        currentMembers: 12,
-        isJoined: true,
-        nextMeeting: '2024-01-10',
-        tags: ['Bible Study', 'Young Adults', 'Fellowship'],
-      },
-      {
-        id: '2',
-        name: "Men's Prayer Group",
-        description:
-          'Men gathering weekly to pray, share testimonies, and support each other in their faith journey.',
-        category: 'Prayer',
-        leader: {
-          name: 'Michael Davis',
-          avatar: '/placeholder.svg?height=40&width=40',
-          phone: '+1 (555) 234-5678',
-          email: 'michael.d@email.com',
-        },
-        meetingDay: 'Saturday',
-        meetingTime: '6:30 AM',
-        location: 'Fellowship Hall',
-        currentStudy: 'The Power of Prayer',
-        capacity: 20,
-        currentMembers: 8,
+        meetingDay: Array.isArray(g.meetingDay)
+          ? g.meetingDay.join(', ')
+          : g.meetingDay || 'Wednesday',
+        meetingTime: Array.isArray(g.meetingTime)
+          ? g.meetingTime.join(', ')
+          : g.meetingTime || '06:00 PM',
+        location: g.location || 'Church Facility',
+        currentStudy: g.category || 'Fellowship',
+        capacity: Number(g.capacity || 20),
+        currentMembers: Number(g.memberCount || g.members || 0),
         isJoined: false,
-        nextMeeting: '2024-01-13',
-        tags: ['Prayer', 'Men', 'Early Morning'],
-      },
-      {
-        id: '3',
-        name: "Women's Life Group",
-        description:
-          'A supportive community of women studying scripture and sharing life experiences together.',
-        category: 'Life Group',
-        leader: {
-          name: 'Jennifer Wilson',
-          avatar: '/placeholder.svg?height=40&width=40',
-          phone: '+1 (555) 345-6789',
-          email: 'jennifer.w@email.com',
-        },
-        meetingDay: 'Thursday',
-        meetingTime: '10:00 AM',
-        location: 'Room 105, Education Wing',
-        currentStudy: 'Proverbs 31 Woman',
-        capacity: 12,
-        currentMembers: 10,
-        isJoined: true,
-        nextMeeting: '2024-01-11',
-        tags: ['Life Group', 'Women', 'Morning'],
-      },
-      {
-        id: '4',
-        name: 'Couples Connection',
-        description:
-          'Married couples strengthening their relationships through biblical principles and fellowship.',
-        category: 'Marriage',
-        leader: {
-          name: 'David & Lisa Brown',
-          avatar: '/placeholder.svg?height=40&width=40',
-          phone: '+1 (555) 456-7890',
-          email: 'browns@email.com',
-        },
-        meetingDay: 'Friday',
-        meetingTime: '7:30 PM',
-        location: 'Room 301, Family Center',
-        currentStudy: 'Love & Respect',
-        capacity: 16,
-        currentMembers: 14,
-        isJoined: false,
-        nextMeeting: '2024-01-12',
-        tags: ['Marriage', 'Couples', 'Evening'],
-      },
-      {
-        id: '5',
-        name: 'Youth Discipleship',
-        description:
-          'High school students diving deep into discipleship and leadership development.',
-        category: 'Youth',
-        leader: {
-          name: 'Pastor Mark Thompson',
-          avatar: '/placeholder.svg?height=40&width=40',
-          phone: '+1 (555) 567-8901',
-          email: 'mark.t@email.com',
-        },
-        meetingDay: 'Sunday',
-        meetingTime: '4:00 PM',
-        location: 'Youth Center',
-        currentStudy: 'Radical Discipleship',
-        capacity: 25,
-        currentMembers: 18,
-        isJoined: false,
-        nextMeeting: '2024-01-14',
-        tags: ['Youth', 'Discipleship', 'Leadership'],
-      },
-    ];
-
-    const mockMeetings: GroupMeeting[] = [
-      {
-        id: '1',
-        groupName: 'Young Adults Bible Study',
-        date: '2024-01-10',
-        time: '7:00 PM',
-        location: 'Room 201',
-        topic: 'Romans 8: Life in the Spirit',
-      },
-      {
-        id: '2',
-        groupName: "Women's Life Group",
-        date: '2024-01-11',
-        time: '10:00 AM',
-        location: 'Room 105',
-        topic: 'Strength and Dignity',
-      },
-      {
-        id: '3',
-        groupName: "Men's Prayer Group",
-        date: '2024-01-13',
-        time: '6:30 AM',
-        location: 'Fellowship Hall',
-        topic: 'Praying for Our Families',
-      },
-    ];
-
-    setGroups(mockGroups);
-    setMyGroups(mockGroups.filter((group) => group.isJoined));
-    setUpcomingMeetings(mockMeetings);
-    setLoading(false);
-  }, []);
+        nextMeeting: new Date().toISOString().split('T')[0],
+        tags: [g.category || 'Small Group'],
+      }));
+      setGroups(mapped);
+      setMyGroups(mapped.filter((g) => g.isJoined));
+      setUpcomingMeetings([]);
+    }
+    setLoading(isFetchingGroups);
+  }, [groupsData, isFetchingGroups]);
 
   const handleJoinGroup = (groupId: string) => {
     setGroups(

@@ -9,6 +9,60 @@ import type { AddReportPayload } from '@/lib/validations/report';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
+export interface ReportTemplateItem {
+  id: string;
+  _id?: string;
+  name: string;
+  type: string;
+  description: string;
+  frequency: string;
+  dateRange: string;
+  format: string;
+  isActive: boolean;
+  lastGenerated?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ReportStatsData {
+  totalReports: number;
+  completedReports: number;
+  generatingReports: number;
+  failedReports: number;
+  totalDownloads: number;
+  activeTemplates: number;
+  totalTemplates: number;
+  generationTrends: {
+    thisMonth: number;
+    lastMonth: number;
+    twoMonthsAgo: number;
+  };
+  popularReports: Array<{
+    id: string;
+    name: string;
+    type: string;
+    downloads: number;
+    percentage: number;
+  }>;
+  reportsByType: Array<{
+    type: string;
+    count: number;
+  }>;
+  reportsByStatus: Array<{
+    status: string;
+    count: number;
+  }>;
+  churchSummary?: {
+    totalMembers: number;
+    activeMembers: number;
+    totalEvents: number;
+    totalDepartments: number;
+    totalIncome: number;
+    totalExpenses: number;
+  };
+  recentReports: any[];
+}
+
 // Create Report Hook
 const createReport = async (
   payload: AddReportPayload
@@ -23,7 +77,8 @@ export const useCreateReport = () => {
     mutationFn: createReport,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reports'] });
-      toast.success('Report generation started successfully.', {
+      queryClient.invalidateQueries({ queryKey: ['report-stats'] });
+      toast.success('Report generated successfully.', {
         style: successToastStyle,
       });
     },
@@ -41,8 +96,8 @@ const fetchReports = async (
   const params = new URLSearchParams({
     page: page.toString(),
     ...(search && { search }),
-    ...(type && { type }),
-    ...(status && { status }),
+    ...(type && type !== 'all' && { type }),
+    ...(status && status !== 'all' && { status }),
     ...(dateRange && { dateRange }),
   });
   const { data } = await apiClient.get(`/church/reports?${params}`);
@@ -66,7 +121,7 @@ export const useFetchReports = (
       const hasGeneratingReports = reports?.some(
         (report: any) => report.status === 'generating'
       );
-      return hasGeneratingReports ? 5000 : false; // Refresh every 5 seconds
+      return hasGeneratingReports ? 5000 : false;
     },
   });
 };
@@ -88,8 +143,9 @@ export const useFetchReport = (reportId: string) => {
     queryFn: () => fetchReport(reportId),
     enabled: !!reportId,
     refetchInterval: (query) => {
-      // Auto-refresh if report is still generating
-      return (query.state.data as any)?.data?.status === 'generating' ? 3000 : false;
+      return (query.state.data as any)?.data?.status === 'generating'
+        ? 3000
+        : false;
     },
   });
 };
@@ -105,19 +161,18 @@ const downloadReport = async (
 };
 
 export const useDownloadReport = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: downloadReport,
     onSuccess: (response, reportId) => {
-      // Create blob URL and trigger download
       const blob = new Blob([response.data]);
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      // Get filename from response headers or use default
-      const contentDisposition = response.headers['content-disposition'];
-      let filename = `report_${reportId}.pdf`;
+      const contentDisposition = response.headers?.['content-disposition'];
+      let filename = `report_${reportId}.csv`;
       if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+        const filenameMatch = contentDisposition.match(/filename="?([^";]+)"?/);
         if (filenameMatch) {
           filename = filenameMatch[1];
         }
@@ -127,7 +182,45 @@ export const useDownloadReport = () => {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
+      queryClient.invalidateQueries({ queryKey: ['reports'] });
+      queryClient.invalidateQueries({ queryKey: ['report-stats'] });
       toast.success('Report downloaded successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
+// Export All Reports Hook
+const exportAllReports = async (): Promise<ReportDownloadResponse> => {
+  const response = await apiClient.get('/church/reports/export', {
+    responseType: 'blob',
+  });
+  return response as any;
+};
+
+export const useExportAllReports = () => {
+  return useMutation({
+    mutationFn: exportAllReports,
+    onSuccess: (response) => {
+      const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const contentDisposition = response.headers?.['content-disposition'];
+      let filename = 'church_reports_export.csv';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?([^";]+)"?/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      }
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success('All reports exported successfully.', {
         style: successToastStyle,
       });
     },
@@ -151,6 +244,7 @@ export const useCancelReport = () => {
     mutationFn: cancelReport,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reports'] });
+      queryClient.invalidateQueries({ queryKey: ['report-stats'] });
       toast.success('Report cancelled successfully.', {
         style: successToastStyle,
       });
@@ -175,6 +269,7 @@ export const useDeleteReport = () => {
     mutationFn: deleteReport,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reports'] });
+      queryClient.invalidateQueries({ queryKey: ['report-stats'] });
       toast.success('Report deleted successfully.', {
         style: successToastStyle,
       });
@@ -185,21 +280,7 @@ export const useDeleteReport = () => {
 // Fetch Report Stats Hook
 const fetchReportStats = async (): Promise<{
   success: boolean;
-  data: {
-    totalReports: number;
-    completedReports: number;
-    generatingReports: number;
-    failedReports: number;
-    reportsByType: Array<{
-      type: string;
-      count: number;
-    }>;
-    reportsByStatus: Array<{
-      status: string;
-      count: number;
-    }>;
-    recentReports: any[];
-  };
+  data: ReportStatsData;
 }> => {
   const { data } = await apiClient.get('/church/reports/stats');
   return data;
@@ -209,7 +290,6 @@ export const useFetchReportStats = () => {
   return useQuery({
     queryKey: ['report-stats'],
     queryFn: fetchReportStats,
-    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
@@ -217,7 +297,9 @@ export const useFetchReportStats = () => {
 const duplicateReport = async (
   reportId: string
 ): Promise<ReportAddResponse> => {
-  const { data } = await apiClient.post(`/church/reports/${reportId}/duplicate`);
+  const { data } = await apiClient.post(
+    `/church/reports/${reportId}/duplicate`
+  );
   return data;
 };
 
@@ -227,6 +309,7 @@ export const useDuplicateReport = () => {
     mutationFn: duplicateReport,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reports'] });
+      queryClient.invalidateQueries({ queryKey: ['report-stats'] });
       toast.success('Report duplicated successfully.', {
         style: successToastStyle,
       });
@@ -237,14 +320,17 @@ export const useDuplicateReport = () => {
 // Get Report Preview Hook
 const getReportPreview = async (payload: {
   type: string;
-  departments: string[];
-  dateRange: string;
+  departments?: string[];
+  dateRange?: string;
   customStartDate?: string;
   customEndDate?: string;
 }): Promise<{
   success: boolean;
   data: {
     estimatedRecords: number;
+    summary?: Record<string, any>;
+    columns?: string[];
+    sampleRows?: Array<Record<string, any>>;
     departmentBreakdown: Array<{
       departmentId: string;
       departmentName: string;
@@ -294,7 +380,7 @@ export const useCalculateReportDepartmentCount = () => {
   });
 };
 
-// Retry Failed Report Hook
+// Retry / Regenerate Report Hook
 const retryReport = async (
   reportId: string
 ): Promise<{
@@ -312,7 +398,9 @@ export const useRetryReport = () => {
     mutationFn: retryReport,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reports'] });
-      toast.success('Report generation restarted successfully.', {
+      queryClient.invalidateQueries({ queryKey: ['report'] });
+      queryClient.invalidateQueries({ queryKey: ['report-stats'] });
+      toast.success('Report regenerated with latest data.', {
         style: successToastStyle,
       });
     },
@@ -342,7 +430,129 @@ export const useBulkDeleteReports = () => {
     mutationFn: bulkDeleteReports,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['reports'] });
-      toast.success(`${data.data.deletedCount} reports deleted successfully.`, {
+      queryClient.invalidateQueries({ queryKey: ['report-stats'] });
+      toast.success(
+        `${data.data.deletedCount} reports deleted successfully.`,
+        {
+          style: successToastStyle,
+        }
+      );
+    },
+  });
+};
+
+// Report Templates Hooks
+const fetchReportTemplates = async (): Promise<{
+  success: boolean;
+  data: {
+    templates: ReportTemplateItem[];
+    total: number;
+  };
+  templates: ReportTemplateItem[];
+}> => {
+  const { data } = await apiClient.get('/church/reports/templates');
+  return data;
+};
+
+export const useFetchReportTemplates = () => {
+  return useQuery({
+    queryKey: ['report-templates'],
+    queryFn: fetchReportTemplates,
+  });
+};
+
+const createReportTemplate = async (payload: {
+  name: string;
+  type: string;
+  description?: string;
+  frequency?: string;
+  dateRange?: string;
+  format?: string;
+  isActive?: boolean;
+}) => {
+  const { data } = await apiClient.post('/church/reports/templates', payload);
+  return data;
+};
+
+export const useCreateReportTemplate = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createReportTemplate,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['report-templates'] });
+      queryClient.invalidateQueries({ queryKey: ['report-stats'] });
+      toast.success('Report template created successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
+const updateReportTemplate = async ({
+  templateId,
+  payload,
+}: {
+  templateId: string;
+  payload: Partial<ReportTemplateItem>;
+}) => {
+  const { data } = await apiClient.patch(
+    `/church/reports/templates/${templateId}`,
+    payload
+  );
+  return data;
+};
+
+export const useUpdateReportTemplate = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateReportTemplate,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['report-templates'] });
+      queryClient.invalidateQueries({ queryKey: ['report-stats'] });
+      toast.success('Report template updated successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
+const deleteReportTemplate = async (templateId: string) => {
+  const { data } = await apiClient.delete(
+    `/church/reports/templates/${templateId}`
+  );
+  return data;
+};
+
+export const useDeleteReportTemplate = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteReportTemplate,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['report-templates'] });
+      queryClient.invalidateQueries({ queryKey: ['report-stats'] });
+      toast.success('Report template deleted successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
+const generateReportFromTemplate = async (templateId: string) => {
+  const { data } = await apiClient.post(
+    `/church/reports/templates/${templateId}/generate`
+  );
+  return data;
+};
+
+export const useGenerateReportFromTemplate = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: generateReportFromTemplate,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reports'] });
+      queryClient.invalidateQueries({ queryKey: ['report-templates'] });
+      queryClient.invalidateQueries({ queryKey: ['report-stats'] });
+      toast.success('Report generated from template successfully.', {
         style: successToastStyle,
       });
     },

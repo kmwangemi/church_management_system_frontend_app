@@ -51,7 +51,7 @@ export function SessionLoader({
   children,
   fallback,
   requireAuth = true,
-  redirectTo = '/sign-in',
+  redirectTo,
   allowedRoles,
 }: SessionLoaderProps) {
   const { user: session, isLoading: isPending, error } = useAuth();
@@ -65,9 +65,16 @@ export function SessionLoader({
 
   useEffect(() => {
     if (isMounted && !isPending && requireAuth && !session) {
-      // Redirect to sign-in if authentication is required but user is not authenticated
+      // Redirect to appropriate sign-in if authentication is required but user is not authenticated
+      const targetLogin =
+        redirectTo ||
+        (pathname?.startsWith('/superadmin')
+          ? '/auth/superadmin'
+          : pathname?.startsWith('/member')
+            ? '/auth/member'
+            : '/auth/admin');
       const callbackUrl = encodeURIComponent(pathname);
-      router.push(`${redirectTo}?callbackUrl=${callbackUrl}`);
+      router.push(`${targetLogin}?callbackUrl=${callbackUrl}`);
     }
   }, [isMounted, isPending, session, requireAuth, router, redirectTo, pathname]);
 
@@ -76,7 +83,7 @@ export function SessionLoader({
       // Check if user has the required role
       const userRole = session?.role;
       if (userRole && !allowedRoles.includes(userRole)) {
-        router.push('/unauthorized');
+        router.push('/auth/unauthorized');
       }
     }
   }, [isMounted, isPending, session, allowedRoles, router]);
