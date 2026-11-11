@@ -38,18 +38,29 @@ export const useRegisterGroup = () => {
 
 const fetchGroups = async (
   page = 1,
-  search = ''
+  search = '',
+  category = '',
+  meetingDay = ''
 ): Promise<GroupListResponse> => {
-  const { data } = await apiClient.get(
-    `/church/groups?page=${page}&search=${search}`
-  );
+  const params = new URLSearchParams({
+    page: page.toString(),
+    search,
+  });
+  if (category && category !== 'all') params.append('category', category);
+  if (meetingDay && meetingDay !== 'all') params.append('meetingDay', meetingDay);
+  const { data } = await apiClient.get(`/church/groups?${params.toString()}`);
   return data;
 };
 
-export const useFetchGroups = (page = 1, search = '') => {
+export const useFetchGroups = (
+  page = 1,
+  search = '',
+  category = '',
+  meetingDay = ''
+) => {
   return useQuery({
-    queryKey: ['groups', page, search],
-    queryFn: () => fetchGroups(page, search),
+    queryKey: ['groups', page, search, category, meetingDay],
+    queryFn: () => fetchGroups(page, search, category, meetingDay),
   });
 };
 
@@ -150,8 +161,10 @@ export const useAddGroupGoal = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: addGroupGoal,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['group-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['group', variables.groupId] });
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
       toast.success('Group goal has been added successfully.', {
         style: successToastStyle,
       });
@@ -222,8 +235,10 @@ export const useDeleteGroupGoal = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteGroupGoal,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['group-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['group', variables.groupId] });
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
       toast.success('Group goal has been deleted successfully.', {
         style: successToastStyle,
       });
@@ -252,8 +267,10 @@ export const useUpdateGroupGoal = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateGroupGoal,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['group-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['group', variables.groupId] });
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
       toast.success('Group goal has been updated successfully.', {
         style: successToastStyle,
       });
@@ -280,8 +297,11 @@ export const useAddGroupActivity = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: addGroupActivity,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['group-activities'] });
+      queryClient.invalidateQueries({ queryKey: ['attendanceSummary'] });
+      queryClient.invalidateQueries({ queryKey: ['group', variables.groupId] });
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
       toast.success('Group activity has been logged successfully.', {
         style: successToastStyle,
       });
@@ -310,8 +330,11 @@ export const useUpdateGroupActivity = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateGroupActivity,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['group-activities'] });
+      queryClient.invalidateQueries({ queryKey: ['attendanceSummary'] });
+      queryClient.invalidateQueries({ queryKey: ['group', variables.groupId] });
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
       toast.success('Group activity has been updated successfully.', {
         style: successToastStyle,
       });
@@ -382,8 +405,11 @@ export const useUpdateGroupMember = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateGroupMember,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['group-members'] });
+      queryClient.invalidateQueries({ queryKey: ['group', variables.groupId] });
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
+      queryClient.invalidateQueries({ queryKey: ['attendanceSummary'] });
       toast.success('Group member has been updated successfully.', {
         style: successToastStyle,
       });
@@ -409,8 +435,11 @@ export const useDeleteGroupMember = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteGroupMember,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['group-members'] });
+      queryClient.invalidateQueries({ queryKey: ['group', variables.groupId] });
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
+      queryClient.invalidateQueries({ queryKey: ['attendanceSummary'] });
       toast.success('Group member has been deleted successfully.', {
         style: successToastStyle,
       });
@@ -437,9 +466,12 @@ export const useAddGroupMember = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: addGroupMember,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       // Invalidate group members query
       queryClient.invalidateQueries({ queryKey: ['group-members'] });
+      queryClient.invalidateQueries({ queryKey: ['group', variables.groupId] });
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
+      queryClient.invalidateQueries({ queryKey: ['attendanceSummary'] });
       toast.success('Group member has been added successfully.', {
         style: successToastStyle,
       });
@@ -505,8 +537,11 @@ export const useDeleteGroupActivity = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteGroupActivity,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['group-activities'] });
+      queryClient.invalidateQueries({ queryKey: ['attendanceSummary'] });
+      queryClient.invalidateQueries({ queryKey: ['group', variables.groupId] });
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
       toast.success('Group activity has been deleted successfully.', {
         style: successToastStyle,
       });

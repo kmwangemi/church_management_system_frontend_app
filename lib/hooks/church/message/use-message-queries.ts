@@ -25,6 +25,8 @@ export const useCreateMessage = () => {
     mutationFn: createMessage,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['messages'] });
+      queryClient.invalidateQueries({ queryKey: ['message-templates'] });
+      queryClient.invalidateQueries({ queryKey: ['communication-stats'] });
       const messageType =
         data.data?.scheduleType === 'draft' ? 'saved' : 'sent';
       toast.success(`Message has been ${messageType} successfully.`, {
@@ -33,7 +35,9 @@ export const useCreateMessage = () => {
     },
     onError: (error: any) => {
       const errorMessage =
-        error?.response?.data?.error || 'Failed to create message';
+        error?.response?.data?.detail ||
+        error?.response?.data?.error ||
+        'Failed to create message';
       toast.error(errorMessage, {
         style: errorToastStyle,
       });
@@ -148,10 +152,207 @@ export const useDeleteMessage = () => {
     mutationFn: deleteMessage,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages'] });
+      queryClient.invalidateQueries({ queryKey: ['communication-stats'] });
       toast.success('Message deleted successfully.', {
         style: successToastStyle,
       });
     },
+  });
+};
+
+const duplicateMessage = async (id: string | number) => {
+  const { data } = await apiClient.post(`/church/messages/${id}/duplicate`);
+  return data;
+};
+
+export const useDuplicateMessage = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: duplicateMessage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages'] });
+      queryClient.invalidateQueries({ queryKey: ['communication-stats'] });
+      toast.success('Message duplicated as draft.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
+const updateMessage = async ({
+  id,
+  payload,
+}: {
+  id: string | number;
+  payload: Record<string, any>;
+}) => {
+  const { data } = await apiClient.put(`/church/messages/${id}`, payload);
+  return data;
+};
+
+export const useUpdateMessage = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateMessage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages'] });
+      queryClient.invalidateQueries({ queryKey: ['communication-stats'] });
+      toast.success('Message updated successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
+// Message Templates Hooks
+export interface MessageTemplateItem {
+  id: string;
+  _id: string;
+  name: string;
+  type: 'SMS' | 'Email';
+  category: string;
+  content: string;
+  usageCount: number;
+  lastUsed: string;
+  createdAt?: string;
+}
+
+const fetchMessageTemplates = async (
+  search = '',
+  type = '',
+  category = ''
+): Promise<{
+  status: string;
+  templates: MessageTemplateItem[];
+  data: { templates: MessageTemplateItem[]; total: number };
+}> => {
+  const params = new URLSearchParams({
+    ...(search && { search }),
+    ...(type && { type }),
+    ...(category && { category }),
+  });
+  const { data } = await apiClient.get(`/church/messages/templates?${params}`);
+  return data;
+};
+
+export const useFetchMessageTemplates = (
+  search = '',
+  type = '',
+  category = ''
+) => {
+  return useQuery({
+    queryKey: ['message-templates', search, type, category],
+    queryFn: () => fetchMessageTemplates(search, type, category),
+  });
+};
+
+const createMessageTemplate = async (payload: {
+  name: string;
+  type: string;
+  category: string;
+  content: string;
+}) => {
+  const { data } = await apiClient.post('/church/messages/templates', payload);
+  return data;
+};
+
+export const useCreateMessageTemplate = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createMessageTemplate,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['message-templates'] });
+      queryClient.invalidateQueries({ queryKey: ['communication-stats'] });
+      toast.success('Message template created successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
+const updateMessageTemplate = async ({
+  id,
+  payload,
+}: {
+  id: string | number;
+  payload: {
+    name?: string;
+    type?: string;
+    category?: string;
+    content?: string;
+  };
+}) => {
+  const { data } = await apiClient.put(
+    `/church/messages/templates/${id}`,
+    payload
+  );
+  return data;
+};
+
+export const useUpdateMessageTemplate = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateMessageTemplate,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['message-templates'] });
+      toast.success('Message template updated successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
+const deleteMessageTemplate = async (id: string | number) => {
+  const { data } = await apiClient.delete(`/church/messages/templates/${id}`);
+  return data;
+};
+
+export const useDeleteMessageTemplate = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteMessageTemplate,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['message-templates'] });
+      queryClient.invalidateQueries({ queryKey: ['communication-stats'] });
+      toast.success('Message template deleted successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};
+
+// Communication Stats Hook
+export interface CommunicationStatsData {
+  totalMessages: number;
+  sentToday: number;
+  activeAnnouncements: number;
+  totalAnnouncements: number;
+  totalRecipients: number;
+  smsDeliveryRate: number;
+  emailDeliveryRate: number;
+  smsCount: number;
+  emailCount: number;
+  messagesThisWeek: number;
+  messagesLastWeek: number;
+  thisWeekPercent: number;
+  lastWeekPercent: number;
+  totalTemplates: number;
+  totalViews: number;
+}
+
+const fetchCommunicationStats = async (): Promise<{
+  status: string;
+  stats: CommunicationStatsData;
+  data: CommunicationStatsData;
+}> => {
+  const { data } = await apiClient.get('/church/communications/stats');
+  return data;
+};
+
+export const useFetchCommunicationStats = () => {
+  return useQuery({
+    queryKey: ['communication-stats'],
+    queryFn: fetchCommunicationStats,
   });
 };
 

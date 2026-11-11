@@ -40,18 +40,26 @@ export const useRegisterDepartment = () => {
 
 const fetchDepartments = async (
   page = 1,
-  search = ''
+  search = '',
+  status = 'all'
 ): Promise<DepartmentListResponse> => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    search,
+  });
+  if (status && status !== 'all') {
+    params.append('status', status);
+  }
   const { data } = await apiClient.get(
-    `/church/departments?page=${page}&search=${search}`
+    `/church/departments?${params.toString()}`
   );
   return data;
 };
 
-export const useFetchDepartments = (page = 1, search = '') => {
+export const useFetchDepartments = (page = 1, search = '', status = 'all') => {
   return useQuery({
-    queryKey: ['departments', page, search],
-    queryFn: () => fetchDepartments(page, search),
+    queryKey: ['departments', page, search, status],
+    queryFn: () => fetchDepartments(page, search, status),
   });
 };
 
@@ -157,9 +165,11 @@ export const useAddDepartmentMember = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: addDepartmentMember,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       // Invalidate department members query
       queryClient.invalidateQueries({ queryKey: ['department-members'] });
+      queryClient.invalidateQueries({ queryKey: ['department', variables.departmentId] });
+      queryClient.invalidateQueries({ queryKey: ['departments'] });
       toast.success('Department member has been added successfully.', {
         style: successToastStyle,
       });
@@ -228,8 +238,10 @@ export const useAddDepartmentActivity = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: addDepartmentActivity,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['department-activities'] });
+      queryClient.invalidateQueries({ queryKey: ['department', variables.departmentId] });
+      queryClient.invalidateQueries({ queryKey: ['departments'] });
       toast.success('Department activity has been logged successfully.', {
         style: successToastStyle,
       });
@@ -300,8 +312,10 @@ export const useAddDepartmentExpense = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: addDepartmentExpense,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['department-expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['department', variables.departmentId] });
+      queryClient.invalidateQueries({ queryKey: ['departments'] });
       toast.success('Department expense has been added successfully.', {
         style: successToastStyle,
       });
@@ -366,8 +380,9 @@ export const useAddDepartmentGoal = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: addDepartmentGoal,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['department-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['department', variables.departmentId] });
       toast.success('Department goal has been added successfully.', {
         style: successToastStyle,
       });
@@ -441,8 +456,10 @@ export const useUpdateDepartmentMember = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateDepartmentMember,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['department-members'] });
+      queryClient.invalidateQueries({ queryKey: ['department', variables.departmentId] });
+      queryClient.invalidateQueries({ queryKey: ['departments'] });
       toast.success('Department member has been updated successfully.', {
         style: successToastStyle,
       });
@@ -471,8 +488,9 @@ export const useUpdateDepartmentGoal = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateDepartmentGoal,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['department-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['department', variables.departmentId] });
       toast.success('Department goal has been updated successfully.', {
         style: successToastStyle,
       });
@@ -501,8 +519,10 @@ export const useUpdateDepartmentExpense = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateDepartmentExpense,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['department-expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['department', variables.departmentId] });
+      queryClient.invalidateQueries({ queryKey: ['departments'] });
       toast.success('Department expense has been updated successfully.', {
         style: successToastStyle,
       });
@@ -531,8 +551,10 @@ export const useUpdateDepartmentActivity = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateDepartmentActivity,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['department-activities'] });
+      queryClient.invalidateQueries({ queryKey: ['department', variables.departmentId] });
+      queryClient.invalidateQueries({ queryKey: ['departments'] });
       toast.success('Department activity has been updated successfully.', {
         style: successToastStyle,
       });
@@ -558,8 +580,10 @@ export const useDeleteDepartmentActivity = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteDepartmentActivity,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['department-activities'] });
+      queryClient.invalidateQueries({ queryKey: ['department', variables.departmentId] });
+      queryClient.invalidateQueries({ queryKey: ['departments'] });
       toast.success('Department activity has been deleted successfully.', {
         style: successToastStyle,
       });
@@ -585,8 +609,9 @@ export const useDeleteDepartmentGoal = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteDepartmentGoal,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['department-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['department', variables.departmentId] });
       toast.success('Department goal has been deleted successfully.', {
         style: successToastStyle,
       });
@@ -612,8 +637,10 @@ export const useDeleteDepartmentExpense = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteDepartmentExpense,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['department-expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['department', variables.departmentId] });
+      queryClient.invalidateQueries({ queryKey: ['departments'] });
       toast.success('Department expense has been deleted successfully.', {
         style: successToastStyle,
       });
@@ -639,8 +666,10 @@ export const useDeleteDepartmentMember = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteDepartmentMember,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['department-members'] });
+      queryClient.invalidateQueries({ queryKey: ['department', variables.departmentId] });
+      queryClient.invalidateQueries({ queryKey: ['departments'] });
       toast.success('Department member has been deleted successfully.', {
         style: successToastStyle,
       });

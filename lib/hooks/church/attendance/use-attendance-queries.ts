@@ -237,3 +237,34 @@ export const useArchiveAttendance = () => {
     },
   });
 };
+
+export interface QuickCheckInPayload {
+  memberId: string;
+  serviceScheduleId?: string;
+  attendanceDate?: string;
+  status?: 'present' | 'late' | 'absent' | 'excused';
+  notes?: string;
+}
+
+const quickCheckIn = async (
+  payload: QuickCheckInPayload
+): Promise<AttendanceSingleResponse> => {
+  const { data } = await apiClient.post(
+    '/church/attendance/quick-checkin',
+    payload
+  );
+  return data;
+};
+
+export const useQuickCheckIn = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: quickCheckIn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['attendance'] });
+      toast.success('Member checked in successfully.', {
+        style: successToastStyle,
+      });
+    },
+  });
+};

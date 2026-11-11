@@ -106,11 +106,11 @@ export function AddGroupGoalForm({
       reset({
         title: capitalizeFirstLetter(goal?.title ?? ''),
         description: capitalizeFirstLetter(goal?.description ?? ''),
-        priority: goal?.priority ?? '',
+        priority: (goal?.priority ?? '').toLowerCase(),
         targetDate: goal?.targetDate
           ? new Date(goal.targetDate).toISOString().split('T')[0]
           : '',
-        category: capitalizeFirstLetter(goal?.category ?? ''),
+        category: (goal?.category ?? '').toLowerCase(),
         assignee: goal?.assignee?._id ?? undefined,
         success: capitalizeFirstLetter(goal?.success ?? ''),
       });
@@ -230,7 +230,7 @@ export function AddGroupGoalForm({
                       <DatePicker
                         format="long"
                         maxDate={getRelativeYear(5)}
-                        minDate={new Date()}
+                        minDate={getRelativeYear(-5)}
                         onChange={(date) =>
                           field.onChange(date ? date.toISOString() : '')
                         }

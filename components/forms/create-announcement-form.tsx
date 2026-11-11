@@ -67,7 +67,7 @@ export function CreateAnnouncementForm({
       targetAudience: '',
       publishDate: new Date().toISOString().split('T')[0],
       expiryDate: '',
-      status: 'draft',
+      status: 'published',
       isPinned: false,
     },
   });
@@ -245,7 +245,7 @@ export function CreateAnnouncementForm({
                         <DatePicker
                           format="long"
                           maxDate={getRelativeYear(1)}
-                          minDate={new Date()}
+                          minDate={getRelativeYear(-1)}
                           onChange={(date) =>
                             field.onChange(date ? date.toISOString() : '')
                           }

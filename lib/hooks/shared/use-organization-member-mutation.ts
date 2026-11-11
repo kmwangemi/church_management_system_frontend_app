@@ -89,8 +89,11 @@ export function useAdminUpdateMember(organizationId: string) {
       return response.data;
     },
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['member-details', variables.userId] });
-      queryClient.invalidateQueries({ queryKey: ['organization-members', { organizationId }] });
+      queryClient.invalidateQueries({ queryKey: ['member-details'] });
+      queryClient.invalidateQueries({ queryKey: ['organization-members'] });
+      queryClient.invalidateQueries({ queryKey: ['member-statistics'] });
+      queryClient.invalidateQueries({ queryKey: ['branchMembers'] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success('Member updated successfully');
     },
     onError: (error: any) => {
@@ -113,8 +116,10 @@ export function useAdminRemoveMember(organizationId: string) {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organization-members', { organizationId }] });
-      queryClient.invalidateQueries({ queryKey: ['member-statistics', organizationId] });
+      queryClient.invalidateQueries({ queryKey: ['organization-members'] });
+      queryClient.invalidateQueries({ queryKey: ['member-statistics'] });
+      queryClient.invalidateQueries({ queryKey: ['branchMembers'] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success('Member removed successfully');
     },
     onError: (error: any) => {

@@ -76,54 +76,26 @@ export default function MemberDetailsPage({
     isError: isErrorUser,
     error: errorUser,
   } = useAdminMemberDetails(id, organizationId);
-  console.log('user detail--->', JSON.stringify(user));
-  const attendanceData = [
-    { month: 'Jan', attendance: 4, services: 4 },
-    { month: 'Feb', attendance: 3, services: 4 },
-    { month: 'Mar', attendance: 4, services: 5 },
-    { month: 'Apr', attendance: 4, services: 4 },
-    { month: 'May', attendance: 3, services: 4 },
-    { month: 'Jun', attendance: 4, services: 4 },
-  ];
 
-  const givingData = [
-    { month: 'Jan', amount: 500 },
-    { month: 'Feb', amount: 450 },
-    { month: 'Mar', amount: 600 },
-    { month: 'Apr', amount: 500 },
-    { month: 'May', amount: 550 },
-    { month: 'Jun', amount: 650 },
-  ];
-
-  const involvementData = [
-    { name: 'Worship', hours: 40, color: '#8884d8' },
-    { name: "Children's Ministry", hours: 60, color: '#82ca9d' },
-    { name: 'Administration', hours: 20, color: '#ffc658' },
-  ];
-
-  const recentActivities = [
-    {
-      date: '2024-12-20',
-      activity: 'Attended Sunday Service',
-      type: 'Attendance',
-    },
-    {
-      date: '2024-12-18',
-      activity: 'Volunteered at Food Drive',
-      type: 'Service',
-    },
-    { date: '2024-12-15', activity: 'Donated KES 250 (Tithe)', type: 'Giving' },
-    {
-      date: '2024-12-12',
-      activity: "Led Children's Bible Study",
-      type: 'Ministry',
-    },
-    {
-      date: '2024-12-10',
-      activity: 'Attended Prayer Meeting',
-      type: 'Attendance',
-    },
-  ];
+  const attendanceData = user?.attendanceData || [];
+  const givingData = user?.givingData || [];
+  const involvementData = user?.involvementData || [];
+  const recentActivities = user?.recentActivities || [];
+  const servicePreferences = user?.servicePreferences || [];
+  const recognitions = user?.recognitions || [];
+  const totalGiving = Number(user?.totalGiving ?? 0);
+  const averageMonthlyGiving = Number(user?.averageMonthlyGiving ?? 0);
+  const givingConsistencyPct = Number(user?.givingConsistencyPct ?? 0);
+  const givingMonthsActive = Number(user?.givingMonthsActive ?? 0);
+  const givingGrowthPct = Number(user?.givingGrowthPct ?? 0);
+  const averageAttendance = Number(user?.averageAttendance ?? 0);
+  const servicesAttended = Number(user?.servicesAttended ?? 0);
+  const totalServices = Number(user?.totalServices ?? 0);
+  const consecutiveWeeks = Number(user?.consecutiveWeeks ?? 0);
+  const bestMonth = user?.bestMonth || 'N/A';
+  const volunteerHours = Number(
+    user?.volunteerDetails?.hoursContributed ?? 0
+  );
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -287,7 +259,7 @@ export default function MemberDetailsPage({
                 </CardHeader>
                 <CardContent>
                   <div className="font-bold text-2xl">
-                    KES 0
+                    KES {totalGiving.toLocaleString()}
                   </div>
                   <p className="text-muted-foreground text-xs">This year</p>
                 </CardContent>
@@ -301,8 +273,7 @@ export default function MemberDetailsPage({
                 </CardHeader>
                 <CardContent>
                   <div className="font-bold text-2xl">
-                    {/* {user.averageAttendance}% */}
-                    {0}%
+                    {averageAttendance}%
                   </div>
                   <p className="text-muted-foreground text-xs">Last 6 months</p>
                 </CardContent>
@@ -315,10 +286,7 @@ export default function MemberDetailsPage({
                   <Heart className="h-4 w-4 text-red-500" />
                 </CardHeader>
                 <CardContent>
-                  {/* <div className="font-bold text-2xl">
-                    {user?.volunteerDetails?.hoursContributed ?? 0}
-                  </div> */}
-                  <div className="font-bold text-2xl">{0}</div>
+                  <div className="font-bold text-2xl">{volunteerHours}</div>
                   <p className="text-muted-foreground text-xs">This year</p>
                 </CardContent>
               </Card>
@@ -657,7 +625,7 @@ export default function MemberDetailsPage({
                       <YAxis />
                       <Tooltip />
                       <Bar
-                        dataKey="attendance"
+                        dataKey="attended"
                         fill="#8884d8"
                         name="Attended"
                       />
@@ -684,24 +652,24 @@ export default function MemberDetailsPage({
                         Average Attendance
                       </span>
                       <span className="font-bold text-2xl">
-                        {/* {user?.averageAttendance}% */}
-                        {0}%
+                        {averageAttendance}%
                       </span>
                     </div>
-                    {/* <Progress className="w-full" value={user?.averageAttendance} /> */}
-                    <Progress className="w-full" value={0} />
+                    <Progress className="w-full" value={averageAttendance} />
                     <div className="grid gap-2 text-sm">
                       <div className="flex justify-between">
                         <span>Services Attended</span>
-                        <span>22/26</span>
+                        <span>
+                          {servicesAttended}/{totalServices}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Consecutive Weeks</span>
-                        <span>4</span>
+                        <span>{consecutiveWeeks}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Best Month</span>
-                        <span>March (100%)</span>
+                        <span>{bestMonth}</span>
                       </div>
                     </div>
                   </CardContent>
@@ -714,36 +682,31 @@ export default function MemberDetailsPage({
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm">Sunday Morning Service</span>
-                        <div className="flex items-center space-x-2">
-                          <Progress className="w-20" value={95} />
-                          <span className="font-medium text-sm">95%</span>
-                        </div>
+                    {servicePreferences.length > 0 ? (
+                      <div className="space-y-3">
+                        {servicePreferences.map((pref: any, idx: number) => (
+                          <div
+                            className="flex items-center justify-between"
+                            key={idx}
+                          >
+                            <span className="text-sm">{pref.name}</span>
+                            <div className="flex items-center space-x-2">
+                              <Progress
+                                className="w-20"
+                                value={pref.percentage}
+                              />
+                              <span className="font-medium text-sm">
+                                {pref.percentage}%
+                              </span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm">Bible Study</span>
-                        <div className="flex items-center space-x-2">
-                          <Progress className="w-20" value={80} />
-                          <span className="font-medium text-sm">80%</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm">Prayer Meeting</span>
-                        <div className="flex items-center space-x-2">
-                          <Progress className="w-20" value={60} />
-                          <span className="font-medium text-sm">60%</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm">Youth Service</span>
-                        <div className="flex items-center space-x-2">
-                          <Progress className="w-20" value={40} />
-                          <span className="font-medium text-sm">40%</span>
-                        </div>
-                      </div>
-                    </div>
+                    ) : (
+                      <p className="text-muted-foreground text-sm">
+                        No attendance records yet.
+                      </p>
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -781,10 +744,12 @@ export default function MemberDetailsPage({
                   </CardHeader>
                   <CardContent>
                     <div className="font-bold text-3xl">
-                      KES 0
+                      KES {totalGiving.toLocaleString()}
                     </div>
                     <p className="text-muted-foreground text-sm">
-                      +15% from last year
+                      {givingGrowthPct >= 0
+                        ? `+${givingGrowthPct}% from previous period`
+                        : `${givingGrowthPct}% from previous period`}
                     </p>
                   </CardContent>
                 </Card>
@@ -795,7 +760,7 @@ export default function MemberDetailsPage({
                   </CardHeader>
                   <CardContent>
                     <div className="font-bold text-3xl">
-                      KES 0
+                      KES {averageMonthlyGiving.toLocaleString()}
                     </div>
                     <p className="text-muted-foreground text-sm">
                       Last 6 months
@@ -808,8 +773,12 @@ export default function MemberDetailsPage({
                     <CardDescription>Regular contributor</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="font-bold text-3xl">100%</div>
-                    <p className="text-muted-foreground text-sm">6/6 months</p>
+                    <div className="font-bold text-3xl">
+                      {givingConsistencyPct}%
+                    </div>
+                    <p className="text-muted-foreground text-sm">
+                      {givingMonthsActive}/6 months
+                    </p>
                   </CardContent>
                 </Card>
               </div>
@@ -824,27 +793,38 @@ export default function MemberDetailsPage({
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <ResponsiveContainer height={300} width="100%">
-                      <PieChart>
-                        <Pie
-                          cx="50%"
-                          cy="50%"
-                          data={involvementData}
-                          dataKey="hours"
-                          fill="#8884d8"
-                          label={({ name, percent }) =>
-                            `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
-                          }
-                          labelLine={false}
-                          outerRadius={80}
-                        >
-                          {involvementData.map((entry, index) => (
-                            <Cell fill={entry.color} key={`cell-${index}`} />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                      </PieChart>
-                    </ResponsiveContainer>
+                    {involvementData.length > 0 ? (
+                      <ResponsiveContainer height={300} width="100%">
+                        <PieChart>
+                          <Pie
+                            cx="50%"
+                            cy="50%"
+                            data={involvementData}
+                            dataKey="hours"
+                            fill="#8884d8"
+                            label={({ name, percent }) =>
+                              `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
+                            }
+                            labelLine={false}
+                            outerRadius={80}
+                          >
+                            {involvementData.map(
+                              (entry: any, index: number) => (
+                                <Cell
+                                  fill={entry.color || '#3b82f6'}
+                                  key={`cell-${index}`}
+                                />
+                              )
+                            )}
+                          </Pie>
+                          <Tooltip />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="flex h-[300px] items-center justify-center text-muted-foreground text-sm">
+                        No ministry hours or department assignments recorded yet.
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
                 <Card>
@@ -855,44 +835,31 @@ export default function MemberDetailsPage({
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="flex items-center space-x-3">
-                      <Award className="h-5 w-5 text-yellow-500" />
-                      <div>
-                        <h4 className="font-medium">Volunteer of the Month</h4>
-                        <p className="text-muted-foreground text-sm">
-                          March 2024
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <Star className="h-5 w-5 text-blue-500" />
-                      <div>
-                        <h4 className="font-medium">
-                          Children's Ministry Leader
-                        </h4>
-                        <p className="text-muted-foreground text-sm">
-                          Since January 2023
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <Gift className="h-5 w-5 text-green-500" />
-                      <div>
-                        <h4 className="font-medium">Faithful Giver</h4>
-                        <p className="text-muted-foreground text-sm">
-                          12 consecutive months
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <Users className="h-5 w-5 text-purple-500" />
-                      <div>
-                        <h4 className="font-medium">Small Group Coordinator</h4>
-                        <p className="text-muted-foreground text-sm">
-                          Young Adults Group
-                        </p>
-                      </div>
-                    </div>
+                    {recognitions.length > 0 ? (
+                      recognitions.map((rec: any, idx: number) => (
+                        <div className="flex items-center space-x-3" key={idx}>
+                          {rec.category === 'award' ? (
+                            <Award className="h-5 w-5 text-yellow-500" />
+                          ) : rec.category === 'department' ? (
+                            <Star className="h-5 w-5 text-blue-500" />
+                          ) : rec.category === 'group' ? (
+                            <Users className="h-5 w-5 text-purple-500" />
+                          ) : (
+                            <Gift className="h-5 w-5 text-green-500" />
+                          )}
+                          <div>
+                            <h4 className="font-medium">{rec.title}</h4>
+                            <p className="text-muted-foreground text-sm">
+                              {rec.subtitle}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-muted-foreground text-sm">
+                        No leadership recognitions recorded yet.
+                      </p>
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -907,23 +874,29 @@ export default function MemberDetailsPage({
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {recentActivities.map((activity, index) => (
-                      <div
-                        className="flex items-center space-x-4 rounded-lg border p-4"
-                        key={index}
-                      >
-                        <div className="flex-shrink-0">
-                          {getActivityIcon(activity.type)}
+                    {recentActivities.length > 0 ? (
+                      recentActivities.map((activity: any, index: number) => (
+                        <div
+                          className="flex items-center space-x-4 rounded-lg border p-4"
+                          key={index}
+                        >
+                          <div className="flex-shrink-0">
+                            {getActivityIcon(activity.type)}
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-medium">{activity.activity}</h4>
+                            <p className="text-muted-foreground text-sm">
+                              {activity.date}
+                            </p>
+                          </div>
+                          <Badge variant="outline">{activity.type}</Badge>
                         </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium">{activity.activity}</h4>
-                          <p className="text-muted-foreground text-sm">
-                            {activity.date}
-                          </p>
-                        </div>
-                        <Badge variant="outline">{activity.type}</Badge>
-                      </div>
-                    ))}
+                      ))
+                    ) : (
+                      <p className="text-muted-foreground text-sm">
+                        No recent activities recorded yet.
+                      </p>
+                    )}
                   </div>
                 </CardContent>
               </Card>

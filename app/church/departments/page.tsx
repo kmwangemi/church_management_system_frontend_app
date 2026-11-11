@@ -7,8 +7,8 @@ import {
   Eye,
   Plus,
   Trash2,
-  // TrendingDown,
-  // TrendingUp,
+  TrendingDown,
+  TrendingUp,
   Users,
 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
@@ -27,7 +27,6 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-// import { Badge } from '@/components/ui/badge';
 import RenderApiError from '@/components/api-error';
 import { DeleteDepartmentDialog } from '@/components/dialogs/delete-department-dialog';
 import { AddDepartmentForm } from '@/components/forms/add-department-form';
@@ -73,67 +72,8 @@ import {
 } from '@/lib/utils';
 import Link from 'next/link';
 
-const departmentBudgets = [
-  { name: 'Worship', budget: 15_000, spent: 12_000 },
-  { name: 'Children', budget: 8000, spent: 6500 },
-  { name: 'Youth', budget: 12_000, spent: 9800 },
-  { name: 'Outreach', budget: 20_000, spent: 18_500 },
-  { name: 'Education', budget: 5000, spent: 3200 },
-  { name: 'Prayer', budget: 3000, spent: 2100 },
-];
-
-const activityData = [
-  {
-    month: 'Jan',
-    worship: 10,
-    children: 6,
-    youth: 12,
-    outreach: 4,
-    education: 8,
-    prayer: 3,
-  },
-  {
-    month: 'Feb',
-    worship: 11,
-    children: 7,
-    youth: 13,
-    outreach: 5,
-    education: 9,
-    prayer: 4,
-  },
-  {
-    month: 'Mar',
-    worship: 12,
-    children: 8,
-    youth: 15,
-    outreach: 6,
-    education: 10,
-    prayer: 4,
-  },
-  {
-    month: 'Apr',
-    worship: 12,
-    children: 8,
-    youth: 15,
-    outreach: 6,
-    education: 10,
-    prayer: 4,
-  },
-];
-
-const memberDistribution = [
-  { name: 'Worship & Music', value: 25, color: '#3b82f6' },
-  { name: 'Outreach & Missions', value: 22, color: '#10b981' },
-  { name: 'Prayer Ministry', value: 20, color: '#f59e0b' },
-  { name: "Children's Ministry", value: 18, color: '#ef4444' },
-  { name: 'Youth Ministry', value: 15, color: '#8b5cf6' },
-  { name: 'Adult Education', value: 12, color: '#06b6d4' },
-];
-
 export default function DepartmentsPage() {
-  // const router = useRouter();
   const searchParams = useSearchParams();
-  // const pathname = usePathname();
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [deletingDepartment, setDeletingDepartment] =
@@ -142,7 +82,6 @@ export default function DepartmentsPage() {
   const searchQuery = searchParams.get('query') || '';
   const {
     register,
-    // reset: resetSearchInput,
     handleSubmit,
   } = useForm({
     defaultValues: {
@@ -154,7 +93,7 @@ export default function DepartmentsPage() {
     isLoading: isLoadingDepartments,
     isError: isErrorDepartments,
     error: errorDepartments,
-  } = useFetchDepartments(page, searchQuery);
+  } = useFetchDepartments(page, searchQuery, selectedStatus);
   const {
     mutateAsync: deleteDepartmentMutation,
     isPending: isPendingDeleteDepartment,
@@ -169,27 +108,22 @@ export default function DepartmentsPage() {
     setDeletingDepartment(department);
   };
 
-  // const handleResetQueries = () => {
-  //   resetSearchInput();
-  //   router.push(pathname);
-  // };
-  // const handleOpenDepartmentDialog = () => {
-  //   setIsDialogOpen(true);
-  //   handleResetQueries();
-  // };
-  // const totalMembers = departments.reduce((sum, dept) => sum + dept.members, 0);
-  const totalMembers = 0;
-  // const totalBudget = departments.reduce((sum, dept) => sum + dept.budget, 0);
-  const totalBudget = 0;
-  // const totalActivities = departments.reduce(
-  //   (sum, dept) => sum + dept.activities,
-  //   0,
-  // );
-  const totalActivities = 0;
-  // const averageGrowth =
-  //   departments.reduce((sum, dept) => sum + dept.growth, 0) /
-  //   departments.length;
-  // const averageGrowth = 0;
+  const deptList = departments?.departments || [];
+  const analytics = departments?.analytics;
+  const totalDepartments =
+    analytics?.totalDepartments ?? departments?.pagination?.total ?? deptList.length;
+  const totalMembers =
+    analytics?.totalMembers ??
+    deptList.reduce((sum, dept) => sum + (dept._count?.members || 0), 0);
+  const totalBudget =
+    analytics?.totalBudget ??
+    deptList.reduce((sum, dept) => sum + (dept.totalBudget || 0), 0);
+  const totalActivities =
+    analytics?.monthlyActivities ??
+    deptList.reduce((sum, dept) => sum + (dept._count?.monthlyActivities ?? dept._count?.activities ?? 0), 0);
+  const activityData = analytics?.activityData || [];
+  const memberDistribution = analytics?.memberDistribution || [];
+  const departmentBudgets = analytics?.departmentBudgets || [];
 
   return (
     <div className="space-y-6">
@@ -230,7 +164,7 @@ export default function DepartmentsPage() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">
-              {departments?.departments.length}
+              {totalDepartments}
             </div>
             <p className="text-muted-foreground text-xs">Active ministries</p>
           </CardContent>
@@ -409,32 +343,34 @@ export default function DepartmentsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {departments?.departments.map((dept) => (
-                    <div
-                      className="flex items-center justify-between"
-                      key={dept._id}
-                    >
-                      <div className="flex items-center space-x-3">
-                        {/* <dept.icon className='h-5 w-5 text-muted-foreground' /> */}
-                        <span className="font-medium">
-                          {dept?.departmentName}
-                        </span>
-                      </div>
+                  {deptList.map((dept) => {
+                    const growth = dept?.growth ?? 0;
+                    return (
                       <div
-                      // className={`flex items-center ${
-                      //   dept?.growth >= 0 ? 'text-green-600' : 'text-red-600'
-                      // }`}
+                        className="flex items-center justify-between"
+                        key={dept._id}
                       >
-                        {/* {dept?.growth >= 0 ? (
-                          <TrendingUp className="mr-1 h-4 w-4" />
-                        ) : (
-                          <TrendingDown className="mr-1 h-4 w-4" />
-                        )}
-                        {dept?.growth > 0 ? '+' : ''}
-                        {dept?.growth}% */}
+                        <div className="flex items-center space-x-3">
+                          <span className="font-medium">
+                            {dept?.departmentName}
+                          </span>
+                        </div>
+                        <div
+                          className={`flex items-center ${
+                            growth >= 0 ? 'text-green-600' : 'text-red-600'
+                          }`}
+                        >
+                          {growth >= 0 ? (
+                            <TrendingUp className="mr-1 h-4 w-4" />
+                          ) : (
+                            <TrendingDown className="mr-1 h-4 w-4" />
+                          )}
+                          {growth > 0 ? '+' : ''}
+                          {growth}%
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>

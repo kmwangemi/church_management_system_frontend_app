@@ -32,6 +32,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import {
   useCreateMessage,
+  useFetchMessageTemplates,
   useFetchRecipientGroups,
 } from '@/lib/hooks/church/message/use-message-queries';
 import { getRelativeYear, MESSAGE_SEND_TIME_OPTIONS } from '@/lib/utils';
@@ -48,13 +49,18 @@ import {
   Smartphone,
   Users,
 } from 'lucide-react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 interface SendMessageFormProps {
   onCloseDialog: () => void;
+  initialValues?: Partial<AddMessagePayload>;
 }
 
-export function SendMessageForm({ onCloseDialog }: SendMessageFormProps) {
+export function SendMessageForm({
+  onCloseDialog,
+  initialValues,
+}: SendMessageFormProps) {
   const {
     mutateAsync: createMessageMutation,
     isPending,
@@ -63,21 +69,33 @@ export function SendMessageForm({ onCloseDialog }: SendMessageFormProps) {
   } = useCreateMessage();
   const { data: recipientGroupsData, isLoading: isLoadingGroups } =
     useFetchRecipientGroups();
+  const { data: templatesData } = useFetchMessageTemplates();
+  const messageTemplates =
+    templatesData?.data?.templates || templatesData?.templates || [];
   const messageRecipientGroups = recipientGroupsData?.data?.groups || [];
   const form = useForm<AddMessagePayload>({
     resolver: zodResolver(AddMessageSchema),
     defaultValues: {
-      type: '',
-      title: '',
-      content: '',
-      recipients: [],
-      scheduleType: 'now',
-      scheduleDate: '',
-      scheduleTime: '',
-      template: '',
+      type: initialValues?.type || 'sms',
+      title: initialValues?.title || '',
+      content: initialValues?.content || '',
+      recipients: initialValues?.recipients || [],
+      scheduleType: initialValues?.scheduleType || 'now',
+      scheduleDate: initialValues?.scheduleDate || '',
+      scheduleTime: initialValues?.scheduleTime || '',
+      template: initialValues?.template || '',
     },
   });
-  const { reset } = form;
+  const { reset, setValue } = form;
+
+  useEffect(() => {
+    if (initialValues) {
+      if (initialValues.type) setValue('type', initialValues.type);
+      if (initialValues.title) setValue('title', initialValues.title);
+      if (initialValues.content) setValue('content', initialValues.content);
+      if (initialValues.template) setValue('template', initialValues.template);
+    }
+  }, [initialValues, setValue]);
   // Handle form submission
   const onSubmit = async (payload: AddMessagePayload) => {
     await createMessageMutation(payload);
@@ -126,8 +144,8 @@ export function SendMessageForm({ onCloseDialog }: SendMessageFormProps) {
                     <FormItem>
                       <FormLabel>Message Type</FormLabel>
                       <Select
-                        defaultValue={field.value}
                         onValueChange={field.onChange}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -160,8 +178,28 @@ export function SendMessageForm({ onCloseDialog }: SendMessageFormProps) {
                     <FormItem>
                       <FormLabel>Use Template (Optional)</FormLabel>
                       <Select
-                        defaultValue={field.value}
-                        onValueChange={field.onChange}
+                        onValueChange={(val) => {
+                          field.onChange(val);
+                          const selected = messageTemplates.find(
+                            (t) => t.id === val || t._id === val
+                          );
+                          if (selected) {
+                            setValue(
+                              'type',
+                              selected.type.toLowerCase() === 'email'
+                                ? 'email'
+                                : 'sms',
+                              { shouldValidate: true }
+                            );
+                            setValue('title', selected.name, {
+                              shouldValidate: true,
+                            });
+                            setValue('content', selected.content, {
+                              shouldValidate: true,
+                            });
+                          }
+                        }}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -169,18 +207,14 @@ export function SendMessageForm({ onCloseDialog }: SendMessageFormProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="service-reminder">
-                            Service Reminder
-                          </SelectItem>
-                          <SelectItem value="event-registration">
-                            Event Registration
-                          </SelectItem>
-                          <SelectItem value="welcome-member">
-                            Welcome New Member
-                          </SelectItem>
-                          <SelectItem value="announcement">
-                            General Announcement
-                          </SelectItem>
+                          {messageTemplates.map((tpl) => (
+                            <SelectItem
+                              key={tpl.id || tpl._id}
+                              value={tpl.id || tpl._id}
+                            >
+                              {tpl.name} ({tpl.type})
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -344,7 +378,7 @@ export function SendMessageForm({ onCloseDialog }: SendMessageFormProps) {
                           <DatePicker
                             format="long"
                             maxDate={getRelativeYear(1)}
-                            minDate={new Date()}
+                            minDate={getRelativeYear(-1)}
                             onChange={(date) =>
                               field.onChange(date ? date.toISOString() : '')
                             }

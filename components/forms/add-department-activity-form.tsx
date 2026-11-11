@@ -112,7 +112,7 @@ export function AddDepartmentActivityForm({
   useEffect(() => {
     if (mode === 'edit' && activity) {
       reset({
-        type: activity?.type ?? '',
+        type: (activity?.type ?? '').toLowerCase(),
         title: capitalizeFirstLetter(activity?.title ?? ''),
         // Convert to YYYY-MM-DD format for input type="date"
         date: activity?.date
@@ -221,7 +221,7 @@ export function AddDepartmentActivityForm({
                       <DatePicker
                         format="long"
                         maxDate={getRelativeYear(1)}
-                        minDate={new Date()}
+                        minDate={getRelativeYear(-5)}
                         onChange={(date) =>
                           field.onChange(date ? date.toISOString() : '')
                         }

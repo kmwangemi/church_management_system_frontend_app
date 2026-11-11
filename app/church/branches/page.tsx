@@ -91,84 +91,8 @@ import {
   YAxis,
 } from 'recharts';
 
-// Mock data
-// const branches = [
-//   {
-//     id: 1,
-//     name: 'Main Campus',
-//     location: '123 Church Street, Downtown',
-//     pastor: 'Rev. John Smith',
-//     phone: '(555) 123-4567',
-//     email: 'main@church.org',
-//     members: 450,
-//     capacity: 600,
-//     services: 3,
-//     established: '1985',
-//     status: 'Active',
-//     growth: 12,
-//   },
-//   {
-//     id: 2,
-//     name: 'North Branch',
-//     location: '456 Oak Avenue, Northside',
-//     pastor: 'Rev. Sarah Johnson',
-//     phone: '(555) 234-5678',
-//     email: 'north@church.org',
-//     members: 280,
-//     capacity: 350,
-//     services: 2,
-//     established: '2010',
-//     status: 'Active',
-//     growth: 8,
-//   },
-//   {
-//     id: 3,
-//     name: 'South Campus',
-//     location: '789 Pine Road, Southside',
-//     pastor: 'Rev. Michael Brown',
-//     phone: '(555) 345-6789',
-//     email: 'south@church.org',
-//     members: 320,
-//     capacity: 400,
-//     services: 2,
-//     established: '2015',
-//     status: 'Active',
-//     growth: -3,
-//   },
-//   {
-//     id: 4,
-//     name: 'East Branch',
-//     location: '321 Elm Street, Eastside',
-//     pastor: 'Rev. Lisa Davis',
-//     phone: '(555) 456-7890',
-//     email: 'east@church.org',
-//     members: 180,
-//     capacity: 250,
-//     services: 2,
-//     established: '2020',
-//     status: 'Growing',
-//     growth: 25,
-//   },
-// ];
-
-const attendanceData = [
-  { month: 'Jan', main: 420, north: 260, south: 300, east: 150 },
-  { month: 'Feb', main: 435, north: 270, south: 310, east: 160 },
-  { month: 'Mar', main: 445, north: 275, south: 315, east: 170 },
-  { month: 'Apr', main: 450, north: 280, south: 320, east: 180 },
-];
-
-const branchDistribution = [
-  { name: 'Main Campus', value: 450, color: '#3b82f6' },
-  { name: 'North Branch', value: 280, color: '#10b981' },
-  { name: 'South Campus', value: 320, color: '#f59e0b' },
-  { name: 'East Branch', value: 180, color: '#ef4444' },
-];
-
 export default function BranchesPage() {
-  // const router = useRouter();
   const searchParams = useSearchParams();
-  // const pathname = usePathname();
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [deletingBranch, setDeletingBranch] = useState<Branch | null>(null);
@@ -177,25 +101,13 @@ export default function BranchesPage() {
   const { organizationId } = useActiveOrganization();
   const {
     register,
-    // reset: resetSearchInput,
     handleSubmit,
   } = useForm({
     defaultValues: {
       query: searchQuery,
     },
   });
-  // const {
-  //   data: branches,
-  //   isLoading: isLoadingBranches,
-  //   isError: isErrorBranches,
-  //   error: errorBranches,
-  // } = useFetchBranches(page, searchQuery);
-  // const {
-  //   mutateAsync: deleteBranchMutation,
-  //   isPending: isPendingDeleteBranch,
-  //   isError: isErrorDeleteBranch,
-  //   error: errorDeleteBranch,
-  // } = useDeleteBranchById();
+
   const {
     data: branches,
     isLoading: isLoadingBranches,
@@ -204,14 +116,10 @@ export default function BranchesPage() {
   } = useAdminTeams({
     organizationId,
     page,
-    pageSize: 10,
+    pageSize: 50,
     search: searchQuery,
-    // isActive: '',
-    // sortBy: 'name',
-    // sortOrder: 'desc',
+    status: selectedStatus !== 'all' ? selectedStatus : undefined,
   });
-
-  console.log('Branches:', JSON.stringify(branches));
 
   const {
     mutateAsync: deleteBranchMutation,
@@ -228,34 +136,47 @@ export default function BranchesPage() {
     setDeletingBranch(branch);
   };
 
-  // const handleResetQueries = () => {
-  //   resetSearchInput();
-  //   router.push(pathname);
-  // };
-
   const branchList = useMemo(() => {
     return (branches?.teams || branches?.branches || []) as any[];
   }, [branches]);
 
+  const analytics = branches?.analytics;
+
+  const totalBranchesCount = analytics?.totalBranches ?? branchList.length;
+  const activeBranchesCount =
+    analytics?.activeBranches ?? branchList.filter((b: any) => b?.isActive).length;
+
   const totalMembers = useMemo(() => {
+    if (typeof analytics?.totalMembers === 'number') {
+      return analytics.totalMembers;
+    }
     return branchList.reduce((sum: number, b: any) => {
       const count = Number(b?._count?.teammembers ?? b?.memberCount ?? b?.members ?? 0);
       return sum + (Number.isNaN(count) ? 0 : count);
     }, 0);
-  }, [branchList]);
+  }, [analytics, branchList]);
 
   const totalCapacity = useMemo(() => {
+    if (typeof analytics?.totalCapacity === 'number') {
+      return analytics.totalCapacity;
+    }
     return branchList.reduce((sum: number, b: any) => {
       const cap = Number(b?.capacity ?? 0);
       return sum + (Number.isNaN(cap) ? 0 : cap);
     }, 0);
-  }, [branchList]);
+  }, [analytics, branchList]);
 
   const capacityUtilization =
-    totalCapacity > 0 ? Math.min(100, Math.round((totalMembers / totalCapacity) * 100)) : 0;
-  const seatsAvailable = Math.max(0, totalCapacity - totalMembers);
+    analytics?.capacityUtilization ??
+    (totalCapacity > 0 ? Math.min(100, Math.round((totalMembers / totalCapacity) * 100)) : 0);
+  const seatsAvailable =
+    analytics?.seatsAvailable ?? Math.max(0, totalCapacity - totalMembers);
+  const averageGrowth = analytics?.averageGrowth ?? 0;
 
   const dynamicBranchDistribution = useMemo(() => {
+    if (Array.isArray(analytics?.branchDistribution) && analytics.branchDistribution.length > 0) {
+      return analytics.branchDistribution;
+    }
     const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
     if (branchList.length === 0) return [];
     return branchList.map((b: any, index: number) => ({
@@ -263,7 +184,26 @@ export default function BranchesPage() {
       value: Number(b?._count?.teammembers ?? b?.memberCount ?? b?.members ?? 0),
       color: colors[index % colors.length],
     }));
-  }, [branchList]);
+  }, [analytics, branchList]);
+
+  const attendanceSeries = useMemo(() => {
+    if (Array.isArray(analytics?.attendanceSeries) && analytics.attendanceSeries.length > 0) {
+      return analytics.attendanceSeries;
+    }
+    return [{ key: 'total', label: 'Total Attendance', color: '#3b82f6' }];
+  }, [analytics]);
+
+  const attendanceChartConfig = useMemo(() => {
+    const cfg: Record<string, { label: string; color: string }> = {};
+    for (const s of attendanceSeries) {
+      cfg[s.key] = { label: s.label, color: s.color };
+    }
+    return cfg;
+  }, [attendanceSeries]);
+
+  const attendanceData = useMemo(() => {
+    return Array.isArray(analytics?.attendanceData) ? analytics.attendanceData : [];
+  }, [analytics]);
 
   return (
     <div className="space-y-6">
@@ -302,9 +242,11 @@ export default function BranchesPage() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">
-              {branchList.length}
+              {totalBranchesCount}
             </div>
-            <p className="text-muted-foreground text-xs">Active locations</p>
+            <p className="text-muted-foreground text-xs">
+              {activeBranchesCount} active location{activeBranchesCount === 1 ? '' : 's'}
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -342,8 +284,12 @@ export default function BranchesPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="font-bold text-2xl text-green-600">
-              +12%
+            <div
+              className={`font-bold text-2xl ${
+                averageGrowth >= 0 ? 'text-green-600' : 'text-red-600'
+              }`}
+            >
+              {averageGrowth >= 0 ? `+${averageGrowth}%` : `${averageGrowth}%`}
             </div>
             <p className="text-muted-foreground text-xs">This quarter</p>
           </CardContent>
@@ -367,12 +313,7 @@ export default function BranchesPage() {
               <CardContent>
                 <ChartContainer
                   className="h-[300px]"
-                  config={{
-                    main: { label: 'Main Campus', color: '#3b82f6' },
-                    north: { label: 'North Branch', color: '#10b981' },
-                    south: { label: 'South Campus', color: '#f59e0b' },
-                    east: { label: 'East Branch', color: '#ef4444' },
-                  }}
+                  config={attendanceChartConfig}
                 >
                   <ResponsiveContainer height="100%" width="100%">
                     <LineChart data={attendanceData}>
@@ -380,30 +321,16 @@ export default function BranchesPage() {
                       <XAxis dataKey="month" />
                       <YAxis />
                       <ChartTooltip content={<ChartTooltipContent />} />
-                      <Line
-                        dataKey="main"
-                        stroke="var(--color-main)"
-                        strokeWidth={2}
-                        type="monotone"
-                      />
-                      <Line
-                        dataKey="north"
-                        stroke="var(--color-north)"
-                        strokeWidth={2}
-                        type="monotone"
-                      />
-                      <Line
-                        dataKey="south"
-                        stroke="var(--color-south)"
-                        strokeWidth={2}
-                        type="monotone"
-                      />
-                      <Line
-                        dataKey="east"
-                        stroke="var(--color-east)"
-                        strokeWidth={2}
-                        type="monotone"
-                      />
+                      {attendanceSeries.map((series: any) => (
+                        <Line
+                          dataKey={series.key}
+                          key={series.key}
+                          name={series.label}
+                          stroke={series.color}
+                          strokeWidth={2}
+                          type="monotone"
+                        />
+                      ))}
                     </LineChart>
                   </ResponsiveContainer>
                 </ChartContainer>
@@ -426,14 +353,14 @@ export default function BranchesPage() {
                       <Pie
                         cx="50%"
                         cy="50%"
-                        data={dynamicBranchDistribution.length > 0 ? dynamicBranchDistribution : branchDistribution}
+                        data={dynamicBranchDistribution}
                         dataKey="value"
                         label={({ name, percent }) =>
                           `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
                         }
                         outerRadius={80}
                       >
-                        {(dynamicBranchDistribution.length > 0 ? dynamicBranchDistribution : branchDistribution).map((entry, index) => (
+                        {dynamicBranchDistribution.map((entry: any, index: number) => (
                           <Cell fill={entry.color} key={`cell-${index}`} />
                         ))}
                       </Pie>
@@ -450,22 +377,24 @@ export default function BranchesPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Branch Performance</CardTitle>
-                <CardDescription>Growth rate comparison</CardDescription>
+                <CardDescription>Member & growth comparison</CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartContainer
                   className="h-[300px]"
                   config={{
-                    growth: { label: 'Growth Rate', color: '#3b82f6' },
+                    memberCount: { label: 'Members', color: '#3b82f6' },
+                    growth: { label: 'Growth %', color: '#10b981' },
                   }}
                 >
                   <ResponsiveContainer height="100%" width="100%">
-                    <BarChart data={branches?.teams}>
+                    <BarChart data={branchList}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
                       <YAxis />
                       <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="growth" fill="var(--color-growth)" />
+                      <Bar dataKey="memberCount" fill="var(--color-memberCount)" name="Members" />
+                      <Bar dataKey="growth" fill="var(--color-growth)" name="Growth %" />
                     </BarChart>
                   </ResponsiveContainer>
                 </ChartContainer>
@@ -477,28 +406,40 @@ export default function BranchesPage() {
                 <CardDescription>Current vs maximum capacity</CardDescription>
               </CardHeader>
               <CardContent>
-                {/* <div className="space-y-4">
-                  {branches?.branches?.map((branch) => (
-                    <div className="space-y-2" key={branch._id}>
-                      <div className="flex justify-between text-sm">
-                        <span>{branch?.branchName}</span>
-                        <span>
-                          {branch?.members}/{branch?.capacity}
-                        </span>
+                <div className="space-y-4">
+                  {branchList.map((branch: any) => {
+                    const mCount = Number(
+                      branch?._count?.teammembers ?? branch?.memberCount ?? branch?.members ?? 0
+                    );
+                    const cap = Number(branch?.capacity || 500);
+                    const pct = cap > 0 ? Math.min(100, Math.round((mCount / cap) * 100)) : 0;
+                    return (
+                      <div className="space-y-2" key={branch.id || branch._id}>
+                        <div className="flex justify-between text-sm">
+                          <span className="font-medium">
+                            {branch?.branchName || branch?.name}
+                          </span>
+                          <span className="text-muted-foreground">
+                            {mCount.toLocaleString()} / {cap.toLocaleString()} ({pct}%)
+                          </span>
+                        </div>
+                        <div className="h-2 w-full rounded-full bg-secondary">
+                          <div
+                            className="h-2 rounded-full bg-blue-600 transition-all"
+                            style={{
+                              width: `${pct}%`,
+                            }}
+                          />
+                        </div>
                       </div>
-                      <div className="h-2 w-full rounded-full bg-secondary">
-                        <div
-                          className="h-2 rounded-full bg-blue-600"
-                          style={{
-                            width: `${
-                              (branch?.members / branch?.capacity) * 100
-                            }%`,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div> */}
+                    );
+                  })}
+                  {branchList.length === 0 && (
+                    <p className="py-8 text-center text-muted-foreground text-sm">
+                      No branch capacity data available.
+                    </p>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>
