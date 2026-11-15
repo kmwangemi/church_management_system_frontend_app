@@ -195,27 +195,30 @@ export default function BranchDetailsPage({
       const branchAddr = getBranchAddress(branch);
       const formData: any = {
         branchName: capitalizeFirstLetter(branch?.name || ''),
-        email: branch?.email || undefined, // undefined instead of empty string
+        email: branch?.email || '',
         phoneNumber: branch?.phoneNumber || (branch as any)?.phone || '',
         address: {
           street: branchAddr?.street
             ? capitalizeFirstLetter(branchAddr.street)
-            : undefined,
+            : '',
           city: branchAddr?.city
             ? capitalizeFirstLetter(branchAddr.city)
-            : undefined,
+            : '',
           state: branchAddr?.state
             ? capitalizeFirstLetter(branchAddr.state)
             : undefined,
           zipCode: branchAddr?.zipCode || branchAddr?.zip_code || undefined,
-          country: branchAddr?.country || undefined,
+          country: branchAddr?.country || 'Kenya',
         },
-        establishedDate: branch?.establishedDate || undefined,
-        capacity: branch?.capacity || undefined,
-        members: branch?.memberCount || undefined,
-        pastorId: (branch as any)?.pastorId?._id || undefined,
-        description: branch?.description || undefined,
-        isActive: branch?.isActive,
+        establishedDate: branch?.establishedDate || '',
+        capacity: String(branch?.capacity ?? 500),
+        members: String(branch?.memberCount ?? 0),
+        pastorId:
+          (branch as any)?.pastorId?._id ||
+          (branch as any)?.pastorId?.id ||
+          undefined,
+        description: branch?.description || '',
+        isActive: Boolean(branch?.isActive),
       };
       form.reset(formData);
     }
@@ -484,8 +487,7 @@ export default function BranchDetailsPage({
               </CardHeader>
               <CardContent>
                 <div className="font-bold text-2xl">
-                  {/* {branch.serviceSchedule.length} */}
-                  {0}
+                  {schedules?.schedules?.length ?? 0}
                 </div>
                 <p className="text-muted-foreground text-xs">
                   Regular services
@@ -501,13 +503,14 @@ export default function BranchDetailsPage({
               </CardHeader>
               <CardContent>
                 <div className="font-bold text-2xl">
-                  {/* {Math.round(
-                branch.serviceSchedule.reduce(
-                  (sum, service) => sum + service.attendance,
-                  0
-                ) / branch.serviceSchedule.length
-              )} */}
-                  0
+                  {schedules?.schedules && schedules.schedules.length > 0
+                    ? Math.round(
+                        schedules.schedules.reduce(
+                          (sum, service) => sum + Number(service.attendance || 0),
+                          0
+                        ) / schedules.schedules.length
+                      ).toLocaleString()
+                    : 0}
                 </div>
                 <p className="text-muted-foreground text-xs">Per service</p>
               </CardContent>
@@ -1154,14 +1157,13 @@ export default function BranchDetailsPage({
                           <div className="flex items-center justify-between">
                             <span className="font-medium text-sm">Members</span>
                             <span className="text-muted-foreground text-sm">
-                              {/* {dept?.members || 0} */}
-                              {0}
+                              {(dept as any)?._count?.members ?? (dept as any)?.memberCount ?? 0}
                             </span>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="font-medium text-sm">Budget</span>
                             <span className="text-muted-foreground text-sm">
-                              {dept?.totalBudget || 0}
+                              KES {Number(dept?.totalBudget || 0).toLocaleString()}
                             </span>
                           </div>
                         </div>

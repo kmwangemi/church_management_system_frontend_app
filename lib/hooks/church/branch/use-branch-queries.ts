@@ -165,6 +165,7 @@ export const useUpdateBranchById = (branchId: string) => {
     mutationFn: updateBranchById,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['branches'] });
+      queryClient.invalidateQueries({ queryKey: ['teams'] });
       queryClient.invalidateQueries({ queryKey: ['branch', branchId] });
       toast.success('Branch has been updated successfully.', {
         style: successToastStyle,

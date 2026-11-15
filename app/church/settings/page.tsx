@@ -98,6 +98,20 @@ export default function SettingsPage() {
   const logoInputRef = useRef<HTMLInputElement | null>(null);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const tabParam = new URLSearchParams(window.location.search).get('tab');
+      if (
+        tabParam &&
+        ['general', 'users', 'notifications', 'integrations', 'security', 'backup'].includes(
+          tabParam
+        )
+      ) {
+        setSelectedTab(tabParam);
+      }
+    }
+  }, []);
+
   // Queries & Mutations
   const { data: remoteSettings, isLoading: isLoadingSettings } =
     useFetchChurchSettings();

@@ -210,7 +210,7 @@ export function AddEventForm({ onCloseDialog }: AddEventFormProps) {
                         <DatePicker
                           format="long"
                           maxDate={getRelativeYear(2)}
-                          minDate={new Date()}
+                          minDate={getRelativeYear(-1)}
                           onChange={(date) =>
                             field.onChange(date ? date.toISOString() : '')
                           }
@@ -236,7 +236,7 @@ export function AddEventForm({ onCloseDialog }: AddEventFormProps) {
                         <DatePicker
                           format="long"
                           maxDate={getRelativeYear(2)}
-                          minDate={new Date()}
+                          minDate={getRelativeYear(-1)}
                           onChange={(date) =>
                             field.onChange(date ? date.toISOString() : '')
                           }
@@ -427,7 +427,7 @@ export function AddEventForm({ onCloseDialog }: AddEventFormProps) {
                         <DatePicker
                           format="long"
                           maxDate={getRelativeYear(2)}
-                          minDate={new Date()}
+                          minDate={getRelativeYear(-1)}
                           onChange={(date) =>
                             field.onChange(date ? date.toISOString() : '')
                           }

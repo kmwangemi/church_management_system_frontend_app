@@ -217,6 +217,7 @@ export default function GroupDetailsPage({
     groupId: id,
     page: 1,
     limit: PAGE_LIMIT,
+    search: searchTerm,
   });
   // Get full attendance summary with all details
   const {
@@ -607,15 +608,30 @@ export default function GroupDetailsPage({
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                {/* <div className="font-bold text-2xl">{groupDetails.members}</div> */}
-                <div className="font-bold text-2xl">{0}</div>
+                <div className="font-bold text-2xl">
+                  {groupDetails?.memberCount ??
+                    groupDetails?.members ??
+                    groupDetails?.stats?.totalMembers ??
+                    groupMembers?.data?.summary?.total ??
+                    0}
+                </div>
                 <div className="flex items-center space-x-2 text-muted-foreground text-xs">
                   <span>of {groupDetails?.capacity ?? 0} capacity</span>
                 </div>
                 <Progress
                   className="mt-2 h-2"
-                  // value={(groupDetails.members / groupDetails?.capacity) * 100}
-                  value={0}
+                  value={Math.min(
+                    100,
+                    Math.round(
+                      (((groupDetails?.memberCount ??
+                        groupDetails?.members ??
+                        groupDetails?.stats?.totalMembers ??
+                        groupMembers?.data?.summary?.total ??
+                        0) /
+                        Math.max(1, groupDetails?.capacity || 1)) *
+                        100)
+                    )
+                  )}
                 />
               </CardContent>
             </Card>
@@ -628,10 +644,16 @@ export default function GroupDetailsPage({
               </CardHeader>
               <CardContent>
                 <div className="font-bold text-2xl">
-                  {/* {groupDetails.averageAttendance}% */}
-                  0%
+                  {AttendanceSummary?.data?.overallStats?.averageAttendanceRate ??
+                    groupDetails?.stats?.averageAttendance ??
+                    0}
+                  %
                 </div>
-                <p className="text-muted-foreground text-xs">Last 6 meetings</p>
+                <p className="text-muted-foreground text-xs">
+                  {AttendanceSummary?.data?.overallStats?.totalActivities
+                    ? `${AttendanceSummary.data.overallStats.totalActivities} recorded activities`
+                    : 'Across logged activities'}
+                </p>
               </CardContent>
             </Card>
             <Card>
@@ -656,13 +678,21 @@ export default function GroupDetailsPage({
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="font-medium text-sm">
                   {capitalizeFirstLetterOfEachWord(
-                    groupDetails?.category || 'Not Provided'
+                    (groupDetails?.category || 'Not Provided').replace(/-/g, ' ')
                   )}
                 </CardTitle>
                 <Clock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="font-bold text-2xl">2</div>
+                <div className="font-bold text-2xl">
+                  {groupDetails?.establishedDate
+                    ? Math.max(
+                        0,
+                        new Date().getFullYear() -
+                          new Date(groupDetails.establishedDate).getFullYear()
+                      )
+                    : 0}
+                </div>
                 <p className="text-muted-foreground text-xs">Years active</p>
               </CardContent>
             </Card>
@@ -746,29 +776,39 @@ export default function GroupDetailsPage({
                 <CardTitle>Group Leader</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {groupMembers?.data?.members?.map((member) => (
-                  <React.Fragment key={member._id}>
-                    {member?.role === 'leader' && (
+                {(() => {
+                  const leaderFromMembers = groupMembers?.data?.members?.find(
+                    (member) => member?.role === 'leader'
+                  );
+                  if (leaderFromMembers) {
+                    return (
                       <>
                         <div className="flex items-center space-x-4">
                           <Avatar className="h-16 w-16">
                             <AvatarImage
-                              alt={member?.userId?.firstName || 'Member'}
-                              src={member?.userId?.profilePictureUrl || ''}
+                              alt={
+                                leaderFromMembers?.userId?.firstName || 'Member'
+                              }
+                              src={
+                                leaderFromMembers?.userId?.profilePictureUrl ||
+                                ''
+                              }
                             />
                             <AvatarFallback>{`${getFirstLetter(
-                              member?.userId?.firstName || ''
-                            )}${getFirstLetter(member?.userId?.lastName || '')}`}</AvatarFallback>
+                              leaderFromMembers?.userId?.firstName || ''
+                            )}${getFirstLetter(leaderFromMembers?.userId?.lastName || '')}`}</AvatarFallback>
                           </Avatar>
                           <div>
                             <h3 className="font-semibold">{`${capitalizeFirstLetter(
-                              member?.userId?.firstName || ''
-                            )} ${capitalizeFirstLetter(member?.userId?.lastName || '')}`}</h3>
+                              leaderFromMembers?.userId?.firstName || ''
+                            )} ${capitalizeFirstLetter(leaderFromMembers?.userId?.lastName || '')}`}</h3>
                             <p className="text-muted-foreground text-sm">
-                              {capitalizeFirstLetter(member?.role)}
+                              {capitalizeFirstLetter(leaderFromMembers?.role)}
                             </p>
                             <Badge variant="outline">
-                              {member?.isActive ? 'Active' : 'Inactive'}
+                              {leaderFromMembers?.isActive
+                                ? 'Active'
+                                : 'Inactive'}
                             </Badge>
                           </div>
                         </div>
@@ -776,13 +816,15 @@ export default function GroupDetailsPage({
                           <div className="flex items-center space-x-2">
                             <Phone className="h-4 w-4 text-muted-foreground" />
                             <span className="text-sm">
-                              {member?.userId?.phoneNumber ?? 'Not Provided'}
+                              {leaderFromMembers?.userId?.phoneNumber ||
+                                'Not Provided'}
                             </span>
                           </div>
                           <div className="flex items-center space-x-2">
                             <Mail className="h-4 w-4 text-muted-foreground" />
                             <span className="text-sm">
-                              {member?.userId?.email ?? 'Not Provided'}
+                              {leaderFromMembers?.userId?.email ||
+                                'Not Provided'}
                             </span>
                           </div>
                           <div className="flex items-center space-x-2">
@@ -790,16 +832,57 @@ export default function GroupDetailsPage({
                             <span className="text-sm">
                               Leading since{' '}
                               {new Date(
-                                member?.joinedDate
+                                leaderFromMembers?.joinedDate
                               ).toLocaleDateString()}
                             </span>
                           </div>
                         </div>
                       </>
-                    )}
-                  </React.Fragment>
-                ))}
-                {groupMembers?.data?.members?.length === 0 && 'Not Assigned'}
+                    );
+                  }
+                  if (groupDetails?.leaderId?.firstName) {
+                    return (
+                      <>
+                        <div className="flex items-center space-x-4">
+                          <Avatar className="h-16 w-16">
+                            <AvatarFallback>{`${getFirstLetter(
+                              groupDetails.leaderId.firstName || ''
+                            )}${getFirstLetter(groupDetails.leaderId.lastName || '')}`}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <h3 className="font-semibold">{`${capitalizeFirstLetter(
+                              groupDetails.leaderId.firstName || ''
+                            )} ${capitalizeFirstLetter(groupDetails.leaderId.lastName || '')}`}</h3>
+                            <p className="text-muted-foreground text-sm">
+                              Leader
+                            </p>
+                            <Badge variant="outline">Active</Badge>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <Phone className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm">
+                              {groupDetails.leaderId.phoneNumber ||
+                                'Not Provided'}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Mail className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm">
+                              {groupDetails.leaderId.email || 'Not Provided'}
+                            </span>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  }
+                  return (
+                    <div className="text-muted-foreground text-sm">
+                      Not Assigned
+                    </div>
+                  );
+                })()}
               </CardContent>
             </Card>
           </div>

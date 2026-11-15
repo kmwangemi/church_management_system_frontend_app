@@ -41,7 +41,17 @@ export function DeleteUserDialog({
   onDelete,
 }: DeleteUserDialogProps) {
   if (!user) return null;
-  const handleDelete = async () => await onDelete(user._id);
+  const u = user as any;
+  const targetId = user._id || u.id || u?.user?.id || '';
+  const firstName = user?.firstName || u?.user?.firstName || 'User';
+  const lastName = user?.lastName || u?.user?.lastName || '';
+  const email = user?.email || u?.user?.email || 'N/A';
+  const phoneNumber = user?.phoneNumber || u?.user?.phoneNumber || '';
+  const roleLabel = Array.isArray(user.role)
+    ? user.role.join(', ')
+    : user.role || 'MEMBER';
+  const statusStr = String(user?.status || 'ACTIVE').toLowerCase();
+  const handleDelete = async () => await onDelete(targetId);
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-[500px]">
@@ -60,37 +70,35 @@ export function DeleteUserDialog({
           <div className="flex items-center space-x-4 rounded-lg bg-accent p-4">
             <Avatar className="h-16 w-16">
               <AvatarImage
-                alt={user?.firstName || 'User'}
-                src={user?.profilePictureUrl ?? ''}
+                alt={firstName}
+                src={user?.profilePictureUrl ?? u?.image ?? ''}
               />
               <AvatarFallback className="bg-blue-100 text-blue-600 text-lg">
-                {`${getFirstLetter(
-                  user?.firstName || ''
-                )}${getFirstLetter(user?.lastName || '')}`}
+                {`${getFirstLetter(firstName)}${getFirstLetter(lastName)}`}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
               <h3 className="font-semibold text-lg">{`${capitalizeFirstLetter(
-                user?.firstName || 'N/A'
-              )} ${capitalizeFirstLetter(user?.lastName || 'N/A')}`}</h3>
+                firstName
+              )} ${capitalizeFirstLetter(lastName)}`}</h3>
               <div className="mt-1 flex items-center space-x-4 text-muted-foreground text-sm">
                 <div className="flex items-center space-x-1">
                   <Mail className="h-3 w-3" />
-                  <span>{user.email}</span>
+                  <span>{email}</span>
                 </div>
-                {user?.phoneNumber && (
+                {phoneNumber && (
                   <div className="flex items-center space-x-1">
                     <Phone className="h-3 w-3" />
-                    <span>{user.phoneNumber}</span>
+                    <span>{phoneNumber}</span>
                   </div>
                 )}
               </div>
               <div className="mt-2 flex items-center space-x-2">
-                <Badge variant="secondary">{user.role}</Badge>
+                <Badge variant="secondary">{roleLabel}</Badge>
                 <Badge
-                  variant={user?.status === 'active' ? 'default' : 'secondary'}
+                  variant={statusStr === 'active' ? 'default' : 'secondary'}
                 >
-                  {capitalizeFirstLetter(user.status)}
+                  {capitalizeFirstLetter(statusStr)}
                 </Badge>
               </div>
             </div>

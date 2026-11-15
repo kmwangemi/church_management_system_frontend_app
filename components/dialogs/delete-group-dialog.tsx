@@ -82,21 +82,24 @@ export function DeleteGroupDialog({
               </div>
             </div>
           </div>
-          {/* Group Statistics
+          {/* Group Statistics */}
           <div className="grid grid-cols-2 gap-4 text-center">
             <div className="rounded-lg bg-blue-50 p-3">
               <div className="font-bold text-blue-600 text-lg">
-                {group?.members || 0}
+                {group?.memberCount ??
+                  group?.members ??
+                  group?.stats?.totalMembers ??
+                  0}
               </div>
               <div className="text-blue-600 text-sm">Members</div>
             </div>
             <div className="rounded-lg bg-green-50 p-3">
               <div className="font-bold text-green-600 text-lg">
-                {group?.activities?.length || 0}
+                {group?.stats?.totalActivities ?? 0}
               </div>
               <div className="text-green-600 text-sm">Activities</div>
             </div>
-          </div> */}
+          </div>
           {/* Warning Section */}
           <Alert className="border-red-200 bg-red-50">
             <AlertTriangle className="h-4 w-4 text-red-600" />

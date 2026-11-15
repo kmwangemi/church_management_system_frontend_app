@@ -108,12 +108,13 @@ export interface DepartmentAddResponse {
 
 export interface Department {
   _id: string;
+  id?: string;
   churchId: string;
   branchId: {
     _id: string;
     branchName: string;
-    address: Address;
-  };
+    address?: Address;
+  } | null;
   leaderId: {
     _id: string;
     firstName: string;
@@ -127,23 +128,58 @@ export interface Department {
   meetingTime: string[];
   description: string;
   location?: string;
-  category: DepartmentCategory;
+  category: DepartmentCategory | string;
   establishedDate: string;
   isActive: boolean;
   isDeleted: boolean;
   totalBudget: number;
+  spentBudget?: number;
+  growth?: number;
+  memberCount?: number;
   _count?: {
     members?: number;
     activities?: number;
+    monthlyActivities?: number;
     expenses?: number;
   };
   createdAt: string;
   updatedAt: string;
-  __v: number;
+  __v?: number;
+}
+
+export interface DepartmentAnalytics {
+  totalDepartments: number;
+  activeDepartments: number;
+  totalMembers: number;
+  totalBudget: number;
+  totalSpent: number;
+  monthlyActivities: number;
+  totalActivities: number;
+  activityData: {
+    month: string;
+    worship: number;
+    children: number;
+    youth: number;
+    outreach: number;
+    education: number;
+    prayer: number;
+    total: number;
+  }[];
+  memberDistribution: {
+    name: string;
+    value: number;
+    color: string;
+  }[];
+  departmentBudgets: {
+    name: string;
+    budget: number;
+    spent: number;
+  }[];
 }
 
 export interface DepartmentListResponse {
   departments: Department[];
+  analytics?: DepartmentAnalytics;
   pagination: Pagination;
 }
 

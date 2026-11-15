@@ -217,7 +217,7 @@ export function AddGroupActivityForm({
                       <DatePicker
                         format="long"
                         maxDate={getRelativeYear(1)}
-                        minDate={new Date()}
+                        minDate={getRelativeYear(-5)}
                         onChange={(date) =>
                           field.onChange(date ? date.toISOString() : '')
                         }

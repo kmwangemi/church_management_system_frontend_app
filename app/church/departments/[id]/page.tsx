@@ -139,6 +139,7 @@ export default function DepartmentDetailsPage({
   const [selectedMember, setSelectedMember] = useState<DepartmentMember | null>(
     null
   );
+  const [searchTerm, setSearchTerm] = useState('');
   const {
     data: department,
     isLoading: isLoadingDepartment,
@@ -167,6 +168,7 @@ export default function DepartmentDetailsPage({
     departmentId: id,
     page: 1,
     limit: PAGE_LIMIT,
+    search: searchTerm,
   });
   const {
     data: departmentActivities,
@@ -214,15 +216,32 @@ export default function DepartmentDetailsPage({
   });
   useEffect(() => {
     if (department) {
+      const validCategories = new Set([
+        'ministry',
+        'music',
+        'worship',
+        'youth',
+        'children',
+        'outreach',
+        'media',
+        'hospitality',
+        'administration',
+        'finance',
+        'pastoral',
+        'missions',
+        'other',
+      ]);
+      const rawCat = String(department?.category || 'ministry').toLowerCase();
+      const normalizedCat = validCategories.has(rawCat) ? rawCat : 'ministry';
       const formData: any = {
         departmentName: capitalizeFirstLetter(department?.departmentName || ''),
-        category: department?.category || '',
+        category: normalizedCat,
         leaderId:
           typeof department?.leaderId === 'object' && department?.leaderId
             ? department.leaderId._id || ''
             : (department?.leaderId as unknown as string) || '',
         location: capitalizeFirstLetter(department?.location || ''),
-        totalBudget: department?.totalBudget || '',
+        totalBudget: String(department?.totalBudget ?? '0'),
         meetingDay: department?.meetingDay || [],
         meetingTime: department?.meetingTime || [],
         // Convert to YYYY-MM-DD format for input type="date"
@@ -482,7 +501,22 @@ export default function DepartmentDetailsPage({
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="font-bold text-2xl">4</div>
+                  <div className="font-bold text-2xl">
+                    {(() => {
+                      const dateStr =
+                        department?.establishedDate || department?.createdAt;
+                      if (!dateStr) return 0;
+                      const estTime = new Date(dateStr).getTime();
+                      if (Number.isNaN(estTime)) return 0;
+                      return Math.max(
+                        0,
+                        Math.floor(
+                          (Date.now() - estTime) /
+                            (1000 * 60 * 60 * 24 * 365.25)
+                        )
+                      );
+                    })()}
+                  </div>
                   <p className="text-muted-foreground text-xs">
                     Since{' '}
                     {department?.establishedDate
@@ -929,55 +963,55 @@ export default function DepartmentDetailsPage({
                 )}
               </TabsContent>
               <TabsContent className="space-y-6" value="members">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <CardTitle>Department Members</CardTitle>
                     <CardDescription>
                       Manage department membership and roles
                     </CardDescription>
                   </div>
-                  {/* <div className="relative">
+                  <div className="flex items-center gap-3">
                     <Input
                       className="w-64"
                       onChange={(e) => setSearchTerm(e.target.value)}
                       placeholder="Search members..."
                       value={searchTerm}
                     />
-                  </div> */}
-                  <Dialog
-                    onOpenChange={(open) => {
-                      if (open) setIsDepartmentMemberDialogOpen(open);
-                      else handleCloseDepartmentMemberDialog();
-                    }}
-                    open={isDepartmentMemberDialogOpen}
-                  >
-                    <DialogTrigger asChild>
-                      <Button onClick={handleAddDepartmentMember}>
-                        <UserPlus className="mr-2 h-4 w-4" />
-                        Add Member
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto">
-                      <DialogHeader>
-                        <DialogTitle>
-                          {dialogMode === 'edit'
-                            ? 'Edit Department Member'
-                            : 'Add Department Member'}
-                        </DialogTitle>
-                        <DialogDescription>
-                          {dialogMode === 'edit'
-                            ? 'Update a member of this department'
-                            : 'Add a member to this department'}
-                        </DialogDescription>
-                      </DialogHeader>
-                      <AddDepartmentMemberForm
-                        departmentId={id}
-                        member={selectedMember ?? undefined}
-                        mode={dialogMode}
-                        onCloseDialog={handleCloseDepartmentMemberDialog}
-                      />
-                    </DialogContent>
-                  </Dialog>
+                    <Dialog
+                      onOpenChange={(open) => {
+                        if (open) setIsDepartmentMemberDialogOpen(open);
+                        else handleCloseDepartmentMemberDialog();
+                      }}
+                      open={isDepartmentMemberDialogOpen}
+                    >
+                      <DialogTrigger asChild>
+                        <Button onClick={handleAddDepartmentMember}>
+                          <UserPlus className="mr-2 h-4 w-4" />
+                          Add Member
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle>
+                            {dialogMode === 'edit'
+                              ? 'Edit Department Member'
+                              : 'Add Department Member'}
+                          </DialogTitle>
+                          <DialogDescription>
+                            {dialogMode === 'edit'
+                              ? 'Update a member of this department'
+                              : 'Add a member to this department'}
+                          </DialogDescription>
+                        </DialogHeader>
+                        <AddDepartmentMemberForm
+                          departmentId={id}
+                          member={selectedMember ?? undefined}
+                          mode={dialogMode}
+                          onCloseDialog={handleCloseDepartmentMemberDialog}
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                 </div>
                 {isErrorDepartmentMembers && (
                   <RenderApiError error={errorDepartmentMembers} />

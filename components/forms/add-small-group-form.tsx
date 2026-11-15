@@ -22,8 +22,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { useRegisterGroup } from '@/lib/hooks/church/group/use-group-queries';
 import {
+  useRegisterGroup,
+  useUpdateGroupById,
+} from '@/lib/hooks/church/group/use-group-queries';
+import type { Group } from '@/lib/types/small-group';
+import {
+  capitalizeFirstLetter,
   getRelativeYear,
   GROUP_CATEGORY_OPTIONS,
   MEETING_DAY_OPTIONS,
@@ -33,21 +38,37 @@ import {
   addGroupSchema,
 } from '@/lib/validations/small-group';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { DatePicker } from '../date-picker';
 import { UserCombobox } from '../user-combobox';
 
 interface AddSmallGroupFormProps {
   onCloseDialog: () => void;
+  group?: Group;
+  mode?: 'add' | 'edit';
 }
 
-export function AddSmallGroupForm({ onCloseDialog }: AddSmallGroupFormProps) {
+export function AddSmallGroupForm({
+  onCloseDialog,
+  group,
+  mode = 'add',
+}: AddSmallGroupFormProps) {
   const {
     mutateAsync: registerGroupMutation,
-    isPending,
-    isError,
-    error,
+    isPending: isPendingAdd,
+    isError: isErrorAdd,
+    error: errorAdd,
   } = useRegisterGroup();
+  const {
+    mutateAsync: updateGroupMutation,
+    isPending: isPendingUpdate,
+    isError: isErrorUpdate,
+    error: errorUpdate,
+  } = useUpdateGroupById(group?._id || '');
+  const isPending = isPendingAdd || isPendingUpdate;
+  const isError = isErrorAdd || isErrorUpdate;
+  const error = errorAdd || errorUpdate;
   const groupForm = useForm<AddGroupPayload>({
     resolver: zodResolver(addGroupSchema),
     defaultValues: {
@@ -63,8 +84,34 @@ export function AddSmallGroupForm({ onCloseDialog }: AddSmallGroupFormProps) {
     },
   });
   const { reset } = groupForm;
+  useEffect(() => {
+    if (mode === 'edit' && group) {
+      reset({
+        groupName: capitalizeFirstLetter(group.groupName || ''),
+        leaderId: group.leaderId?._id || '',
+        establishedDate: group.establishedDate
+          ? new Date(group.establishedDate).toISOString().split('T')[0]
+          : '',
+        meetingDay: (group.meetingDay || []).map((d) => d.toLowerCase()),
+        meetingTime: group.meetingTime || [],
+        description: group.description || '',
+        category: (group.category || '')
+          .toLowerCase()
+          .replace(/\s+/g, '-'),
+        capacity: String(group.capacity || ''),
+        location: capitalizeFirstLetter(group.location || ''),
+      });
+    }
+  }, [mode, group, reset]);
   const onSubmitGroupForm = async (payload: AddGroupPayload) => {
-    await registerGroupMutation(payload);
+    if (mode === 'edit' && group) {
+      await updateGroupMutation({
+        groupId: group._id,
+        payload,
+      });
+    } else {
+      await registerGroupMutation(payload);
+    }
     onCloseDialog();
     reset();
   };
@@ -270,7 +317,13 @@ export function AddSmallGroupForm({ onCloseDialog }: AddSmallGroupFormProps) {
               disabled={!groupForm.formState.isValid || isPending}
               type="submit"
             >
-              {isPending ? 'Adding group...' : 'Add Group'}
+              {isPending
+                ? mode === 'edit'
+                  ? 'Updating group...'
+                  : 'Adding group...'
+                : mode === 'edit'
+                  ? 'Update Group'
+                  : 'Add Group'}
             </Button>
           </div>
         </form>

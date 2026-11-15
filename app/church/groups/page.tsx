@@ -56,11 +56,16 @@ import {
   useFetchGroups,
 } from '@/lib/hooks/church/group/use-group-queries';
 import type { Group } from '@/lib/types/small-group';
-import { capitalizeFirstLetter } from '@/lib/utils';
+import {
+  capitalizeFirstLetter,
+  GROUP_CATEGORY_OPTIONS,
+  MEETING_DAY_OPTIONS,
+} from '@/lib/utils';
 import {
   Activity,
   Calendar,
   Clock,
+  Edit,
   Eye,
   MapPin,
   MoreHorizontal,
@@ -86,76 +91,11 @@ import {
   YAxis,
 } from 'recharts';
 
-const activityData = [
-  {
-    month: 'Jan',
-    worship: 10,
-    children: 6,
-    youth: 12,
-    outreach: 4,
-    education: 8,
-    prayer: 3,
-  },
-  {
-    month: 'Feb',
-    worship: 11,
-    children: 7,
-    youth: 13,
-    outreach: 5,
-    education: 9,
-    prayer: 4,
-  },
-  {
-    month: 'Mar',
-    worship: 12,
-    children: 8,
-    youth: 15,
-    outreach: 6,
-    education: 10,
-    prayer: 4,
-  },
-  {
-    month: 'Apr',
-    worship: 12,
-    children: 8,
-    youth: 15,
-    outreach: 6,
-    education: 10,
-    prayer: 4,
-  },
-];
-
-const attendanceData = [
-  { month: 'Jan', total: 95, active: 88, new: 7 },
-  { month: 'Feb', total: 102, active: 92, new: 10 },
-  { month: 'Mar', total: 108, active: 96, new: 12 },
-  { month: 'Apr', total: 115, active: 99, new: 16 },
-];
-
-const categoryDistribution = [
-  { name: 'Bible Study', value: 12, color: '#3b82f6' },
-  { name: 'Youth', value: 22, color: '#10b981' },
-  { name: 'Prayer', value: 18, color: '#f59e0b' },
-  { name: 'Fellowship', value: 15, color: '#ef4444' },
-  { name: 'Worship', value: 14, color: '#8b5cf6' },
-  { name: 'Children', value: 10, color: '#06b6d4' },
-  { name: 'Marriage', value: 8, color: '#84cc16' },
-];
-
-const meetingDays = [
-  { day: 'Sunday', groups: 1 },
-  { day: 'Monday', groups: 0 },
-  { day: 'Tuesday', groups: 1 },
-  { day: 'Wednesday', groups: 1 },
-  { day: 'Thursday', groups: 2 },
-  { day: 'Friday', groups: 1 },
-  { day: 'Saturday', groups: 1 },
-];
-
 export default function SmallGroupsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedDay, setSelectedDay] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingGroup, setEditingGroup] = useState<Group | null>(null);
   const [deletingGroup, setDeletingGroup] = useState<Group | null>(null);
   const searchParams = useSearchParams();
   const page = Number.parseInt(searchParams.get('page') || '1', 10);
@@ -174,7 +114,7 @@ export default function SmallGroupsPage() {
     isLoading: isLoadingSmallGroups,
     isError: isErrorSmallGroups,
     error: errorSmallGroups,
-  } = useFetchGroups(page, searchQuery);
+  } = useFetchGroups(page, searchQuery, selectedCategory, selectedDay);
   const {
     mutateAsync: deleteGroupMutation,
     isPending: isPendingDeleteGroup,
@@ -188,14 +128,49 @@ export default function SmallGroupsPage() {
   const openDeleteDialog = (group: Group) => {
     setDeletingGroup(group);
   };
-  const totalMembers = 0;
-  const totalCapacity = smallGroups?.groups.reduce(
-    (sum, group) => sum + group?.capacity,
-    0
-  );
-  const activeGroups = smallGroups?.groups.filter(
-    (group) => group?.isActive
-  ).length;
+  const openEditDialog = (group: Group) => {
+    setEditingGroup(group);
+  };
+
+  const analytics = smallGroups?.analytics;
+  const totalGroups =
+    analytics?.totalGroups ?? smallGroups?.groups?.length ?? 0;
+  const activeGroups =
+    analytics?.activeGroups ??
+    smallGroups?.groups?.filter((group) => group?.isActive).length ??
+    0;
+  const totalMembers =
+    analytics?.totalMembers ??
+    smallGroups?.groups?.reduce(
+      (sum, group) =>
+        sum +
+        (group?.memberCount ?? group?.members ?? group?.stats?.totalMembers ?? 0),
+      0
+    ) ??
+    0;
+  const totalCapacity =
+    analytics?.totalCapacity ??
+    smallGroups?.groups?.reduce(
+      (sum, group) => sum + (group?.capacity || 0),
+      0
+    ) ??
+    0;
+  const capacityUtilization =
+    analytics?.capacityUtilization ??
+    (totalCapacity > 0 ? Math.round((totalMembers / totalCapacity) * 100) : 0);
+  const availableSpots =
+    analytics?.availableSpots ?? Math.max(0, totalCapacity - totalMembers);
+  const monthlyActivities =
+    analytics?.monthlyActivities ??
+    smallGroups?.groups?.reduce(
+      (sum, group) => sum + (group?.stats?.totalActivities ?? 0),
+      0
+    ) ??
+    0;
+  const attendanceData = analytics?.attendanceData ?? [];
+  const categoryDistribution = analytics?.categoryDistribution ?? [];
+  const meetingDays = analytics?.meetingDays ?? [];
+  const activityData = analytics?.activityData ?? [];
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -232,9 +207,7 @@ export default function SmallGroupsPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="font-bold text-2xl">
-              {smallGroups?.groups.length}
-            </div>
+            <div className="font-bold text-2xl">{totalGroups}</div>
             <p className="text-muted-foreground text-xs">
               {activeGroups} active groups
             </p>
@@ -258,11 +231,9 @@ export default function SmallGroupsPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="font-bold text-2xl">
-              {Math.round((totalMembers / (totalCapacity || 1)) * 100)}%
-            </div>
+            <div className="font-bold text-2xl">{capacityUtilization}%</div>
             <p className="text-muted-foreground text-xs">
-              {(totalCapacity || 0) - totalMembers} spots available
+              {availableSpots} spots available
             </p>
           </CardContent>
         </Card>
@@ -274,7 +245,7 @@ export default function SmallGroupsPage() {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="font-bold text-2xl">{0}</div>
+            <div className="font-bold text-2xl">{monthlyActivities}</div>
             <p className="text-muted-foreground text-xs">This month</p>
           </CardContent>
         </Card>
@@ -465,13 +436,11 @@ export default function SmallGroupsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="bible study">Bible Study</SelectItem>
-                <SelectItem value="fellowship">Fellowship</SelectItem>
-                <SelectItem value="prayer">Prayer</SelectItem>
-                <SelectItem value="youth">Youth</SelectItem>
-                <SelectItem value="children">Children</SelectItem>
-                <SelectItem value="marriage">Marriage</SelectItem>
-                <SelectItem value="worship">Worship</SelectItem>
+                {GROUP_CATEGORY_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Select onValueChange={setSelectedDay} value={selectedDay}>
@@ -480,13 +449,11 @@ export default function SmallGroupsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Days</SelectItem>
-                <SelectItem value="sunday">Sunday</SelectItem>
-                <SelectItem value="monday">Monday</SelectItem>
-                <SelectItem value="tuesday">Tuesday</SelectItem>
-                <SelectItem value="wednesday">Wednesday</SelectItem>
-                <SelectItem value="thursday">Thursday</SelectItem>
-                <SelectItem value="friday">Friday</SelectItem>
-                <SelectItem value="saturday">Saturday</SelectItem>
+                {MEETING_DAY_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -567,23 +534,29 @@ export default function SmallGroupsPage() {
                         </TableCell>
                         <TableCell>
                           <div className="text-sm">
-                            {/* <span className="font-medium">{group.members}</span> */}
-                            <span className="font-medium">{0}</span>
+                            <span className="font-medium">
+                              {group.memberCount ??
+                                group.members ??
+                                group.stats?.totalMembers ??
+                                0}
+                            </span>
                             <span className="text-muted-foreground">
                               /{group.capacity}
                             </span>
                           </div>
                           <div className="mt-1 h-1.5 w-full rounded-full bg-secondary">
-                            {/* <div
-                              className="h-1.5 rounded-full bg-blue-600"
-                              style={{
-                                width: `${(group.members / group.capacity) * 100}%`,
-                              }}
-                            /> */}
                             <div
                               className="h-1.5 rounded-full bg-blue-600"
                               style={{
-                                width: `${(1 / group.capacity) * 100}%`,
+                                width: `${Math.min(
+                                  100,
+                                  (((group.memberCount ??
+                                    group.members ??
+                                    group.stats?.totalMembers ??
+                                    0) /
+                                    Math.max(1, group.capacity || 1)) *
+                                    100)
+                                )}%`,
                               }}
                             />
                           </div>
@@ -612,6 +585,13 @@ export default function SmallGroupsPage() {
                                   <Eye className="mr-2 h-4 w-4" />
                                   View Group
                                 </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => openEditDialog(group)}
+                              >
+                                <Edit className="mr-2 h-4 w-4" />
+                                Edit Group
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
@@ -644,6 +624,29 @@ export default function SmallGroupsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+      {/* Edit Group Dialog */}
+      <Dialog
+        onOpenChange={(open) => {
+          if (!open) setEditingGroup(null);
+        }}
+        open={!!editingGroup}
+      >
+        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Small Group</DialogTitle>
+            <DialogDescription>
+              Update small group ministry details
+            </DialogDescription>
+          </DialogHeader>
+          {editingGroup && (
+            <AddSmallGroupForm
+              group={editingGroup}
+              mode="edit"
+              onCloseDialog={() => setEditingGroup(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
       {/* Delete Group Dialog */}
       <DeleteGroupDialog
         group={deletingGroup}

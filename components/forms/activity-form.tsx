@@ -168,7 +168,7 @@ export function ActivityForm({
                     <DatePicker
                       format="long"
                       maxDate={getRelativeYear(2)}
-                      minDate={new Date()}
+                      minDate={getRelativeYear(-5)}
                       onChange={(date) =>
                         field.onChange(date ? date.toISOString() : '')
                       }
@@ -208,6 +208,7 @@ export function ActivityForm({
                   <Select
                     defaultValue={field.value}
                     onValueChange={field.onChange}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -237,6 +238,7 @@ export function ActivityForm({
                   <Select
                     defaultValue={field.value}
                     onValueChange={field.onChange}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>

@@ -21,6 +21,7 @@ export const useRegisterAnnouncement = () => {
     mutationFn: registerAnnouncement,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['announcements'] });
+      queryClient.invalidateQueries({ queryKey: ['communication-stats'] });
       toast.success('Announcement has been created successfully.', {
         style: successToastStyle,
       });
@@ -56,6 +57,7 @@ export const useDeleteAnnouncement = () => {
     mutationFn: deleteAnnouncement,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['announcements'] });
+      queryClient.invalidateQueries({ queryKey: ['communication-stats'] });
       toast.success('Announcement deleted successfully.', {
         style: successToastStyle,
       });
@@ -68,7 +70,7 @@ const updateAnnouncement = async ({
   payload,
 }: {
   id: string | number;
-  payload: Partial<AddAnnouncementPayload>;
+  payload: Partial<AddAnnouncementPayload> & Record<string, any>;
 }) => {
   const { data } = await apiClient.put(`/church/announcements/${id}`, payload);
   return data;
@@ -80,9 +82,26 @@ export const useUpdateAnnouncement = () => {
     mutationFn: updateAnnouncement,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['announcements'] });
+      queryClient.invalidateQueries({ queryKey: ['communication-stats'] });
       toast.success('Announcement updated successfully.', {
         style: successToastStyle,
       });
+    },
+  });
+};
+
+const incrementAnnouncementView = async (id: string | number) => {
+  const { data } = await apiClient.post(`/church/announcements/${id}/view`);
+  return data;
+};
+
+export const useIncrementAnnouncementView = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: incrementAnnouncementView,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['announcements'] });
+      queryClient.invalidateQueries({ queryKey: ['communication-stats'] });
     },
   });
 };

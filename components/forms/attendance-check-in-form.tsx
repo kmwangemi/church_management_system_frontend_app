@@ -96,7 +96,10 @@ export function AttendanceCheckInForm({
     resolver: zodResolver(addAttendanceSchema),
     defaultValues: isEditMode
       ? {
-          serviceScheduleId: existingAttendance.serviceScheduleId as string,
+          serviceScheduleId:
+            typeof existingAttendance.serviceScheduleId === 'string'
+              ? existingAttendance.serviceScheduleId
+              : existingAttendance.serviceScheduleId?._id || '',
           attendanceDate: new Date(existingAttendance.attendanceDate)
             .toISOString()
             .split('T')[0],
@@ -138,6 +141,17 @@ export function AttendanceCheckInForm({
       setSelectedStatus(statusMap);
     }
   }, [isEditMode, existingAttendance]);
+
+  // Auto-select first service schedule in create mode when loaded
+  useEffect(() => {
+    if (
+      !isEditMode &&
+      !form.getValues('serviceScheduleId') &&
+      servicesData?.schedules?.length
+    ) {
+      form.setValue('serviceScheduleId', servicesData.schedules[0]._id);
+    }
+  }, [isEditMode, servicesData, form]);
   const getFullName = (member: UserResponse): string => {
     return `${capitalizeFirstLetter(member?.firstName || '')} ${capitalizeFirstLetter(member?.lastName || '')}`.trim();
   };

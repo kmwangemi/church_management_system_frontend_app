@@ -314,14 +314,31 @@ export default function EditMemberPage({
         user?.pastorDetails?.pastorId ||
         '';
 
+      const toStringIds = (arr: any): string[] =>
+        Array.isArray(arr)
+          ? arr
+              .map((item) =>
+                typeof item === 'string'
+                  ? item
+                  : item?._id || item?.id || ''
+              )
+              .filter(Boolean)
+          : [];
+
       // Only add role-specific details that actually exist
       // Member details
       formData.memberDetails = {
         memberId: customId || user?.memberDetails?.memberId || user?.member?.id || user?.id || '',
         membershipDate: user?.memberDetails?.membershipDate || undefined,
-        membershipStatus: user?.memberDetails?.membershipStatus || 'active',
-        departmentIds: user?.memberDetails?.departmentIds || [],
-        groupIds: user?.memberDetails?.groupIds || [],
+        membershipStatus: (
+          user?.memberDetails?.membershipStatus || 'ACTIVE'
+        ).toUpperCase(),
+        departmentIds: toStringIds(
+          user?.memberDetails?.departmentIds || user?.memberDetails?.departments
+        ),
+        groupIds: toStringIds(
+          user?.memberDetails?.groupIds || user?.memberDetails?.groups
+        ),
         baptismDate: user?.memberDetails?.baptismDate || undefined,
         joinedDate: user?.memberDetails?.joinedDate || undefined,
       };
@@ -362,9 +379,10 @@ export default function EditMemberPage({
       const accessLevelVal = (
         user?.adminDetails?.accessLevel || 'NATIONAL'
       ).toUpperCase();
-      const assignedBranchesVal =
+      const assignedBranchesVal = toStringIds(
         user?.adminDetails?.assignedBranches ||
-        (user?.member?.branchId ? [user.member.branchId] : []);
+          (user?.member?.branchId ? [user.member.branchId] : [])
+      );
 
       formData.adminDetails = {
         adminId: adminIdVal,
@@ -381,11 +399,17 @@ export default function EditMemberPage({
           visitorId: user?.visitorDetails?.visitorId || '',
           visitDate: user?.visitorDetails?.visitDate || undefined,
           invitedBy: user?.visitorDetails?.invitedBy || '',
-          howDidYouHear: user?.visitorDetails?.howDidYouHear || 'friend',
-          followUpStatus: user?.visitorDetails?.followUpStatus || 'pending',
+          howDidYouHear: (
+            user?.visitorDetails?.howDidYouHear || 'FRIEND'
+          ).toUpperCase(),
+          followUpStatus: (
+            user?.visitorDetails?.followUpStatus || 'PENDING'
+          ).toUpperCase(),
           followUpDate: user?.visitorDetails?.followUpDate || undefined,
           followUpNotes: user?.visitorDetails?.followUpNotes || '',
-          interestedInMembership: user?.visitorDetails?.interestedInMembership,
+          interestedInMembership: Boolean(
+            user?.visitorDetails?.interestedInMembership
+          ),
           servicesAttended: user?.visitorDetails?.servicesAttended || [],
         };
         formData.visitorUpdate = { ...formData.visitorDetails };
@@ -420,7 +444,11 @@ export default function EditMemberPage({
         ),
         startDate: user?.staffDetails?.startDate || undefined,
         salary: user?.staffDetails?.salary || 0,
-        employmentType: user?.staffDetails?.employmentType || 'full-time',
+        employmentType: (
+          user?.staffDetails?.employmentType || 'FULL_TIME'
+        )
+          .toUpperCase()
+          .replace('-', '_'),
         isActive: user?.staffDetails?.isActive ?? true,
       };
       formData.staffUpdate = {
@@ -429,10 +457,12 @@ export default function EditMemberPage({
       // volunteer details
       formData.volunteerDetails = {
         volunteerId: isVolunteer ? (user?.volunteerDetails?.volunteerId || '') : '',
-        volunteerStatus: user?.volunteerDetails?.volunteerStatus || 'active',
+        volunteerStatus: (
+          user?.volunteerDetails?.volunteerStatus || 'ACTIVE'
+        ).toUpperCase(),
         availabilitySchedule:
           user?.volunteerDetails?.availabilitySchedule || {},
-        departments: user?.volunteerDetails?.departments || [],
+        departments: toStringIds(user?.volunteerDetails?.departments),
         volunteerRoles: user?.volunteerDetails?.volunteerRoles || [],
         backgroundCheck: user?.volunteerDetails?.backgroundCheck || {},
         hoursContributed: user?.volunteerDetails?.hoursContributed || 0,

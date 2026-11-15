@@ -49,14 +49,53 @@ export interface Group {
   meetingTime: string[]; // e.g., ["02:30", "03:15"]
   location: string;
   capacity: number;
+  memberCount?: number;
+  members?: number;
   isActive: boolean;
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
   __v: number;
 }
 
+export interface GroupAnalytics {
+  totalGroups: number;
+  activeGroups: number;
+  totalMembers: number;
+  totalCapacity: number;
+  capacityUtilization: number;
+  availableSpots: number;
+  monthlyActivities: number;
+  attendanceData: {
+    month: string;
+    total: number;
+    active: number;
+    new: number;
+  }[];
+  categoryDistribution: {
+    name: string;
+    category?: string;
+    value: number;
+    color: string;
+  }[];
+  meetingDays: {
+    day: string;
+    groups: number;
+  }[];
+  activityData: {
+    month: string;
+    worship: number;
+    children: number;
+    youth: number;
+    outreach: number;
+    education: number;
+    prayer: number;
+    total?: number;
+  }[];
+}
+
 export interface GroupListResponse {
   groups: Group[];
+  analytics?: GroupAnalytics;
   pagination: Pagination;
 }
 

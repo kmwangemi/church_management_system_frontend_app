@@ -3,8 +3,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-// import type { IUser } from '@/lib/auth';
-import { capitalizeFirstLetter, capitalizeFirstLetterOfEachWord, cn } from '@/lib/utils';
+import {
+  capitalizeFirstLetter,
+  capitalizeFirstLetterOfEachWord,
+  cn,
+} from '@/lib/utils';
 import { BookOpen, Church } from 'lucide-react';
 import Link from 'next/link';
 import { ChurchNavigation } from './church-navigation';
@@ -14,6 +17,7 @@ interface SidebarProps {
   pathname: string;
   mobile?: boolean;
   setSidebarOpen?: (open: boolean) => void;
+  onOpenHelp?: () => void;
 }
 
 const getRoleColor = (role: string) => {
@@ -22,8 +26,11 @@ const getRoleColor = (role: string) => {
     case 'bishop':
       return 'bg-purple-100 text-purple-800';
     case 'admin':
+    case 'church_admin':
+    case 'owner':
       return 'bg-blue-100 text-blue-800';
     case 'finance':
+    case 'treasurer':
       return 'bg-green-100 text-green-800';
     default:
       return 'bg-muted text-foreground';
@@ -35,7 +42,19 @@ export function ChurchSidebar({
   pathname,
   mobile = false,
   setSidebarOpen,
+  onOpenHelp,
 }: SidebarProps) {
+  const displayName =
+    user?.fullName ||
+    user?.name ||
+    [user?.firstName, user?.lastName].filter(Boolean).join(' ') ||
+    'Church Admin';
+  const displayAvatar = user?.profilePictureUrl || user?.image || '';
+  const rawRole = (user?.role || user?.globalRole || 'Admin')
+    .toString()
+    .replace(/_/g, ' ');
+  const churchName = user?.churchName || '';
+
   return (
     <div
       className={cn(
@@ -44,53 +63,56 @@ export function ChurchSidebar({
       )}
     >
       <div className="flex items-center justify-between border-b p-4">
-        <div className="flex items-center space-x-2">
+        <Link className="flex items-center space-x-2" href="/church">
           <div className="rounded-lg bg-blue-600 p-1.5">
             <Church className="h-6 w-6 text-white" />
           </div>
           <span className="font-bold text-foreground text-xl">ChurchHub</span>
-        </div>
+        </Link>
       </div>
       {/* User Info */}
       {user && (
         <div className="border-b bg-accent p-4">
           <div className="flex items-center space-x-3">
             <Avatar className="h-8 w-8">
-              <AvatarImage
-                alt={user?.name || 'Admin'}
-                src={user?.image || ''}
-              />
+              <AvatarImage alt={displayName} src={displayAvatar} />
               <AvatarFallback>
-                {((user?.name || 'Admin') as string)
+                {displayName
                   .split(' ')
                   .map((n: string) => n[0]?.toUpperCase() || '')
-                  .join('')}
+                  .join('')
+                  .slice(0, 2) || 'CA'}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium text-foreground text-sm">
-                {capitalizeFirstLetterOfEachWord(user.name || '')}
+                {capitalizeFirstLetterOfEachWord(displayName)}
               </p>
               <div className="flex items-center space-x-2">
                 <Badge
-                  className={cn('text-xs', getRoleColor(user?.role || 'Admin'))}
+                  className={cn(
+                    'text-xs',
+                    getRoleColor(user?.role || user?.globalRole || 'Admin')
+                  )}
                   variant="secondary"
                 >
-                  {capitalizeFirstLetter(user?.role || 'Admin')}
+                  {capitalizeFirstLetter(rawRole.toLowerCase())}
                 </Badge>
               </div>
             </div>
           </div>
-          {'churchName' in user && (user as any).churchName && (
+          {churchName && (
             <p className="mt-2 truncate text-muted-foreground text-xs">
-              {(user as any).churchName}
+              {churchName}
             </p>
           )}
         </div>
       )}
       <nav className="flex-1 space-y-1 overflow-y-auto p-4">
         {ChurchNavigation.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            pathname === item.href ||
+            (item.href !== '/church' && pathname?.startsWith(`${item.href}/`));
           return (
             <Link
               className={cn(
@@ -137,6 +159,12 @@ export function ChurchSidebar({
           </p>
           <Button
             className="h-7 w-full bg-transparent text-xs"
+            onClick={() => {
+              if (mobile && setSidebarOpen) {
+                setSidebarOpen(false);
+              }
+              onOpenHelp?.();
+            }}
             size="sm"
             variant="outline"
           >
