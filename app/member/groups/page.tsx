@@ -209,7 +209,7 @@ export default function SmallGroupsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-bold text-3xl text-foreground">Small Groups</h1>
           <p className="mt-1 text-muted-foreground">
@@ -219,7 +219,7 @@ export default function SmallGroupsPage() {
       </div>
 
       <Tabs className="space-y-6" defaultValue="discover">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-3">
           <TabsTrigger value="discover">Discover Groups</TabsTrigger>
           <TabsTrigger value="my-groups">
             My Groups ({myGroups.length})

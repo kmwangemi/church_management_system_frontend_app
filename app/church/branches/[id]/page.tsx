@@ -517,7 +517,7 @@ export default function BranchDetailsPage({
             </Card>
           </div>
           <Tabs className="space-y-4" defaultValue="overview">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-5">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="members">Members</TabsTrigger>
               <TabsTrigger value="departments">Departments</TabsTrigger>
@@ -937,7 +937,7 @@ export default function BranchDetailsPage({
                 </CardHeader>
                 <CardContent>
                   <Tabs onValueChange={setSelectedTab} value={selectedTab}>
-                    <TabsList className="grid w-full grid-cols-4">
+                    <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-4">
                       <TabsTrigger value="all">All ({stats.total})</TabsTrigger>
                       <TabsTrigger value="active">
                         Active ({stats.active})

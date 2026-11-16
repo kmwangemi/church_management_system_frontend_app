@@ -267,7 +267,7 @@ export default function MemberEvents() {
       </Card>
 
       <Tabs className="space-y-6" defaultValue="all">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-3">
           <TabsTrigger value="all">All Events</TabsTrigger>
           <TabsTrigger value="registered">
             My Events ({myRegistrations.length})

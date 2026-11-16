@@ -201,7 +201,7 @@ export default function MemberAnalytics() {
       </div>
 
       <Tabs className="space-y-6" defaultValue="attendance">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-4">
           <TabsTrigger value="attendance">Attendance</TabsTrigger>
           <TabsTrigger value="giving">Giving</TabsTrigger>
           <TabsTrigger value="involvement">Involvement</TabsTrigger>

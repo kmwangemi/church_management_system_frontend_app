@@ -138,7 +138,7 @@ export default function MemberSettingsPage() {
       </div>
 
       <Tabs className="space-y-4" defaultValue="profile">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-6">
           <TabsTrigger className="flex items-center space-x-2" value="profile">
             <User className="h-4 w-4" />
             <span className="hidden sm:inline">Profile</span>

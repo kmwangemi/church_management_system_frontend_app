@@ -558,7 +558,7 @@ export default function CommunicationPage() {
         </CardHeader>
         <CardContent>
           <Tabs onValueChange={setSelectedTab} value={selectedTab}>
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-4">
               <TabsTrigger value="messages">Messages</TabsTrigger>
               <TabsTrigger value="announcements">Announcements</TabsTrigger>
               <TabsTrigger value="templates">Templates</TabsTrigger>

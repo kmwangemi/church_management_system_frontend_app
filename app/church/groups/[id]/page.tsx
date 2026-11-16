@@ -888,7 +888,7 @@ export default function GroupDetailsPage({
           </div>
           {/* Detailed Tabs */}
           <Tabs className="space-y-4" defaultValue="members">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-4">
               <TabsTrigger value="members">Members</TabsTrigger>
               <TabsTrigger value="attendance">Attendance</TabsTrigger>
               <TabsTrigger value="activities">Activities</TabsTrigger>

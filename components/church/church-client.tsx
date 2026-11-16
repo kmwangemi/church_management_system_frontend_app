@@ -260,7 +260,7 @@ export function ChurchClient({
   );
 
   return (
-    <div className="min-h-screen bg-accent">
+    <div className="min-h-dvh bg-accent">
       {/* Desktop Sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
         <div className="flex grow flex-col border-border border-r bg-background">
@@ -291,23 +291,24 @@ export function ChurchClient({
       </Sheet>
 
       {/* Main Content */}
-      <div className="flex min-h-screen flex-1 flex-col lg:pl-64">
+      <div className="flex min-h-dvh min-w-0 flex-1 flex-col lg:pl-64">
         {/* Header */}
-        <header className="sticky top-0 z-40 flex items-center justify-between border-border border-b bg-background px-4 py-2.5">
-          <div className="flex items-center space-x-4">
+        <header className="sticky top-0 z-40 flex items-center justify-between gap-2 border-border border-b bg-background px-3 py-2.5 sm:px-4">
+          <div className="flex min-w-0 flex-1 items-center space-x-2 sm:space-x-4">
             <Button
-              className="lg:hidden"
+              aria-label="Open menu"
+              className="shrink-0 lg:hidden"
               onClick={() => setSidebarOpen(true)}
               size="sm"
               variant="ghost"
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <div>
-              <h1 className="font-semibold text-foreground text-xl">
+            <div className="min-w-0 flex-1">
+              <h1 className="truncate font-semibold text-foreground text-lg sm:text-xl">
                 {pageTitle}
               </h1>
-              <p className="hidden text-muted-foreground text-sm sm:block">
+              <p className="hidden truncate text-muted-foreground text-sm sm:block">
                 {effectiveUser.churchName || 'Church Management System'}
               </p>
             </div>
@@ -522,7 +523,7 @@ export function ChurchClient({
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 bg-accent p-6">{children}</main>
+        <main className="min-w-0 flex-1 bg-accent p-3 sm:p-6">{children}</main>
       </div>
 
       {/* Admin Self-Profile Modal */}

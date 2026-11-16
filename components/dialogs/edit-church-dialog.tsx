@@ -264,7 +264,7 @@ export function EditChurchDialog({
 
         <form onSubmit={handleSubmit}>
           <Tabs onValueChange={setCurrentTab} value={currentTab}>
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-4">
               <TabsTrigger value="basic">Basic Info</TabsTrigger>
               <TabsTrigger value="contact">Contact</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>

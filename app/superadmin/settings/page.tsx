@@ -156,7 +156,7 @@ export default function GlobalSettingsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-bold text-3xl tracking-tight">Global Settings</h1>
           <p className="text-muted-foreground">
@@ -184,7 +184,7 @@ export default function GlobalSettingsPage() {
       </div>
 
       <Tabs className="space-y-6" defaultValue="general">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-6">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="email">Email</TabsTrigger>

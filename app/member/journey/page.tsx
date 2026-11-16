@@ -411,7 +411,7 @@ export default function SpiritualJourneyPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-bold text-3xl text-foreground">
             Spiritual Journey
@@ -488,7 +488,7 @@ export default function SpiritualJourneyPage() {
       )}
 
       <Tabs className="space-y-6" defaultValue="goals">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-4">
           <TabsTrigger value="goals">Goals</TabsTrigger>
           <TabsTrigger value="milestones">Milestones</TabsTrigger>
           <TabsTrigger value="bible-reading">Bible Reading</TabsTrigger>
@@ -496,7 +496,7 @@ export default function SpiritualJourneyPage() {
         </TabsList>
 
         <TabsContent className="space-y-6" value="goals">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="font-semibold text-xl">Spiritual Goals</h2>
             <Dialog>
               <DialogTrigger asChild>
@@ -668,7 +668,7 @@ export default function SpiritualJourneyPage() {
         </TabsContent>
 
         <TabsContent className="space-y-6" value="milestones">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="font-semibold text-xl">Spiritual Milestones</h2>
             <Dialog>
               <DialogTrigger asChild>
@@ -821,7 +821,7 @@ export default function SpiritualJourneyPage() {
         </TabsContent>
 
         <TabsContent className="space-y-6" value="bible-reading">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="font-semibold text-xl">Bible Reading Log</h2>
             <Dialog>
               <DialogTrigger asChild>

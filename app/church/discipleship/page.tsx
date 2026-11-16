@@ -428,7 +428,7 @@ export default function DiscipleshipPage() {
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="className">
                     Class Name *
                   </Label>
@@ -440,7 +440,7 @@ export default function DiscipleshipPage() {
                     value={newClassName}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="instructor">
                     Instructor
                   </Label>
@@ -476,7 +476,7 @@ export default function DiscipleshipPage() {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right">Level</Label>
                   <Select
                     onValueChange={setNewClassLevel}
@@ -492,7 +492,7 @@ export default function DiscipleshipPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="duration">
                     Duration
                   </Label>
@@ -504,7 +504,7 @@ export default function DiscipleshipPage() {
                     value={newClassDuration}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="capacity">
                     Max Capacity
                   </Label>
@@ -517,7 +517,7 @@ export default function DiscipleshipPage() {
                     value={newClassCapacity}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="startDate">
                     Start Date
                   </Label>
@@ -529,7 +529,7 @@ export default function DiscipleshipPage() {
                     value={newClassStartDate}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="endDate">
                     End Date
                   </Label>
@@ -541,7 +541,7 @@ export default function DiscipleshipPage() {
                     value={newClassEndDate}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="classSchedule">
                     Schedule
                   </Label>
@@ -553,7 +553,7 @@ export default function DiscipleshipPage() {
                     value={newClassSchedule}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="classDescription">
                     Description
                   </Label>
@@ -735,7 +735,7 @@ export default function DiscipleshipPage() {
         <CardHeader />
         <CardContent>
           <Tabs onValueChange={setSelectedTab} value={selectedTab}>
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-4">
               <TabsTrigger value="disciples">Disciples</TabsTrigger>
               <TabsTrigger value="classes">Discipleship Classes</TabsTrigger>
               <TabsTrigger value="mentors">Mentors</TabsTrigger>
@@ -1357,7 +1357,7 @@ export default function DiscipleshipPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="followUpDate">
                 Visit Date
               </Label>
@@ -1369,7 +1369,7 @@ export default function DiscipleshipPage() {
                 value={followUpDate}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="followUpClasses">
                 Completed Classes
               </Label>
@@ -1382,7 +1382,7 @@ export default function DiscipleshipPage() {
                 value={followUpCompletedClasses}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="followUpProgress">
                 Progress (%)
               </Label>
@@ -1396,7 +1396,7 @@ export default function DiscipleshipPage() {
                 value={followUpProgress}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="followUpNotes">
                 Visit Notes
               </Label>
@@ -1463,7 +1463,7 @@ export default function DiscipleshipPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right">Mentor</Label>
               <Select
                 onValueChange={setEditDiscipleMentorId}
@@ -1482,7 +1482,7 @@ export default function DiscipleshipPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right">Current Level</Label>
               <Select
                 onValueChange={setEditDiscipleLevel}
@@ -1499,7 +1499,7 @@ export default function DiscipleshipPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right">Status</Label>
               <Select
                 onValueChange={setEditDiscipleStatus}
@@ -1515,7 +1515,7 @@ export default function DiscipleshipPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editDiscProgress">
                 Progress (%)
               </Label>
@@ -1529,7 +1529,7 @@ export default function DiscipleshipPage() {
                 value={editDiscipleProgress}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editDiscCompClasses">
                 Classes Completed
               </Label>
@@ -1553,7 +1553,7 @@ export default function DiscipleshipPage() {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editDiscGoals">
                 Goals
               </Label>
@@ -1565,7 +1565,7 @@ export default function DiscipleshipPage() {
                 value={editDiscipleGoals}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editDiscNotes">
                 Notes
               </Label>
@@ -1766,7 +1766,7 @@ export default function DiscipleshipPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="schedMeetingTime">
                 Meeting Time
               </Label>
@@ -1778,7 +1778,7 @@ export default function DiscipleshipPage() {
                 value={schedMeetingTime}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="schedStartDate">
                 Start Date
               </Label>
@@ -1790,7 +1790,7 @@ export default function DiscipleshipPage() {
                 value={schedStartDate}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="schedEndDate">
                 End Date
               </Label>
@@ -1802,7 +1802,7 @@ export default function DiscipleshipPage() {
                 value={schedEndDate}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right">Status</Label>
               <Select onValueChange={setSchedStatus} value={schedStatus}>
                 <SelectTrigger className="col-span-3">
@@ -1816,7 +1816,7 @@ export default function DiscipleshipPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="schedProgress">
                 Progress (%)
               </Label>
@@ -1876,7 +1876,7 @@ export default function DiscipleshipPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editClassName">
                 Class Name *
               </Label>
@@ -1887,7 +1887,7 @@ export default function DiscipleshipPage() {
                 value={editClassName}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editClassInstructor">
                 Instructor
               </Label>
@@ -1898,7 +1898,7 @@ export default function DiscipleshipPage() {
                 value={editClassInstructor}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right">Level</Label>
               <Select onValueChange={setEditClassLevel} value={editClassLevel}>
                 <SelectTrigger className="col-span-3">
@@ -1911,7 +1911,7 @@ export default function DiscipleshipPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editClassDuration">
                 Duration
               </Label>
@@ -1922,7 +1922,7 @@ export default function DiscipleshipPage() {
                 value={editClassDuration}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editClassCap">
                 Max Capacity
               </Label>
@@ -1935,7 +1935,7 @@ export default function DiscipleshipPage() {
                 value={editClassCapacity}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right">Status</Label>
               <Select
                 onValueChange={setEditClassStatus}
@@ -1952,7 +1952,7 @@ export default function DiscipleshipPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editClassProg">
                 Progress (%)
               </Label>
@@ -1966,7 +1966,7 @@ export default function DiscipleshipPage() {
                 value={editClassProgress}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editClassDesc">
                 Description
               </Label>
@@ -2149,7 +2149,7 @@ export default function DiscipleshipPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editMentorName">
                 Name *
               </Label>
@@ -2160,7 +2160,7 @@ export default function DiscipleshipPage() {
                 value={editMentorName}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editMentorEmail">
                 Email
               </Label>
@@ -2172,7 +2172,7 @@ export default function DiscipleshipPage() {
                 value={editMentorEmail}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editMentorPhone">
                 Phone
               </Label>
@@ -2183,7 +2183,7 @@ export default function DiscipleshipPage() {
                 value={editMentorPhone}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editMentorExp">
                 Experience
               </Label>
@@ -2194,7 +2194,7 @@ export default function DiscipleshipPage() {
                 value={editMentorExperience}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editMentorSpec">
                 Specialization
               </Label>
@@ -2205,7 +2205,7 @@ export default function DiscipleshipPage() {
                 value={editMentorSpecialization}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editMentorCap">
                 Max Mentees
               </Label>
@@ -2218,7 +2218,7 @@ export default function DiscipleshipPage() {
                 value={editMentorCapacity}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right">Status</Label>
               <Select
                 onValueChange={setEditMentorStatus}
@@ -2233,7 +2233,7 @@ export default function DiscipleshipPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editMentorNotes">
                 Notes
               </Label>

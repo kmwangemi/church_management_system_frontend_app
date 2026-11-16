@@ -372,7 +372,7 @@ export function AddChurchForm({ onCloseDialog }: AddChurchFormProps) {
         onSubmit={form.handleSubmit(onSubmit, onInvalid)}
       >
         <Tabs onValueChange={(v) => goToTab(v as TabName)} value={currentTab}>
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-3">
             {tabTrigger('basic', 'Basic Info')}
             {tabTrigger('contact', 'Contact')}
             {tabTrigger('subscription', 'Plan')}

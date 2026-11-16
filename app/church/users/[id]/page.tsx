@@ -647,7 +647,7 @@ export default function MemberDetailsPage({
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                       <span className="font-medium text-sm">
                         Average Attendance
                       </span>

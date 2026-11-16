@@ -366,7 +366,7 @@ export default function VolunteersPage() {
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right">Member</Label>
                   <div className="col-span-3">
                     <UserCombobox
@@ -390,7 +390,7 @@ export default function VolunteersPage() {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="volunteerName">
                     Name *
                   </Label>
@@ -402,7 +402,7 @@ export default function VolunteersPage() {
                     value={volName}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="volunteerEmail">
                     Email
                   </Label>
@@ -415,7 +415,7 @@ export default function VolunteersPage() {
                     value={volEmail}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="volunteerPhone">
                     Phone
                   </Label>
@@ -509,7 +509,7 @@ export default function VolunteersPage() {
                     ))}
                   </div>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="volunteerHours">
                     Hours This Month
                   </Label>
@@ -522,7 +522,7 @@ export default function VolunteersPage() {
                     value={volHours}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="volunteerNotes">
                     Notes
                   </Label>
@@ -596,7 +596,7 @@ export default function VolunteersPage() {
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="roleTitle">
                     Role Title *
                   </Label>
@@ -608,7 +608,7 @@ export default function VolunteersPage() {
                     value={roleTitle}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="roleDepartment">
                     Ministry
                   </Label>
@@ -620,7 +620,7 @@ export default function VolunteersPage() {
                     value={roleDepartment}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="roleNeededVolunteers">
                     Open Spots
                   </Label>
@@ -633,7 +633,7 @@ export default function VolunteersPage() {
                     value={roleNeededVolunteers}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="roleTimeCommitment">
                     Time Commitment
                   </Label>
@@ -645,7 +645,7 @@ export default function VolunteersPage() {
                     value={roleTimeCommitment}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right">Priority</Label>
                   <Select onValueChange={setRolePriority} value={rolePriority}>
                     <SelectTrigger className="col-span-3">
@@ -684,7 +684,7 @@ export default function VolunteersPage() {
                     ))}
                   </div>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="roleDescription">
                     Description
                   </Label>
@@ -754,7 +754,7 @@ export default function VolunteersPage() {
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="newTaskTitle">
                     Task Title *
                   </Label>
@@ -766,7 +766,7 @@ export default function VolunteersPage() {
                     value={newTaskTitle}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="newTaskDepartment">
                     Ministry
                   </Label>
@@ -778,7 +778,7 @@ export default function VolunteersPage() {
                     value={newTaskDepartment}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="newTaskDate">
                     Date
                   </Label>
@@ -790,7 +790,7 @@ export default function VolunteersPage() {
                     value={newTaskDate}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="newTaskTime">
                     Time
                   </Label>
@@ -802,7 +802,7 @@ export default function VolunteersPage() {
                     value={newTaskTime}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="newTaskReqVols">
                     Volunteers Needed
                   </Label>
@@ -815,7 +815,7 @@ export default function VolunteersPage() {
                     value={newTaskRequiredVolunteers}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right">Priority</Label>
                   <Select onValueChange={setNewTaskPriority} value={newTaskPriority}>
                     <SelectTrigger className="col-span-3">
@@ -858,7 +858,7 @@ export default function VolunteersPage() {
                     </div>
                   </div>
                 )}
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="newTaskDesc">
                     Description
                   </Label>
@@ -1577,7 +1577,7 @@ export default function VolunteersPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editVolName">
                 Name *
               </Label>
@@ -1588,7 +1588,7 @@ export default function VolunteersPage() {
                 value={editVolName}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editVolEmail">
                 Email
               </Label>
@@ -1600,7 +1600,7 @@ export default function VolunteersPage() {
                 value={editVolEmail}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editVolPhone">
                 Phone
               </Label>
@@ -1611,7 +1611,7 @@ export default function VolunteersPage() {
                 value={editVolPhone}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right">Status</Label>
               <Select onValueChange={setEditVolStatus} value={editVolStatus}>
                 <SelectTrigger className="col-span-3">
@@ -1623,7 +1623,7 @@ export default function VolunteersPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editVolHours">
                 Hours This Month
               </Label>
@@ -1722,7 +1722,7 @@ export default function VolunteersPage() {
                 ))}
               </div>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editVolNotes">
                 Notes
               </Label>
@@ -1829,7 +1829,7 @@ export default function VolunteersPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editRoleTitle">
                 Role Title *
               </Label>
@@ -1840,7 +1840,7 @@ export default function VolunteersPage() {
                 value={editRoleTitle}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editRoleDepartment">
                 Ministry
               </Label>
@@ -1851,7 +1851,7 @@ export default function VolunteersPage() {
                 value={editRoleDepartment}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editRoleNeeded">
                 Open Spots
               </Label>
@@ -1864,7 +1864,7 @@ export default function VolunteersPage() {
                 value={editRoleNeededVolunteers}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editRoleTime">
                 Time Commitment
               </Label>
@@ -1875,7 +1875,7 @@ export default function VolunteersPage() {
                 value={editRoleTimeCommitment}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right">Priority</Label>
               <Select
                 onValueChange={setEditRolePriority}
@@ -1919,7 +1919,7 @@ export default function VolunteersPage() {
                 ))}
               </div>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editRoleDesc">
                 Description
               </Label>
@@ -2100,7 +2100,7 @@ export default function VolunteersPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editTaskTitle">
                 Title *
               </Label>
@@ -2111,7 +2111,7 @@ export default function VolunteersPage() {
                 value={editTaskTitle}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editTaskDept">
                 Ministry
               </Label>
@@ -2122,7 +2122,7 @@ export default function VolunteersPage() {
                 value={editTaskDepartment}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editTaskDate">
                 Date
               </Label>
@@ -2134,7 +2134,7 @@ export default function VolunteersPage() {
                 value={editTaskDate}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editTaskTime">
                 Time
               </Label>
@@ -2145,7 +2145,7 @@ export default function VolunteersPage() {
                 value={editTaskTime}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editTaskReqVols">
                 Required Volunteers
               </Label>
@@ -2158,7 +2158,7 @@ export default function VolunteersPage() {
                 value={editTaskRequiredVolunteers}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right">Priority</Label>
               <Select
                 onValueChange={setEditTaskPriority}
@@ -2174,7 +2174,7 @@ export default function VolunteersPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right">Status</Label>
               <Select onValueChange={setEditTaskStatus} value={editTaskStatus}>
                 <SelectTrigger className="col-span-3">
@@ -2190,7 +2190,7 @@ export default function VolunteersPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
               <Label className="text-right" htmlFor="editTaskDesc">
                 Description
               </Label>
