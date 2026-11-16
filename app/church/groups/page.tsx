@@ -82,11 +82,11 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  Legend,
   Line,
   LineChart,
   Pie,
   PieChart,
-  ResponsiveContainer,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -274,10 +274,13 @@ export default function SmallGroupsPage() {
                     new: { label: 'New Members', color: '#f59e0b' },
                   }}
                 >
-                    <LineChart data={attendanceData}>
+                    <LineChart
+                      data={attendanceData}
+                      margin={{ top: 10, right: 16, left: -12, bottom: 5 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
+                      <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                      <YAxis tick={{ fontSize: 11 }} width={44} />
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Line
                         dataKey="total"
@@ -313,22 +316,24 @@ export default function SmallGroupsPage() {
                     value: { label: 'Members' },
                   }}
                 >
-                    <PieChart>
+                    <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
                       <Pie
                         cx="50%"
-                        cy="50%"
+                        cy="45%"
                         data={categoryDistribution}
                         dataKey="value"
-                        label={({ name, percent }) =>
-                          `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
-                        }
-                        outerRadius="65%"
+                        labelLine={false}
+                        outerRadius="70%"
                       >
                         {categoryDistribution.map((entry, index) => (
                           <Cell fill={entry.color} key={`cell-${index}`} />
                         ))}
                       </Pie>
                       <ChartTooltip content={<ChartTooltipContent />} />
+                      <Legend
+                        verticalAlign="bottom"
+                        wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }}
+                      />
                     </PieChart>
                 </ChartContainer>
               </CardContent>
@@ -349,10 +354,20 @@ export default function SmallGroupsPage() {
                     groups: { label: 'Groups', color: '#3b82f6' },
                   }}
                 >
-                    <BarChart data={meetingDays}>
+                    <BarChart
+                      data={meetingDays}
+                      margin={{ top: 10, right: 16, left: -12, bottom: 16 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="day" />
-                      <YAxis />
+                      <XAxis
+                        dataKey="day"
+                        interval={0}
+                        tick={{ fontSize: 11 }}
+                        tickFormatter={(v: string) =>
+                          v && v.length > 6 ? v.slice(0, 3) : v
+                        }
+                      />
+                      <YAxis tick={{ fontSize: 11 }} width={44} />
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Bar dataKey="groups" fill="var(--color-groups)" />
                     </BarChart>
@@ -376,10 +391,13 @@ export default function SmallGroupsPage() {
                     prayer: { label: 'Prayer', color: '#06b6d4' },
                   }}
                 >
-                    <LineChart data={activityData}>
+                    <LineChart
+                      data={activityData}
+                      margin={{ top: 10, right: 16, left: -12, bottom: 5 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
+                      <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                      <YAxis tick={{ fontSize: 11 }} width={44} />
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Line
                         dataKey="worship"
