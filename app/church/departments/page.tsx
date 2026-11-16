@@ -19,11 +19,11 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  Legend,
   Line,
   LineChart,
   Pie,
   PieChart,
-  ResponsiveContainer,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -233,10 +233,13 @@ export default function DepartmentsPage() {
                     prayer: { label: 'Prayer', color: '#06b6d4' },
                   }}
                 >
-                    <LineChart data={activityData}>
+                    <LineChart
+                      data={activityData}
+                      margin={{ top: 10, right: 16, left: -12, bottom: 5 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
+                      <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                      <YAxis tick={{ fontSize: 11 }} width={44} />
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Line
                         dataKey="worship"
@@ -278,24 +281,24 @@ export default function DepartmentsPage() {
                     value: { label: 'Members' },
                   }}
                 >
-                    <PieChart>
+                    <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
                       <Pie
                         cx="50%"
-                        cy="50%"
+                        cy="45%"
                         data={memberDistribution}
                         dataKey="value"
-                        label={({ name, percent }) =>
-                          `${name?.split(' ')[0]} ${(
-                            (percent ?? 0) * 100
-                          ).toFixed(0)}%`
-                        }
-                        outerRadius="65%"
+                        labelLine={false}
+                        outerRadius="70%"
                       >
                         {memberDistribution.map((entry, index) => (
                           <Cell fill={entry.color} key={`cell-${index}`} />
                         ))}
                       </Pie>
                       <ChartTooltip content={<ChartTooltipContent />} />
+                      <Legend
+                        verticalAlign="bottom"
+                        wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }}
+                      />
                     </PieChart>
                 </ChartContainer>
               </CardContent>
@@ -319,10 +322,20 @@ export default function DepartmentsPage() {
                     spent: { label: 'Spent', color: '#10b981' },
                   }}
                 >
-                    <BarChart data={departmentBudgets}>
+                    <BarChart
+                      data={departmentBudgets}
+                      margin={{ top: 10, right: 16, left: -12, bottom: 16 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
+                      <XAxis
+                        dataKey="name"
+                        interval={0}
+                        tick={{ fontSize: 11 }}
+                        tickFormatter={(v: string) =>
+                          v && v.length > 12 ? `${v.slice(0, 11)}…` : v
+                        }
+                      />
+                      <YAxis tick={{ fontSize: 11 }} width={44} />
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Bar dataKey="budget" fill="var(--color-budget)" />
                       <Bar dataKey="spent" fill="var(--color-spent)" />

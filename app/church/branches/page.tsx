@@ -82,11 +82,11 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  Legend,
   Line,
   LineChart,
   Pie,
   PieChart,
-  ResponsiveContainer,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -315,22 +315,25 @@ export default function BranchesPage() {
                   className="h-[250px] w-full sm:h-[300px]"
                   config={attendanceChartConfig}
                 >
-                    <LineChart data={attendanceData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      {attendanceSeries.map((series: any) => (
-                        <Line
-                          dataKey={series.key}
-                          key={series.key}
-                          name={series.label}
-                          stroke={series.color}
-                          strokeWidth={2}
-                          type="monotone"
-                        />
-                      ))}
-                    </LineChart>
+                  <LineChart
+                    data={attendanceData}
+                    margin={{ top: 10, right: 16, left: -12, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                    <YAxis tick={{ fontSize: 11 }} width={44} />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    {attendanceSeries.map((series: any) => (
+                      <Line
+                        dataKey={series.key}
+                        key={series.key}
+                        name={series.label}
+                        stroke={series.color}
+                        strokeWidth={2}
+                        type="monotone"
+                      />
+                    ))}
+                  </LineChart>
                 </ChartContainer>
               </CardContent>
             </Card>
@@ -341,28 +344,30 @@ export default function BranchesPage() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[250px] w-full sm:h-[300px]"
+                  className="h-[260px] w-full sm:h-[300px]"
                   config={{
                     value: { label: 'Members' },
                   }}
                 >
-                    <PieChart>
-                      <Pie
-                        cx="50%"
-                        cy="50%"
-                        data={dynamicBranchDistribution}
-                        dataKey="value"
-                        label={({ name, percent }) =>
-                          `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
-                        }
-                        outerRadius="65%"
-                      >
-                        {dynamicBranchDistribution.map((entry: any, index: number) => (
-                          <Cell fill={entry.color} key={`cell-${index}`} />
-                        ))}
-                      </Pie>
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                    </PieChart>
+                  <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+                    <Pie
+                      cx="50%"
+                      cy="45%"
+                      data={dynamicBranchDistribution}
+                      dataKey="value"
+                      labelLine={false}
+                      outerRadius="70%"
+                    >
+                      {dynamicBranchDistribution.map((entry: any, index: number) => (
+                        <Cell fill={entry.color} key={`cell-${index}`} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Legend
+                      verticalAlign="bottom"
+                      wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }}
+                    />
+                  </PieChart>
                 </ChartContainer>
               </CardContent>
             </Card>
@@ -377,20 +382,34 @@ export default function BranchesPage() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[250px] w-full sm:h-[300px]"
+                  className="h-[260px] w-full sm:h-[300px]"
                   config={{
                     memberCount: { label: 'Members', color: '#3b82f6' },
                     growth: { label: 'Growth %', color: '#10b981' },
                   }}
                 >
-                    <BarChart data={branchList}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="memberCount" fill="var(--color-memberCount)" name="Members" />
-                      <Bar dataKey="growth" fill="var(--color-growth)" name="Growth %" />
-                    </BarChart>
+                  <BarChart
+                    data={branchList}
+                    margin={{ top: 10, right: 16, left: -12, bottom: 16 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="name"
+                      interval={0}
+                      tick={{ fontSize: 11 }}
+                      tickFormatter={(v: string) =>
+                        v && v.length > 12 ? `${v.slice(0, 11)}…` : v
+                      }
+                    />
+                    <YAxis tick={{ fontSize: 11 }} width={44} />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Legend
+                      verticalAlign="bottom"
+                      wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }}
+                    />
+                    <Bar dataKey="memberCount" fill="var(--color-memberCount)" name="Members" />
+                    <Bar dataKey="growth" fill="var(--color-growth)" name="Growth %" />
+                  </BarChart>
                 </ChartContainer>
               </CardContent>
             </Card>

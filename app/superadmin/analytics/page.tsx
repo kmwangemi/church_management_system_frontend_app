@@ -307,27 +307,29 @@ export default function AnalyticsPage() {
             {isLoading ? (
               <Skeleton className="h-[300px] w-full" />
             ) : (
-              <div className="h-[300px] w-full">
-                  <PieChart>
-                    <Pie
-                      cx="50%"
-                      cy="50%"
-                      data={churchDistributionData}
-                      dataKey="value"
-                      fill="#8884d8"
-                      label={({ name, percent }) =>
-                        `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
-                      }
-                      labelLine={false}
-                      outerRadius="65%"
-                    >
-                      {churchDistributionData.map((entry: any, index: number) => (
-                        <Cell fill={entry.color || '#8884d8'} key={`cell-${index}`} />
-                      ))}
-                    </Pie>
-                    <ChartTooltip />
-                  </PieChart>
-              </div>
+              <ChartContainer
+                className="h-[260px] w-full sm:h-[300px]"
+                config={{
+                  value: { label: 'Churches' },
+                }}
+              >
+                <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+                  <Pie
+                    cx="50%"
+                    cy="45%"
+                    data={churchDistributionData}
+                    dataKey="value"
+                    fill="#8884d8"
+                    labelLine={false}
+                    outerRadius="70%"
+                  >
+                    {churchDistributionData.map((entry: any, index: number) => (
+                      <Cell fill={entry.color || '#8884d8'} key={`cell-${index}`} />
+                    ))}
+                  </Pie>
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                </PieChart>
+              </ChartContainer>
             )}
           </CardContent>
         </Card>
