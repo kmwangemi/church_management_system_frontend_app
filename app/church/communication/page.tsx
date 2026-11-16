@@ -399,7 +399,7 @@ export default function CommunicationPage() {
             Send messages, manage announcements, and communicate with members
           </p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Button onClick={handleExportReport} size="sm" variant="outline">
             <Download className="mr-2 h-4 w-4" />
             Export Reports
@@ -409,7 +409,7 @@ export default function CommunicationPage() {
             open={isAnnouncementDialogOpen}
           >
             <DialogTrigger asChild>
-              <Button variant="outline">
+              <Button size="sm" variant="outline">
                 <Bell className="mr-2 h-4 w-4" />
                 New Announcement
               </Button>
@@ -439,6 +439,7 @@ export default function CommunicationPage() {
                   setSendMessageInitialValues(undefined);
                   setIsSendMessageDialogOpen(true);
                 }}
+                size="sm"
               >
                 <Send className="mr-2 h-4 w-4" />
                 Send Message

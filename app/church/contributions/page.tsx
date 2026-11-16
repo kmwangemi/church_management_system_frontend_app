@@ -341,7 +341,7 @@ export default function ContributionsPage() {
             Manage special event contributions and fundraising
           </p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Button onClick={handleExportCsv} size="sm" variant="outline">
             <Download className="mr-2 h-4 w-4" />
             Export CSV

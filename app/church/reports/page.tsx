@@ -307,7 +307,7 @@ export default function ReportsPage() {
             Generate and manage church reports and analytics
           </p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Button
             disabled={isExportingAll || activeReports.length === 0}
             onClick={() => exportAllReports()}
@@ -326,7 +326,7 @@ export default function ReportsPage() {
             open={isGenerateReportDialogOpen}
           >
             <DialogTrigger asChild>
-              <Button>
+              <Button size="sm">
                 <Plus className="mr-2 h-4 w-4" />
                 Generate Report
               </Button>

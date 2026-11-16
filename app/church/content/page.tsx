@@ -232,7 +232,7 @@ export default function ContentPage() {
             Manage sermons, videos, documents, and other church content
           </p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Button size="sm" variant="outline">
             <Upload className="mr-2 h-4 w-4" />
             Bulk Upload
@@ -246,7 +246,7 @@ export default function ContentPage() {
             open={isAddContentDialogOpen}
           >
             <DialogTrigger asChild>
-              <Button>
+              <Button size="sm">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Content
               </Button>

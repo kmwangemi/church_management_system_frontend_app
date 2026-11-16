@@ -408,13 +408,13 @@ export default function PrayerPage() {
             Manage prayer requests and counseling assignments
           </p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Dialog
             onOpenChange={setIsAddCounselorOpen}
             open={isAddCounselorOpen}
           >
             <DialogTrigger asChild>
-              <Button variant="outline">
+              <Button size="sm" variant="outline">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Counselor
               </Button>
@@ -576,7 +576,7 @@ export default function PrayerPage() {
             open={isAddRequestDialogOpen}
           >
             <DialogTrigger asChild>
-              <Button>
+              <Button size="sm">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Prayer Request
               </Button>
