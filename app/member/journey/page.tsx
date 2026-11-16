@@ -962,7 +962,7 @@ export default function SpiritualJourneyPage() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[300px]"
+                  className="h-[250px] w-full sm:h-[300px]"
                   config={{
                     progress: {
                       label: 'Progress',
@@ -970,7 +970,6 @@ export default function SpiritualJourneyPage() {
                     },
                   }}
                 >
-                  <ResponsiveContainer height="100%" width="100%">
                     <BarChart data={progressData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
@@ -978,7 +977,6 @@ export default function SpiritualJourneyPage() {
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Bar dataKey="progress" fill="var(--color-progress)" />
                     </BarChart>
-                  </ResponsiveContainer>
                 </ChartContainer>
               </CardContent>
             </Card>
@@ -992,7 +990,7 @@ export default function SpiritualJourneyPage() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[300px]"
+                  className="h-[250px] w-full sm:h-[300px]"
                   config={{
                     value: {
                       label: 'Count',
@@ -1000,7 +998,6 @@ export default function SpiritualJourneyPage() {
                     },
                   }}
                 >
-                  <ResponsiveContainer height="100%" width="100%">
                     <PieChart>
                       <Pie
                         cx="50%"
@@ -1012,7 +1009,7 @@ export default function SpiritualJourneyPage() {
                         //   `${name} ${(percent * 100).toFixed(0)}%`
                         // }
                         labelLine={false}
-                        outerRadius={80}
+                        outerRadius="65%"
                       >
                         {pieData.map((_, index) => (
                           <Cell
@@ -1023,7 +1020,6 @@ export default function SpiritualJourneyPage() {
                       </Pie>
                       <ChartTooltip content={<ChartTooltipContent />} />
                     </PieChart>
-                  </ResponsiveContainer>
                 </ChartContainer>
               </CardContent>
             </Card>

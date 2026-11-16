@@ -375,7 +375,7 @@ export default function SystemHealthPage() {
         </CardHeader>
         <CardContent>
           <ChartContainer
-            className="h-[300px]"
+            className="h-[250px] w-full sm:h-[300px]"
             config={{
               cpu: {
                 label: 'CPU Usage',
@@ -395,7 +395,6 @@ export default function SystemHealthPage() {
               },
             }}
           >
-            <ResponsiveContainer height="100%" width="100%">
               <LineChart data={performanceData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="time" />
@@ -431,7 +430,6 @@ export default function SystemHealthPage() {
                   type="monotone"
                 />
               </LineChart>
-            </ResponsiveContainer>
           </ChartContainer>
         </CardContent>
       </Card>

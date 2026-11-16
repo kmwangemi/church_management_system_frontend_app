@@ -604,7 +604,7 @@ export default function FinancePage() {
                   onValueChange={setSelectedPeriod}
                   value={selectedPeriod}
                 >
-                  <SelectTrigger className="w-[160px]">
+                  <SelectTrigger className="w-full sm:w-[160px]">
                     <SelectValue placeholder="Select period" />
                   </SelectTrigger>
                   <SelectContent>

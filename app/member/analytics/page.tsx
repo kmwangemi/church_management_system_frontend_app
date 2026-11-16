@@ -220,7 +220,7 @@ export default function MemberAnalytics() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[300px]"
+                  className="h-[250px] w-full sm:h-[300px]"
                   config={{
                     attendance: {
                       label: 'Services Attended',
@@ -232,7 +232,6 @@ export default function MemberAnalytics() {
                     },
                   }}
                 >
-                  <ResponsiveContainer height="100%" width="100%">
                     <BarChart data={attendanceData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
@@ -251,7 +250,6 @@ export default function MemberAnalytics() {
                         name="Attended"
                       />
                     </BarChart>
-                  </ResponsiveContainer>
                 </ChartContainer>
               </CardContent>
             </Card>
@@ -312,7 +310,7 @@ export default function MemberAnalytics() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[300px]"
+                  className="h-[250px] w-full sm:h-[300px]"
                   config={{
                     amount: {
                       label: 'Amount',
@@ -320,7 +318,6 @@ export default function MemberAnalytics() {
                     },
                   }}
                 >
-                  <ResponsiveContainer height="100%" width="100%">
                     <AreaChart data={givingData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
@@ -334,7 +331,6 @@ export default function MemberAnalytics() {
                         type="monotone"
                       />
                     </AreaChart>
-                  </ResponsiveContainer>
                 </ChartContainer>
               </CardContent>
             </Card>
@@ -397,7 +393,7 @@ export default function MemberAnalytics() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[300px]"
+                  className="h-[250px] w-full sm:h-[300px]"
                   config={{
                     value: {
                       label: 'Hours',
@@ -405,7 +401,6 @@ export default function MemberAnalytics() {
                     },
                   }}
                 >
-                  <ResponsiveContainer height="100%" width="100%">
                     <PieChart>
                       <Pie
                         cx="50%"
@@ -413,7 +408,7 @@ export default function MemberAnalytics() {
                         data={involvementData}
                         dataKey="value"
                         innerRadius={60}
-                        outerRadius={100}
+                        outerRadius="65%"
                         paddingAngle={5}
                       >
                         {involvementData.map((entry, index) => (
@@ -423,7 +418,6 @@ export default function MemberAnalytics() {
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Legend />
                     </PieChart>
-                  </ResponsiveContainer>
                 </ChartContainer>
               </CardContent>
             </Card>

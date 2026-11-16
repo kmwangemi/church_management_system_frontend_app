@@ -205,7 +205,7 @@ export default function NotificationsPage() {
           />
         </div>
         <Select onValueChange={setFilter} value={filter}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Filter status/type" />
           </SelectTrigger>
           <SelectContent>
@@ -219,7 +219,7 @@ export default function NotificationsPage() {
           </SelectContent>
         </Select>
         <Select onValueChange={setCategory} value={category}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Filter category" />
           </SelectTrigger>
           <SelectContent>

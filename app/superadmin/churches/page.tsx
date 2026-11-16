@@ -414,7 +414,7 @@ export default function ChurchesPage() {
               />
             </div>
             <Select onValueChange={setStatusFilter} value={statusFilter}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
@@ -425,7 +425,7 @@ export default function ChurchesPage() {
               </SelectContent>
             </Select>
             <Select onValueChange={setPlanFilter} value={planFilter}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Filter by plan" />
               </SelectTrigger>
               <SelectContent>
