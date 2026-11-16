@@ -188,7 +188,7 @@ export default function MemberProfile() {
 
       {/* Profile Tabs */}
       <Tabs className="space-y-6" defaultValue="personal">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-4">
           <TabsTrigger value="personal">Personal Info</TabsTrigger>
           <TabsTrigger value="membership">Membership</TabsTrigger>
           <TabsTrigger value="spiritual">Spiritual Growth</TabsTrigger>

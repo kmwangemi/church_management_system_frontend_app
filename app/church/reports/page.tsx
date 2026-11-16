@@ -451,7 +451,7 @@ export default function ReportsPage() {
         </CardHeader>
         <CardContent>
           <Tabs onValueChange={setSelectedTab} value={selectedTab}>
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-3">
               <TabsTrigger value="reports">Generated Reports</TabsTrigger>
               <TabsTrigger value="templates">Report Templates</TabsTrigger>
               <TabsTrigger value="analytics">Analytics Dashboard</TabsTrigger>
@@ -1169,7 +1169,7 @@ export default function ReportsPage() {
           </DialogHeader>
           {previewModalData && (
             <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-4 rounded-lg bg-muted/50 p-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 rounded-lg bg-muted/50 p-4">
                 <div>
                   <p className="text-muted-foreground text-xs">
                     Estimated Records

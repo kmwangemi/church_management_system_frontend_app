@@ -324,7 +324,7 @@ export default function MemberGiving() {
       </Card>
 
       <Tabs className="space-y-6" defaultValue="history">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-3">
           <TabsTrigger value="history">Giving History</TabsTrigger>
           <TabsTrigger value="pledges">Pledges & Goals</TabsTrigger>
           <TabsTrigger value="statements">Tax Statements</TabsTrigger>

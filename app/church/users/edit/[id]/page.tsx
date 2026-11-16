@@ -621,7 +621,7 @@ export default function EditMemberPage({
           <Form {...form}>
             <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
               <Tabs className="space-y-4" defaultValue="personal">
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-4">
                   <TabsTrigger value="personal">Personal Info</TabsTrigger>
                   <TabsTrigger value="role">Role Details</TabsTrigger>
                   <TabsTrigger value="staff">Staff Details</TabsTrigger>

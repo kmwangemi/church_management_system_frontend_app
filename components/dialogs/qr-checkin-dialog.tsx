@@ -44,7 +44,7 @@ export function QRCheckinDialog({ open, onOpenChange }: QRCheckinDialogProps) {
           </DialogDescription>
         </DialogHeader>
         <Tabs className="w-full" defaultValue="generate">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-3">
             <TabsTrigger value="generate">Generate QR</TabsTrigger>
             <TabsTrigger value="active">Active Codes</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>

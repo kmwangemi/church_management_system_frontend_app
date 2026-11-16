@@ -676,7 +676,7 @@ export default function AssetsPage() {
         </CardHeader>
         <CardContent>
           <Tabs onValueChange={setSelectedTab} value={selectedTab}>
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-4">
               <TabsTrigger value="all">All ({stats.total})</TabsTrigger>
               <TabsTrigger value="vehicles">
                 Vehicles ({stats.vehicles})

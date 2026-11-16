@@ -56,7 +56,7 @@ export function SuperAdminClient({
     );
   }
   return (
-    <div className="min-h-screen bg-accent">
+    <div className="min-h-dvh bg-accent">
       {/* Mobile sidebar */}
       <Sheet onOpenChange={setSidebarOpen} open={sidebarOpen}>
         <SheetContent className="w-64 p-0" side="left">
@@ -83,34 +83,23 @@ export function SuperAdminClient({
         </div>
       </div>
       {/* Main content */}
-      <div className="lg:pl-64">
+      <div className="min-w-0 lg:pl-64">
         {/* Top bar */}
-        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-border border-b bg-background px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
-          <Sheet onOpenChange={setSidebarOpen} open={sidebarOpen}>
-            <SheetTrigger asChild>
-              <Button className="lg:hidden" size="sm" variant="ghost">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent className="w-64 p-0" side="left">
-              <SheetTitle className="sr-only">
-                SuperAdmin Navigation Menu
-              </SheetTitle>
-              <SheetDescription className="sr-only">
-                Main navigation menu for the SuperAdmin portal
-              </SheetDescription>
-              <SuperAdminSidebar
-                mobile
-                pathname={pathname}
-                setSidebarOpen={setSidebarOpen}
-              />
-            </SheetContent>
-          </Sheet>
-          <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-            <div className="flex flex-1 items-center">
-              <div className="flex items-center gap-2">
-                <Globe className="h-5 w-5 text-purple-600" />
-                <span className="font-medium text-foreground text-sm">
+        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-2 border-border border-b bg-background px-3 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+          <Button
+            aria-label="Open menu"
+            className="shrink-0 lg:hidden"
+            onClick={() => setSidebarOpen(true)}
+            size="sm"
+            variant="ghost"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+          <div className="flex min-w-0 flex-1 gap-x-3 self-stretch lg:gap-x-6">
+            <div className="flex min-w-0 flex-1 items-center">
+              <div className="flex min-w-0 items-center gap-2">
+                <Globe className="h-5 w-5 shrink-0 text-purple-600" />
+                <span className="truncate font-medium text-foreground text-sm">
                   Global System Management
                 </span>
               </div>
@@ -177,8 +166,8 @@ export function SuperAdminClient({
           </div>
         </div>
         {/* Page content */}
-        <main className="py-8">
-          <div className="px-4 sm:px-6 lg:px-8">{children}</div>
+        <main className="min-w-0 py-4 sm:py-8">
+          <div className="px-3 sm:px-6 lg:px-8">{children}</div>
         </main>
       </div>
     </div>

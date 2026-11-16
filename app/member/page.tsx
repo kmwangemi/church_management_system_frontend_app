@@ -93,7 +93,7 @@ export default function MemberDashboard() {
     <div className="space-y-6">
       {/* Welcome Section */}
       <div className="rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="mb-2 font-bold text-2xl">
               Welcome back, {user?.firstName || user?.name?.split(' ')[0] || 'Member'}!

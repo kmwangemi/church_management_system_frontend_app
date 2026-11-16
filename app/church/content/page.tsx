@@ -377,7 +377,7 @@ export default function ContentPage() {
         </CardHeader>
         <CardContent>
           <Tabs onValueChange={setSelectedTab} value={selectedTab}>
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-4">
               <TabsTrigger value="all">All Content</TabsTrigger>
               <TabsTrigger value="recent">Recent</TabsTrigger>
               <TabsTrigger value="popular">Popular</TabsTrigger>

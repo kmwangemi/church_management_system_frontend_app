@@ -672,7 +672,7 @@ export default function PrayerPage() {
       <Card>
         <CardContent className="pt-6">
           <Tabs onValueChange={setSelectedTab} value={selectedTab}>
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-4">
               <TabsTrigger value="requests">Prayer Requests</TabsTrigger>
               <TabsTrigger value="counselors">Counselors</TabsTrigger>
               <TabsTrigger value="categories">Categories</TabsTrigger>
@@ -1701,7 +1701,7 @@ export default function PrayerPage() {
                 value={editCounselorForm.specialization}
               />
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="space-y-2">
                 <Label>Max Cases</Label>
                 <Input

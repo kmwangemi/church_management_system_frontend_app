@@ -361,7 +361,7 @@ export default function ContributionsPage() {
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="event">
                     Event
                   </Label>
@@ -373,7 +373,7 @@ export default function ContributionsPage() {
                     value={eventTitle}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="type">
                     Type
                   </Label>
@@ -397,7 +397,7 @@ export default function ContributionsPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="target">
                     Target (KES)
                   </Label>
@@ -410,7 +410,7 @@ export default function ContributionsPage() {
                     value={targetAmount}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="date">
                     Event Date
                   </Label>
@@ -422,7 +422,7 @@ export default function ContributionsPage() {
                     value={eventDate}
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="status">
                     Status
                   </Label>
@@ -437,7 +437,7 @@ export default function ContributionsPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label className="text-right" htmlFor="description">
                     Description
                   </Label>

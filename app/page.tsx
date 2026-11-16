@@ -94,26 +94,27 @@ export default function LandingPage() {
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50 transition-colors duration-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/90 shadow-sm backdrop-blur-md transition-colors duration-300 dark:bg-gray-900/90">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <div className="flex items-center space-x-3">
+        <div className="container mx-auto flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:py-4">
+          <div className="flex items-center space-x-2.5 sm:space-x-3">
             <div className="relative">
-              <Church className="h-8 w-8 text-blue-600" />
-              <div className="-top-1 -right-1 absolute h-3 w-3 animate-pulse rounded-full bg-gradient-to-r from-blue-500 to-purple-500" />
+              <Church className="h-7 w-7 text-blue-600 sm:h-8 sm:w-8" />
+              <div className="-top-1 -right-1 absolute h-2.5 w-2.5 animate-pulse rounded-full bg-gradient-to-r from-blue-500 to-purple-500 sm:h-3 sm:w-3" />
             </div>
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text font-bold text-2xl text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text font-bold text-xl text-transparent sm:text-2xl">
               ChurchHub
             </span>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <ThemeToggle />
             <DropdownMenu>
               <DropdownMenuTrigger asChild className="cursor-pointer">
                 <Button
-                  className="flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-gray-800"
+                  className="flex items-center gap-1 px-2 text-xs hover:bg-blue-50 sm:gap-2 sm:px-3 sm:text-sm dark:hover:bg-gray-800"
+                  size="sm"
                   variant="ghost"
                 >
                   Pricing
-                  <ChevronDown className="h-4 w-4" />
+                  <ChevronDown className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -130,13 +131,17 @@ export default function LandingPage() {
               </DropdownMenuContent>
             </DropdownMenu>
             <Link href="/shared/request-demo">
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-purple-700 hover:shadow-xl">
+              <Button
+                className="bg-gradient-to-r from-blue-600 to-purple-600 px-2.5 text-xs shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-purple-700 hover:shadow-xl sm:px-4 sm:text-sm"
+                size="sm"
+              >
                 Free Demo
               </Button>
             </Link>
             <Link href="/auth/member">
               <Button
-                className="hover:bg-blue-50 dark:hover:bg-gray-800"
+                className="px-2.5 text-xs hover:bg-blue-50 sm:px-4 sm:text-sm dark:hover:bg-gray-800"
+                size="sm"
                 variant="ghost"
               >
                 Login

@@ -542,7 +542,7 @@ export default function SettingsPage() {
         <CardContent className="p-0">
           <Tabs onValueChange={setSelectedTab} value={selectedTab}>
             <div className="border-b">
-              <TabsList className="grid h-auto w-full grid-cols-5 p-1">
+              <TabsList className="flex overflow-x-auto no-scrollbar sm:grid h-auto w-full sm:grid-cols-5 p-1">
                 <TabsTrigger
                   className="flex items-center space-x-2 py-3"
                   value="general"

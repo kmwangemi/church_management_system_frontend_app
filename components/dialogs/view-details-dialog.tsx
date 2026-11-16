@@ -38,7 +38,7 @@ export function ViewDetailsDialog({
 
   const renderBranchDetails = () => (
     <Tabs className="w-full" defaultValue="overview">
-      <TabsList className="grid w-full grid-cols-3">
+      <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-3">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="members">Members</TabsTrigger>
         <TabsTrigger value="analytics">Analytics</TabsTrigger>
@@ -116,7 +116,7 @@ export function ViewDetailsDialog({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="text-center">
                 <p className="font-bold text-2xl text-blue-600">
                   {item.members}
@@ -183,7 +183,7 @@ export function ViewDetailsDialog({
 
   const renderDepartmentDetails = () => (
     <Tabs className="w-full" defaultValue="overview">
-      <TabsList className="grid w-full grid-cols-3">
+      <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-3">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="activities">Activities</TabsTrigger>
         <TabsTrigger value="budget">Budget</TabsTrigger>
@@ -251,7 +251,7 @@ export function ViewDetailsDialog({
 
   const renderGroupDetails = () => (
     <Tabs className="w-full" defaultValue="overview">
-      <TabsList className="grid w-full grid-cols-3">
+      <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-3">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="schedule">Schedule</TabsTrigger>
         <TabsTrigger value="members">Members</TabsTrigger>

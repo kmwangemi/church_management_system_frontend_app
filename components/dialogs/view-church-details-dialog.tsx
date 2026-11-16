@@ -84,7 +84,7 @@ export function ViewChurchDetailsDialog({
           </DialogDescription>
         </DialogHeader>
         <Tabs className="w-full" defaultValue="overview">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="flex overflow-x-auto no-scrollbar sm:grid w-full sm:grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="contact">Contact</TabsTrigger>
             <TabsTrigger value="statistics">Statistics</TabsTrigger>
