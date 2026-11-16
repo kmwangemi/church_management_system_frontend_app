@@ -1,4 +1,5 @@
 'use client';
+import { CardGridSkeleton, InlineListSkeleton } from '@/components/loaders/page-skeletons';
 
 import RenderApiError from '@/components/api-error';
 import { DatePicker } from '@/components/date-picker';
@@ -115,10 +116,7 @@ export function SendMessageForm({
   };
   if (isLoadingGroups) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin" />
-        <span className="ml-2">Loading recipient groups...</span>
-      </div>
+      <InlineListSkeleton rows={4} />
     );
   }
   return (
@@ -129,7 +127,7 @@ export function SendMessageForm({
           {/* Message Type & Template */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center gap-2 text-base font-semibold sm:text-lg">
                 <MessageSquare className="h-5 w-5" />
                 <span>Message Details</span>
               </CardTitle>
@@ -263,7 +261,7 @@ export function SendMessageForm({
           {/* Recipients */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+              <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-base font-semibold sm:text-lg">
                 <div className="flex items-center space-x-2">
                   <Users className="h-5 w-5" />
                   <span>Recipients</span>
@@ -409,7 +407,7 @@ export function SendMessageForm({
               )}
             </CardContent>
           </Card>
-          <div className="flex justify-end space-x-4">
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
             <Button
               onClick={handleCancelDialog}
               type="button"

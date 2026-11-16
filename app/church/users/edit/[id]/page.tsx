@@ -4,7 +4,7 @@ import RenderApiError from '@/components/api-error';
 import { BranchCombobox } from '@/components/branch-combobox';
 import { CountrySelect } from '@/components/country-list-input';
 import { DatePicker } from '@/components/date-picker';
-import { SpinnerLoader } from '@/components/loaders/spinnerloader';
+import { DetailPageSkeleton } from '@/components/loaders/page-skeletons';
 import { MultiSelect } from '@/components/multi-select';
 import { PhoneInput } from '@/components/phone-number-input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -582,7 +582,7 @@ export default function EditMemberPage({
       {isErrorUser && <RenderApiError error={errorUser} />}
       {isError && <RenderApiError error={error} />}
       {isLoadingUser ? (
-        <SpinnerLoader description="Loading user data..." />
+        <DetailPageSkeleton />
       ) : (
         <>
           <div className="flex items-center justify-between">
@@ -647,7 +647,7 @@ export default function EditMemberPage({
                               ''
                             }
                           />
-                          <AvatarFallback className="bg-blue-100 text-blue-600">
+                          <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-blue-600">
                             {(user?.user?.name || 'User')
                               .split(' ')
                               .filter(Boolean)

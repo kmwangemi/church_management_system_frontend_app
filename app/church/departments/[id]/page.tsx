@@ -10,7 +10,7 @@ import { AddDepartmentActivityForm } from '@/components/forms/add-department-act
 import { AddDepartmentExpenseForm } from '@/components/forms/add-department-expense-form';
 import { AddDepartmentGoalForm } from '@/components/forms/add-department-goal-form';
 import { AddDepartmentMemberForm } from '@/components/forms/add-department-member-form';
-import { SpinnerLoader } from '@/components/loaders/spinnerloader';
+import { CardGridSkeleton, DetailPageSkeleton, TableSkeleton } from '@/components/loaders/page-skeletons';
 import { MultiSelect } from '@/components/multi-select';
 import { NumberInput } from '@/components/number-input';
 import { TimeInput } from '@/components/time-input';
@@ -446,7 +446,7 @@ export default function DepartmentDetailsPage({
           <RenderApiError error={errorUpdateDepartment} />
         )}
         {isLoadingDepartment ? (
-          <SpinnerLoader description="Loading department data..." />
+          <DetailPageSkeleton />
         ) : (
           <>
             <div className="grid gap-4 md:grid-cols-4">
@@ -1020,7 +1020,7 @@ export default function DepartmentDetailsPage({
                   <RenderApiError error={errorDeleteMember} />
                 )}
                 {isLoadingDepartmentMembers ? (
-                  <SpinnerLoader description="Loading department members..." />
+                  <TableSkeleton rows={5} columns={5} />
                 ) : (departmentMembers?.data?.members?.length ?? 0) > 0 ? (
                   <Card>
                     <CardContent className="p-0">
@@ -1184,7 +1184,7 @@ export default function DepartmentDetailsPage({
                   <RenderApiError error={errorDeleteExpense} />
                 )}
                 {isLoadingDepartmentExpenses ? (
-                  <SpinnerLoader description="Loading department expenses..." />
+                  <CardGridSkeleton cards={4} columns={2} />
                 ) : (
                   <Card>
                     <CardHeader>
@@ -1387,7 +1387,7 @@ export default function DepartmentDetailsPage({
                   <RenderApiError error={errorDeleteActivity} />
                 )}
                 {isLoadingDepartmentActivities ? (
-                  <SpinnerLoader description="Loading department activities..." />
+                  <CardGridSkeleton cards={4} columns={2} />
                 ) : (departmentActivities?.data?.activities?.length ?? 0) > 0 ? (
                   <Card>
                     <CardContent className="p-0">
@@ -1557,7 +1557,7 @@ export default function DepartmentDetailsPage({
                   <RenderApiError error={errorDeleteGoal} />
                 )}
                 {isLoadingDepartmentGoals ? (
-                  <SpinnerLoader description="Loading department goals..." />
+                  <CardGridSkeleton cards={4} columns={2} />
                 ) : (departmentGoals?.data?.goals?.length ?? 0) > 0 ? (
                   <Card>
                     <CardContent className="p-0">

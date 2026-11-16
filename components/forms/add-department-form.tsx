@@ -267,7 +267,7 @@ export function AddDepartmentForm({ onCloseDialog }: AddDepartmentFormProps) {
               </FormItem>
             )}
           />
-          <div className="flex justify-end space-x-2">
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
             <Button
               onClick={handleCancelDialog}
               type="button"

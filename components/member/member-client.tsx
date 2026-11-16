@@ -25,6 +25,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type React from 'react';
 import { useState } from 'react';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { MemberNavigation } from './member-navigation';
 import { MemberSidebar } from './member-sidebar';
 
@@ -110,7 +111,8 @@ export function MemberClient({
               </p>
             </div>
           </div>
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <ThemeToggle />
             <Button className="relative" size="sm" variant="ghost">
               <Bell className="h-5 w-5" />
               <span className="-top-1 -right-1 absolute flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white text-xs">
@@ -128,7 +130,7 @@ export function MemberClient({
                       alt={user?.name || 'Member'}
                       src="/placeholder.svg?height=32&width=32"
                     />
-                    <AvatarFallback className="bg-blue-100 text-blue-600">
+                    <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-blue-600">
                       {(user?.name || 'Member')
                         .split(' ')
                         .map((n) => n[0]?.toUpperCase() || '')

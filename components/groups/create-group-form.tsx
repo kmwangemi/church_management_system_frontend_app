@@ -30,7 +30,7 @@ export function CreateGroupForm() {
   return (
     <div className="p-6 max-w-xl mx-auto bg-background rounded-xl shadow-md space-y-4 border border-border">
       <h2 className="text-2xl font-bold text-foreground">Create New Group</h2>
-      {isSuccess && <div className="p-3 bg-green-50 text-green-700 rounded-md">Group created successfully!</div>}
+      {isSuccess && <div className="p-3 bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 rounded-md">Group created successfully!</div>}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-muted-foreground mb-1">Group Name</label>

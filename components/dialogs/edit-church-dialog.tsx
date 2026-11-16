@@ -285,7 +285,7 @@ export function EditChurchDialog({
                   <div className="flex items-center space-x-4">
                     <Avatar className="h-20 w-20">
                       <AvatarImage src={currentLogoDisplay || undefined} />
-                      <AvatarFallback className="bg-blue-100 text-2xl text-blue-600">
+                      <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-2xl text-blue-600">
                         {name
                           .split(' ')
                           .filter(Boolean)
@@ -578,11 +578,11 @@ export function EditChurchDialog({
                     </div>
                   </div>
 
-                  <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
-                    <h4 className="mb-1 font-medium text-amber-900">
+                  <div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 p-4">
+                    <h4 className="mb-1 font-medium text-amber-900 dark:text-amber-100">
                       Important Status Change Notice
                     </h4>
-                    <p className="text-amber-800 text-sm">
+                    <p className="text-amber-800 dark:text-amber-200 text-sm">
                       Suspending or deactivating a church immediately disables portal
                       access for all ministers, staff, and church members under this
                       organization.
@@ -617,11 +617,11 @@ export function EditChurchDialog({
                     </Select>
                   </div>
 
-                  <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                    <h4 className="mb-1 font-medium text-blue-900">
+                  <div className="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 p-4">
+                    <h4 className="mb-1 font-medium text-blue-900 dark:text-blue-100">
                       Subscription Plan Notice
                     </h4>
-                    <p className="text-blue-800 text-sm">
+                    <p className="text-blue-800 dark:text-blue-200 text-sm">
                       Changes made to the subscription plan update the church's billing
                       tier and tier capabilities in the backend database.
                     </p>

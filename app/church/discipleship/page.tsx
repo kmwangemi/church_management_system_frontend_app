@@ -1,4 +1,5 @@
 'use client';
+import { CardGridSkeleton, InlineListSkeleton } from '@/components/loaders/page-skeletons';
 
 import { AddDiscipleForm } from '@/components/forms/add-disciple-form';
 import { AddMentorForm } from '@/components/forms/add-mentor-form';
@@ -271,10 +272,10 @@ export default function DiscipleshipPage() {
 
   const getLevelBadge = (level: string) => {
     const colors: Record<string, string> = {
-      'New Convert': 'bg-blue-100 text-blue-800',
-      Growing: 'bg-green-100 text-green-800',
-      Mature: 'bg-purple-100 text-purple-800',
-      Leader: 'bg-orange-100 text-orange-800',
+      'New Convert': 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200',
+      Growing: 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200',
+      Mature: 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200',
+      Leader: 'bg-orange-100 dark:bg-orange-950/60 text-orange-800 dark:text-orange-200',
     };
     return (
       <Badge className={colors[level] || 'bg-muted text-foreground'}>
@@ -286,12 +287,12 @@ export default function DiscipleshipPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Active':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200';
       case 'Graduated':
       case 'Completed':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200';
       case 'Scheduled':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200';
       case 'Inactive':
       default:
         return 'bg-muted text-foreground';
@@ -301,11 +302,11 @@ export default function DiscipleshipPage() {
   const getLevelColor = (level: string) => {
     switch (level) {
       case 'Beginner':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200';
       case 'Intermediate':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200';
       case 'Advanced':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200';
       default:
         return 'bg-muted text-foreground';
     }
@@ -643,7 +644,7 @@ export default function DiscipleshipPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               New Converts
             </CardTitle>
-            <div className="rounded-lg bg-blue-100 p-2">
+            <div className="rounded-lg bg-blue-100 dark:bg-blue-950/60 p-2">
               <Users className="h-5 w-5 text-blue-600" />
             </div>
           </CardHeader>
@@ -661,7 +662,7 @@ export default function DiscipleshipPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Active Classes
             </CardTitle>
-            <div className="rounded-lg bg-blue-100 p-2">
+            <div className="rounded-lg bg-blue-100 dark:bg-blue-950/60 p-2">
               <BookOpen className="h-5 w-5 text-blue-600" />
             </div>
           </CardHeader>
@@ -679,7 +680,7 @@ export default function DiscipleshipPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Active Disciples
             </CardTitle>
-            <div className="rounded-lg bg-green-100 p-2">
+            <div className="rounded-lg bg-green-100 dark:bg-green-950/60 p-2">
               <Heart className="h-5 w-5 text-green-600" />
             </div>
           </CardHeader>
@@ -697,7 +698,7 @@ export default function DiscipleshipPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Graduated
             </CardTitle>
-            <div className="rounded-lg bg-purple-100 p-2">
+            <div className="rounded-lg bg-purple-100 dark:bg-purple-950/60 p-2">
               <Award className="h-5 w-5 text-purple-600" />
             </div>
           </CardHeader>
@@ -715,7 +716,7 @@ export default function DiscipleshipPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Active Mentors
             </CardTitle>
-            <div className="rounded-lg bg-orange-100 p-2">
+            <div className="rounded-lg bg-orange-100 dark:bg-orange-950/60 p-2">
               <Users className="h-5 w-5 text-orange-600" />
             </div>
           </CardHeader>
@@ -779,12 +780,7 @@ export default function DiscipleshipPage() {
                   </div>
 
                   {isLoadingDisciples ? (
-                    <div className="flex items-center justify-center py-12">
-                      <Loader2 className="mr-2 h-6 w-6 animate-spin text-muted-foreground" />
-                      <span className="text-muted-foreground">
-                        Loading disciples...
-                      </span>
-                    </div>
+                    <CardGridSkeleton cards={6} columns={3} />
                   ) : activeDisciples.length === 0 ? (
                     <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12 text-center">
                       <Heart className="mb-2 h-10 w-10 text-muted-foreground" />
@@ -836,7 +832,7 @@ export default function DiscipleshipPage() {
                                         disciple.avatar || '/placeholder.svg'
                                       }
                                     />
-                                    <AvatarFallback className="bg-blue-100 text-blue-600">
+                                    <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-blue-600">
                                       {(disciple.name || 'D')
                                         .split(' ')
                                         .map((n: string) => n[0])
@@ -967,12 +963,7 @@ export default function DiscipleshipPage() {
                 </CardHeader>
                 <CardContent>
                   {isLoadingClasses ? (
-                    <div className="flex items-center justify-center py-12">
-                      <Loader2 className="mr-2 h-6 w-6 animate-spin text-muted-foreground" />
-                      <span className="text-muted-foreground">
-                        Loading classes...
-                      </span>
-                    </div>
+                    <CardGridSkeleton cards={6} columns={3} />
                   ) : activeClasses.length === 0 ? (
                     <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12 text-center">
                       <BookOpen className="mb-2 h-10 w-10 text-muted-foreground" />
@@ -1079,7 +1070,7 @@ export default function DiscipleshipPage() {
                                 Edit
                               </Button>
                               <Button
-                                className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                                className="text-red-600 hover:bg-red-50 dark:bg-red-950/40 hover:text-red-700 dark:text-red-300"
                                 onClick={() => setDeletingClass(classItem)}
                                 size="sm"
                                 variant="outline"
@@ -1117,12 +1108,7 @@ export default function DiscipleshipPage() {
                 </CardHeader>
                 <CardContent>
                   {isLoadingMentors ? (
-                    <div className="flex items-center justify-center py-12">
-                      <Loader2 className="mr-2 h-6 w-6 animate-spin text-muted-foreground" />
-                      <span className="text-muted-foreground">
-                        Loading mentors...
-                      </span>
-                    </div>
+                    <CardGridSkeleton cards={6} columns={3} />
                   ) : activeMentors.length === 0 ? (
                     <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12 text-center">
                       <Award className="mb-2 h-10 w-10 text-muted-foreground" />
@@ -1240,7 +1226,7 @@ export default function DiscipleshipPage() {
                                   Edit
                                 </Button>
                                 <Button
-                                  className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                                  className="text-red-600 hover:bg-red-50 dark:bg-red-950/40 hover:text-red-700 dark:text-red-300"
                                   onClick={() => setDeletingMentor(mentor)}
                                   size="sm"
                                   variant="ghost"

@@ -248,13 +248,13 @@ export default function SystemHealthPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'online':
-        return <Badge className="bg-green-100 text-green-800">Online</Badge>;
+        return <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">Online</Badge>;
       case 'maintenance':
         return (
-          <Badge className="bg-yellow-100 text-yellow-800">Maintenance</Badge>
+          <Badge className="bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200">Maintenance</Badge>
         );
       case 'offline':
-        return <Badge className="bg-red-100 text-red-800">Offline</Badge>;
+        return <Badge className="bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200">Offline</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -353,7 +353,7 @@ export default function SystemHealthPage() {
                   </span>
                 </div>
                 <Progress
-                  className={`h-3 ${resource.status === 'warning' ? 'bg-yellow-100' : 'bg-muted'}`}
+                  className={`h-3 ${resource.status === 'warning' ? 'bg-yellow-100 dark:bg-yellow-950/60' : 'bg-muted'}`}
                   value={resource.value}
                 />
                 <div className="text-muted-foreground text-xs">
@@ -493,12 +493,12 @@ export default function SystemHealthPage() {
                 <Alert
                   className={`${
                     alert.type === 'error'
-                      ? 'border-red-200 bg-red-50'
+                      ? 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/40'
                       : alert.type === 'warning'
-                        ? 'border-yellow-200 bg-yellow-50'
+                        ? 'border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950/40'
                         : alert.type === 'success'
-                          ? 'border-green-200 bg-green-50'
-                          : 'border-blue-200 bg-blue-50'
+                          ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/40'
+                          : 'border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40'
                   }`}
                   key={alert.id}
                 >

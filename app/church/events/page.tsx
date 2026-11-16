@@ -1,4 +1,5 @@
 'use client';
+import { TableRowsSkeleton, InlineListSkeleton, CardGridSkeleton } from '@/components/loaders/page-skeletons';
 
 import { AddEventForm } from '@/components/forms/add-event-form';
 import { Badge } from '@/components/ui/badge';
@@ -73,17 +74,17 @@ import { toast } from 'sonner';
 const getStatusBadge = (status: string) => {
   switch (status) {
     case 'Scheduled':
-      return <Badge className="bg-blue-100 text-blue-800">Scheduled</Badge>;
+      return <Badge className="bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200">Scheduled</Badge>;
     case 'Open for Registration':
       return (
-        <Badge className="bg-green-100 text-green-800">
+        <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">
           Open for Registration
         </Badge>
       );
     case 'Completed':
       return <Badge className="bg-muted text-foreground">Completed</Badge>;
     case 'Cancelled':
-      return <Badge className="bg-red-100 text-red-800">Cancelled</Badge>;
+      return <Badge className="bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200">Cancelled</Badge>;
     default:
       return <Badge variant="secondary">{status}</Badge>;
   }
@@ -91,11 +92,11 @@ const getStatusBadge = (status: string) => {
 
 const getTypeBadge = (type: string) => {
   const colors: Record<string, string> = {
-    Service: 'bg-purple-100 text-purple-800',
-    Conference: 'bg-orange-100 text-orange-800',
-    'Bible Study': 'bg-blue-100 text-blue-800',
-    Study: 'bg-blue-100 text-blue-800',
-    Outreach: 'bg-green-100 text-green-800',
+    Service: 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200',
+    Conference: 'bg-orange-100 dark:bg-orange-950/60 text-orange-800 dark:text-orange-200',
+    'Bible Study': 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200',
+    Study: 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200',
+    Outreach: 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200',
     Meeting: 'bg-muted text-foreground',
   };
   return (
@@ -361,7 +362,7 @@ export default function EventsPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Total Events
             </CardTitle>
-            <div className="rounded-lg bg-blue-100 p-2">
+            <div className="rounded-lg bg-blue-100 dark:bg-blue-950/60 p-2">
               <Calendar className="h-5 w-5 text-blue-600" />
             </div>
           </CardHeader>
@@ -377,7 +378,7 @@ export default function EventsPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Upcoming Events
             </CardTitle>
-            <div className="rounded-lg bg-green-100 p-2">
+            <div className="rounded-lg bg-green-100 dark:bg-green-950/60 p-2">
               <Clock className="h-5 w-5 text-green-600" />
             </div>
           </CardHeader>
@@ -395,7 +396,7 @@ export default function EventsPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               This Week
             </CardTitle>
-            <div className="rounded-lg bg-orange-100 p-2">
+            <div className="rounded-lg bg-orange-100 dark:bg-orange-950/60 p-2">
               <Calendar className="h-5 w-5 text-orange-600" />
             </div>
           </CardHeader>
@@ -413,7 +414,7 @@ export default function EventsPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Total Registrations / Attendance
             </CardTitle>
-            <div className="rounded-lg bg-purple-100 p-2">
+            <div className="rounded-lg bg-purple-100 dark:bg-purple-950/60 p-2">
               <Users className="h-5 w-5 text-purple-600" />
             </div>
           </CardHeader>
@@ -469,11 +470,7 @@ export default function EventsPage() {
                   </TableHeader>
                   <TableBody>
                     {isLoading ? (
-                      <TableRow>
-                        <TableCell className="py-8 text-center" colSpan={7}>
-                          <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
-                        </TableCell>
-                      </TableRow>
+                      <TableRowsSkeleton columns={7} rows={5} />
                     ) : (
                       filteredEvents.map((event: any) => {
                         const attRatio =
@@ -975,11 +972,7 @@ export default function EventsPage() {
               </TableHeader>
               <TableBody>
                 {isAttendanceLoading ? (
-                  <TableRow>
-                    <TableCell className="py-6 text-center" colSpan={5}>
-                      <Loader2 className="mx-auto h-5 w-5 animate-spin text-muted-foreground" />
-                    </TableCell>
-                  </TableRow>
+                  <TableRowsSkeleton columns={5} rows={5} />
                 ) : attendeesList.length === 0 ? (
                   <TableRow>
                     <TableCell
@@ -1000,7 +993,7 @@ export default function EventsPage() {
                         {att.phoneNumber || att.email || '-'}
                       </TableCell>
                       <TableCell>
-                        <Badge className="bg-green-100 text-green-800">
+                        <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">
                           {att.status}
                         </Badge>
                       </TableCell>
@@ -1011,7 +1004,7 @@ export default function EventsPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <Button
-                          className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                          className="text-red-600 hover:bg-red-50 dark:bg-red-950/40 hover:text-red-700 dark:text-red-300"
                           onClick={() =>
                             attendanceEvent &&
                             removeAttendance({

@@ -19,9 +19,9 @@ interface MemberSidebarProps {
 const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
     case 'active':
-      return 'bg-green-100 text-green-800';
+      return 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200';
     case 'new':
-      return 'bg-blue-100 text-blue-800';
+      return 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200';
     case 'inactive':
       return 'bg-muted text-foreground';
     default:
@@ -59,7 +59,7 @@ export function MemberSidebar({
                 alt={member.name}
                 src="/placeholder.svg?height=48&width=48"
               />
-              <AvatarFallback className="bg-blue-100 text-blue-600">
+              <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-blue-600">
                 {member.name
                   .split(' ')
                   .map((n: string) => n[0])
@@ -99,7 +99,7 @@ export function MemberSidebar({
               className={cn(
                 'flex items-center justify-between rounded-lg px-3 py-2.5 font-medium text-sm transition-all duration-200',
                 isActive
-                  ? 'border border-blue-200 bg-blue-50 text-blue-700'
+                  ? 'border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300'
                   : 'text-muted-foreground hover:bg-accent hover:text-foreground'
               )}
               href={item.href}
@@ -117,7 +117,7 @@ export function MemberSidebar({
               </div>
               {item.badge && (
                 <Badge
-                  className="h-5 bg-red-100 px-1.5 text-red-800 text-xs"
+                  className="h-5 bg-red-100 dark:bg-red-950/60 px-1.5 text-red-800 dark:text-red-200 text-xs"
                   variant="secondary"
                 >
                   {item.badge}
@@ -128,14 +128,14 @@ export function MemberSidebar({
         })}
       </nav>
       <div className="border-t p-4">
-        <div className="rounded-lg bg-blue-50 p-3">
+        <div className="rounded-lg bg-blue-50 dark:bg-blue-950/40 p-3">
           <div className="mb-2 flex items-center space-x-2">
             <Gift className="h-4 w-4 text-blue-600" />
-            <span className="font-medium text-blue-900 text-sm">
+            <span className="font-medium text-blue-900 dark:text-blue-100 text-sm">
               Quick Give
             </span>
           </div>
-          <p className="mb-2 text-blue-700 text-xs">
+          <p className="mb-2 text-blue-700 dark:text-blue-300 text-xs">
             Make a quick contribution
           </p>
           <Button

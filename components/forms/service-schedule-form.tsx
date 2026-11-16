@@ -167,7 +167,7 @@ export function ServiceScheduleForm({
               </FormItem>
             )}
           />
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={serviceScheduleForm.control}
               name="day"
@@ -218,7 +218,7 @@ export function ServiceScheduleForm({
               )}
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={serviceScheduleForm.control}
               name="type"
@@ -265,7 +265,7 @@ export function ServiceScheduleForm({
               )}
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={serviceScheduleForm.control}
               name="duration"
@@ -316,7 +316,7 @@ export function ServiceScheduleForm({
               </FormItem>
             )}
           />
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={serviceScheduleForm.control}
               name="startDate"
@@ -366,7 +366,7 @@ export function ServiceScheduleForm({
               )}
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={serviceScheduleForm.control}
               name="recurring"
@@ -418,7 +418,7 @@ export function ServiceScheduleForm({
               </FormItem>
             )}
           />
-          <div className="flex justify-end space-x-2">
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
             <Button
               onClick={handleCancelDialog}
               type="button"

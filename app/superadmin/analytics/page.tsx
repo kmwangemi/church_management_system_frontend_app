@@ -424,7 +424,7 @@ export default function AnalyticsPage() {
                     </div>
                     <div className="text-right">
                       <div className="flex items-center space-x-2">
-                        <Badge className="bg-green-100 text-green-800">
+                        <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">
                           <TrendingUp className="mr-1 h-3 w-3" />+{church.growth}%
                         </Badge>
                       </div>
@@ -476,10 +476,10 @@ export default function AnalyticsPage() {
                       <Badge
                         className={`${
                           region.growth > 15
-                            ? 'bg-green-100 text-green-800'
+                            ? 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200'
                             : region.growth > 10
-                              ? 'bg-blue-100 text-blue-800'
-                              : 'bg-yellow-100 text-yellow-800'
+                              ? 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200'
+                              : 'bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200'
                         }`}
                       >
                         <TrendingUp className="mr-1 h-3 w-3" />+{region.growth}%
@@ -503,34 +503,34 @@ export default function AnalyticsPage() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+            <div className="rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/40 p-4">
               <div className="mb-2 flex items-center space-x-2">
                 <TrendingUp className="h-5 w-5 text-green-600" />
-                <h4 className="font-medium text-green-800">Steady Growth</h4>
+                <h4 className="font-medium text-green-800 dark:text-green-200">Steady Growth</h4>
               </div>
-              <p className="text-green-700 text-sm">
+              <p className="text-green-700 dark:text-green-300 text-sm">
                 Overall church and membership acquisition is trending positive. Focus on branch expansion.
               </p>
             </div>
-            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+            <div className="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 p-4">
               <div className="mb-2 flex items-center space-x-2">
                 <Users className="h-5 w-5 text-blue-600" />
-                <h4 className="font-medium text-blue-800">
+                <h4 className="font-medium text-blue-800 dark:text-blue-200">
                   Capacity Optimization
                 </h4>
               </div>
-              <p className="text-blue-700 text-sm">
+              <p className="text-blue-700 dark:text-blue-300 text-sm">
                 Sunday services average 85% branch capacity. Consider multiple Sunday services in busy campuses.
               </p>
             </div>
-            <div className="rounded-lg border border-purple-200 bg-purple-50 p-4">
+            <div className="rounded-lg border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/40 p-4">
               <div className="mb-2 flex items-center space-x-2">
                 <MapPin className="h-5 w-5 text-purple-600" />
-                <h4 className="font-medium text-purple-800">
+                <h4 className="font-medium text-purple-800 dark:text-purple-200">
                   Regional Focus
                 </h4>
               </div>
-              <p className="text-purple-700 text-sm">
+              <p className="text-purple-700 dark:text-purple-300 text-sm">
                 Urban campuses show the fastest growth rate in both membership and weekly collections (KES).
               </p>
             </div>

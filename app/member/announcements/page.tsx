@@ -198,11 +198,11 @@ export default function MemberAnnouncements() {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
-        return 'bg-red-100 text-red-800 border-red-200';
+        return 'bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200 border-red-200 dark:border-red-800';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        return 'bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-800';
       case 'low':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200 border-green-200 dark:border-green-800';
       default:
         return 'bg-muted text-foreground border-border';
     }
@@ -306,7 +306,7 @@ export default function MemberAnnouncements() {
                     </Badge>
                     <Badge variant="secondary">{announcement.category}</Badge>
                     {announcement.readStatus === 'unread' && (
-                      <Badge className="bg-blue-100 text-blue-800">New</Badge>
+                      <Badge className="bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200">New</Badge>
                     )}
                   </div>
                   <CardTitle className="mb-2 text-xl">

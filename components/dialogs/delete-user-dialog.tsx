@@ -73,7 +73,7 @@ export function DeleteUserDialog({
                 alt={firstName}
                 src={user?.profilePictureUrl ?? u?.image ?? ''}
               />
-              <AvatarFallback className="bg-blue-100 text-blue-600 text-lg">
+              <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-blue-600 text-lg">
                 {`${getFirstLetter(firstName)}${getFirstLetter(lastName)}`}
               </AvatarFallback>
             </Avatar>
@@ -104,9 +104,9 @@ export function DeleteUserDialog({
             </div>
           </div>
           {/* Warning Section */}
-          <Alert className="border-red-200 bg-red-50">
+          <Alert className="border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/40">
             <AlertTriangle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-red-800">
+            <AlertDescription className="text-red-800 dark:text-red-200">
               <strong>Warning:</strong> This will permanently delete all data
               associated with this member.
             </AlertDescription>

@@ -344,11 +344,11 @@ export default function SpiritualJourneyPage() {
   const getSignificanceColor = (significance: string) => {
     switch (significance) {
       case 'high':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200';
       case 'low':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200';
       default:
         return 'bg-muted text-foreground';
     }
@@ -357,9 +357,9 @@ export default function SpiritualJourneyPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200';
       case 'active':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200';
       case 'paused':
         return 'bg-muted text-foreground';
       default:
@@ -428,7 +428,7 @@ export default function SpiritualJourneyPage() {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
-                <div className="rounded-lg bg-blue-100 p-2">
+                <div className="rounded-lg bg-blue-100 dark:bg-blue-950/60 p-2">
                   <Target className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
@@ -444,7 +444,7 @@ export default function SpiritualJourneyPage() {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
-                <div className="rounded-lg bg-orange-100 p-2">
+                <div className="rounded-lg bg-orange-100 dark:bg-orange-950/60 p-2">
                   <Flame className="h-5 w-5 text-orange-600" />
                 </div>
                 <div>
@@ -458,7 +458,7 @@ export default function SpiritualJourneyPage() {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
-                <div className="rounded-lg bg-green-100 p-2">
+                <div className="rounded-lg bg-green-100 dark:bg-green-950/60 p-2">
                   <BookOpen className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
@@ -472,7 +472,7 @@ export default function SpiritualJourneyPage() {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
-                <div className="rounded-lg bg-purple-100 p-2">
+                <div className="rounded-lg bg-purple-100 dark:bg-purple-950/60 p-2">
                   <Trophy className="h-5 w-5 text-purple-600" />
                 </div>
                 <div>
@@ -783,7 +783,7 @@ export default function SpiritualJourneyPage() {
               <Card key={milestone.id}>
                 <CardContent className="p-6">
                   <div className="flex items-start space-x-4">
-                    <div className="rounded-lg bg-purple-100 p-2">
+                    <div className="rounded-lg bg-purple-100 dark:bg-purple-950/60 p-2">
                       <Award className="h-5 w-5 text-purple-600" />
                     </div>
                     <div className="flex-1">
@@ -914,7 +914,7 @@ export default function SpiritualJourneyPage() {
               <Card key={reading.id}>
                 <CardContent className="p-6">
                   <div className="flex items-start space-x-4">
-                    <div className="rounded-lg bg-green-100 p-2">
+                    <div className="rounded-lg bg-green-100 dark:bg-green-950/60 p-2">
                       <BookOpen className="h-5 w-5 text-green-600" />
                     </div>
                     <div className="flex-1">
@@ -1034,25 +1034,25 @@ export default function SpiritualJourneyPage() {
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-3">
-                <div className="rounded-lg bg-blue-50 p-4 text-center">
+                <div className="rounded-lg bg-blue-50 dark:bg-blue-950/40 p-4 text-center">
                   <div className="font-bold text-2xl text-blue-600">
                     {stats?.longestStreak}
                   </div>
-                  <div className="text-blue-800 text-sm">
+                  <div className="text-blue-800 dark:text-blue-200 text-sm">
                     Longest Streak (days)
                   </div>
                 </div>
-                <div className="rounded-lg bg-green-50 p-4 text-center">
+                <div className="rounded-lg bg-green-50 dark:bg-green-950/40 p-4 text-center">
                   <div className="font-bold text-2xl text-green-600">
                     {stats?.booksRead}
                   </div>
-                  <div className="text-green-800 text-sm">Books Completed</div>
+                  <div className="text-green-800 dark:text-green-200 text-sm">Books Completed</div>
                 </div>
-                <div className="rounded-lg bg-purple-50 p-4 text-center">
+                <div className="rounded-lg bg-purple-50 dark:bg-purple-950/40 p-4 text-center">
                   <div className="font-bold text-2xl text-purple-600">
                     {Math.floor((stats?.prayerMinutes || 0) / 60)}
                   </div>
-                  <div className="text-purple-800 text-sm">Hours in Prayer</div>
+                  <div className="text-purple-800 dark:text-purple-200 text-sm">Hours in Prayer</div>
                 </div>
               </div>
             </CardContent>

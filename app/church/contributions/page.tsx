@@ -1,4 +1,5 @@
 'use client';
+import { TableRowsSkeleton, InlineListSkeleton, CardGridSkeleton } from '@/components/loaders/page-skeletons';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -604,11 +605,7 @@ export default function ContributionsPage() {
                 </TableHeader>
                 <TableBody>
                   {isLoading ? (
-                    <TableRow>
-                      <TableCell className="py-8 text-center" colSpan={7}>
-                        <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
-                      </TableCell>
-                    </TableRow>
+                    <TableRowsSkeleton columns={7} rows={5} />
                   ) : filteredContributions.length === 0 ? (
                     <TableRow>
                       <TableCell
@@ -700,7 +697,7 @@ export default function ContributionsPage() {
                               <Edit className="h-4 w-4" />
                             </Button>
                             <Button
-                              className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                              className="text-red-600 hover:bg-red-50 dark:bg-red-950/40 hover:text-red-700 dark:text-red-300"
                               onClick={() => {
                                 const targetId =
                                   contribution.id || contribution._id;

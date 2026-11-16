@@ -873,25 +873,25 @@ function AddUserDialog({
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="rounded-lg border border-blue-200 bg-blue-50/70 p-4 text-sm">
+                <div className="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/70 p-4 text-sm">
                   <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                     <div>
-                      <span className="font-semibold text-blue-900 block">Church:</span>
-                      <span className="text-blue-700">{church.name}</span>
+                      <span className="font-semibold text-blue-900 dark:text-blue-100 block">Church:</span>
+                      <span className="text-blue-700 dark:text-blue-300">{church.name}</span>
                     </div>
                     <div>
-                      <span className="font-semibold text-blue-900 block">Assigned Role:</span>
-                      <span className="text-blue-700">Church Administrator</span>
+                      <span className="font-semibold text-blue-900 dark:text-blue-100 block">Assigned Role:</span>
+                      <span className="text-blue-700 dark:text-blue-300">Church Administrator</span>
                     </div>
                     <div>
-                      <span className="font-semibold text-blue-900 block">Assigned Branch:</span>
+                      <span className="font-semibold text-blue-900 dark:text-blue-100 block">Assigned Branch:</span>
                       {branches.length > 1 ? (
                         <FormField
                           control={form.control}
                           name="teamId"
                           render={({ field }) => (
                             <Select onValueChange={field.onChange} value={field.value || branches[0]?.id}>
-                              <SelectTrigger className="mt-1 h-8 bg-white">
+                              <SelectTrigger className="mt-1 h-8 bg-background">
                                 <SelectValue placeholder="Select branch" />
                               </SelectTrigger>
                               <SelectContent>
@@ -905,7 +905,7 @@ function AddUserDialog({
                           )}
                         />
                       ) : (
-                        <span className="text-blue-700">
+                        <span className="text-blue-700 dark:text-blue-300">
                           {branches[0]?.name || (isLoadingBranches ? 'Loading branch...' : 'Main Branch (Headquarters)')}
                         </span>
                       )}

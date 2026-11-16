@@ -1,4 +1,5 @@
 'use client';
+import { CardGridSkeleton, InlineListSkeleton } from '@/components/loaders/page-skeletons';
 
 import { AddPrayerRequestForm } from '@/components/forms/add-prayer-request-form';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -80,15 +81,15 @@ import {
 import { useState } from 'react';
 
 const CATEGORY_COLOR_MAP: Record<string, string> = {
-  Health: 'bg-red-100 text-red-800',
-  Financial: 'bg-green-100 text-green-800',
-  Family: 'bg-pink-100 text-pink-800',
-  Relationship: 'bg-blue-100 text-blue-800',
-  Career: 'bg-purple-100 text-purple-800',
-  Spiritual: 'bg-yellow-100 text-yellow-800',
-  Thanksgiving: 'bg-emerald-100 text-emerald-800',
-  Guidance: 'bg-indigo-100 text-indigo-800',
-  Other: 'bg-gray-100 text-gray-800',
+  Health: 'bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200',
+  Financial: 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200',
+  Family: 'bg-pink-100 dark:bg-pink-950/60 text-pink-800 dark:text-pink-200',
+  Relationship: 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200',
+  Career: 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200',
+  Spiritual: 'bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200',
+  Thanksgiving: 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200',
+  Guidance: 'bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-200',
+  Other: 'bg-muted text-foreground',
 };
 
 const CATEGORY_BAR_COLOR_MAP: Record<string, string> = {
@@ -253,11 +254,11 @@ export default function PrayerPage() {
     switch ((priority || '').toLowerCase()) {
       case 'high':
       case 'urgent':
-        return <Badge className="bg-red-100 text-red-800">High</Badge>;
+        return <Badge className="bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200">High</Badge>;
       case 'medium':
-        return <Badge className="bg-yellow-100 text-yellow-800">Medium</Badge>;
+        return <Badge className="bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200">Medium</Badge>;
       case 'low':
-        return <Badge className="bg-green-100 text-green-800">Low</Badge>;
+        return <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">Low</Badge>;
       default:
         return <Badge variant="secondary">{priority}</Badge>;
     }
@@ -266,14 +267,14 @@ export default function PrayerPage() {
   const getStatusBadge = (status: string) => {
     switch ((status || '').toLowerCase()) {
       case 'active':
-        return <Badge className="bg-blue-100 text-blue-800">Active</Badge>;
+        return <Badge className="bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200">Active</Badge>;
       case 'in progress':
       case 'progress':
         return (
-          <Badge className="bg-yellow-100 text-yellow-800">In Progress</Badge>
+          <Badge className="bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200">In Progress</Badge>
         );
       case 'answered':
-        return <Badge className="bg-green-100 text-green-800">Answered</Badge>;
+        return <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">Answered</Badge>;
       case 'closed':
         return <Badge className="bg-muted text-foreground">Closed</Badge>;
       default:
@@ -284,17 +285,17 @@ export default function PrayerPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Active':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200';
       case 'In Progress':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200';
       case 'Answered':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200';
       case 'Closed':
         return 'bg-muted text-foreground';
       case 'Available':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200';
       case 'Full':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200';
       default:
         return 'bg-muted text-foreground';
     }
@@ -603,7 +604,7 @@ export default function PrayerPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Total Requests
             </CardTitle>
-            <div className="rounded-lg bg-blue-100 p-2">
+            <div className="rounded-lg bg-blue-100 dark:bg-blue-950/60 p-2">
               <Heart className="h-5 w-5 text-purple-600" />
             </div>
           </CardHeader>
@@ -621,7 +622,7 @@ export default function PrayerPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Active Requests
             </CardTitle>
-            <div className="rounded-lg bg-orange-100 p-2">
+            <div className="rounded-lg bg-orange-100 dark:bg-orange-950/60 p-2">
               <Clock className="h-5 w-5 text-orange-600" />
             </div>
           </CardHeader>
@@ -637,7 +638,7 @@ export default function PrayerPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Answered Prayers
             </CardTitle>
-            <div className="rounded-lg bg-green-100 p-2">
+            <div className="rounded-lg bg-green-100 dark:bg-green-950/60 p-2">
               <CheckCircle className="h-5 w-5 text-green-600" />
             </div>
           </CardHeader>
@@ -653,7 +654,7 @@ export default function PrayerPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Active Counselors
             </CardTitle>
-            <div className="rounded-lg bg-purple-100 p-2">
+            <div className="rounded-lg bg-purple-100 dark:bg-purple-950/60 p-2">
               <User className="h-5 w-5 text-purple-600" />
             </div>
           </CardHeader>
@@ -746,12 +747,7 @@ export default function PrayerPage() {
                 </div>
 
                 {isLoadingPrayers ? (
-                  <div className="flex items-center justify-center py-12">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                    <span className="ml-2 text-muted-foreground">
-                      Loading prayer requests...
-                    </span>
-                  </div>
+                  <InlineListSkeleton rows={5} />
                 ) : filteredRequests.length === 0 ? (
                   <div className="flex flex-col items-center justify-center rounded-md border border-dashed py-12 text-center">
                     <Heart className="mb-3 h-10 w-10 text-muted-foreground" />
@@ -811,7 +807,7 @@ export default function PrayerPage() {
                                           alt={request.requester}
                                           src={request.requesterAvatar}
                                         />
-                                        <AvatarFallback className="bg-blue-100 text-blue-600 text-xs">
+                                        <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-blue-600 text-xs">
                                           {(request.requester || 'P')
                                             .split(' ')
                                             .map((n: string) => n[0])
@@ -985,12 +981,7 @@ export default function PrayerPage() {
                 </CardHeader>
                 <CardContent>
                   {isLoadingCounselors ? (
-                    <div className="flex items-center justify-center py-12">
-                      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                      <span className="ml-2 text-muted-foreground">
-                        Loading counselors...
-                      </span>
-                    </div>
+                    <InlineListSkeleton rows={5} />
                   ) : counselors.length === 0 ? (
                     <div className="flex flex-col items-center justify-center rounded-md border border-dashed py-12 text-center">
                       <User className="mb-3 h-10 w-10 text-muted-foreground" />
@@ -1152,7 +1143,7 @@ export default function PrayerPage() {
                     {categoriesList.map((category) => {
                       const colorClass =
                         CATEGORY_COLOR_MAP[category.name] ||
-                        'bg-blue-100 text-blue-800';
+                        'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200';
                       return (
                         <Card
                           className="cursor-pointer transition-shadow hover:shadow-md"
@@ -1197,12 +1188,7 @@ export default function PrayerPage() {
             {/* Analytics Tab */}
             <TabsContent className="mt-6" value="analytics">
               {isLoadingStats ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  <span className="ml-2 text-muted-foreground">
-                    Loading analytics...
-                  </span>
-                </div>
+                <InlineListSkeleton rows={5} />
               ) : (
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <Card>

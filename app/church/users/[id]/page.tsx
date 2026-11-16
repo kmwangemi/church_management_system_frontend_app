@@ -4,7 +4,7 @@ import React from 'react';
 
 import RenderApiError from '@/components/api-error';
 import { getRoleBadge, getStatusBadge } from '@/components/helpers';
-import { SpinnerLoader } from '@/components/loaders/spinnerloader';
+import { DetailPageSkeleton } from '@/components/loaders/page-skeletons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -135,7 +135,7 @@ export default function MemberDetailsPage({
       {/* Header */}
       {isErrorUser && <RenderApiError error={errorUser} />}
       {isLoadingUser ? (
-        <SpinnerLoader description="Loading user data..." />
+        <DetailPageSkeleton />
       ) : (
         <>
           <div className="flex items-center justify-between">
@@ -182,7 +182,7 @@ export default function MemberDetailsPage({
                     alt={user?.user?.name || 'User'}
                     src={user?.user?.image ?? ''}
                   />
-                  <AvatarFallback className="bg-blue-100 text-blue-600">
+                  <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-blue-600">
                     {(user?.user?.name || 'User')
                       .split(' ')
                       .filter(Boolean)

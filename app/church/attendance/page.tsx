@@ -1,4 +1,5 @@
 'use client';
+import { CardGridSkeleton, InlineListSkeleton } from '@/components/loaders/page-skeletons';
 
 import { AttendanceCheckInForm } from '@/components/forms/attendance-check-in-form';
 import {
@@ -343,28 +344,28 @@ export default function AttendancePage() {
     switch (status) {
       case 'present':
         return (
-          <Badge className="border-green-200 bg-green-100 text-green-800">
+          <Badge className="border-green-200 dark:border-green-800 bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">
             <CheckCircle className="mr-1 h-3 w-3" />
             Present
           </Badge>
         );
       case 'absent':
         return (
-          <Badge className="border-red-200 bg-red-100 text-red-800">
+          <Badge className="border-red-200 dark:border-red-800 bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200">
             <XCircle className="mr-1 h-3 w-3" />
             Absent
           </Badge>
         );
       case 'late':
         return (
-          <Badge className="border-orange-200 bg-orange-100 text-orange-800">
+          <Badge className="border-orange-200 dark:border-orange-800 bg-orange-100 dark:bg-orange-950/60 text-orange-800 dark:text-orange-200">
             <Clock className="mr-1 h-3 w-3" />
             Late
           </Badge>
         );
       case 'excused':
         return (
-          <Badge className="border-blue-200 bg-blue-100 text-blue-800">
+          <Badge className="border-blue-200 dark:border-blue-800 bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200">
             <CheckCircle className="mr-1 h-3 w-3" />
             Excused
           </Badge>
@@ -431,7 +432,7 @@ export default function AttendancePage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Present Today
             </CardTitle>
-            <div className="rounded-lg bg-green-100 p-2">
+            <div className="rounded-lg bg-green-100 dark:bg-green-950/60 p-2">
               <UserCheck className="h-5 w-5 text-green-600" />
             </div>
           </CardHeader>
@@ -449,7 +450,7 @@ export default function AttendancePage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Absent Today
             </CardTitle>
-            <div className="rounded-lg bg-red-100 p-2">
+            <div className="rounded-lg bg-red-100 dark:bg-red-950/60 p-2">
               <UserX className="h-5 w-5 text-red-600" />
             </div>
           </CardHeader>
@@ -465,7 +466,7 @@ export default function AttendancePage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Late Arrivals
             </CardTitle>
-            <div className="rounded-lg bg-orange-100 p-2">
+            <div className="rounded-lg bg-orange-100 dark:bg-orange-950/60 p-2">
               <Clock className="h-5 w-5 text-orange-600" />
             </div>
           </CardHeader>
@@ -483,7 +484,7 @@ export default function AttendancePage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Attendance Rate
             </CardTitle>
-            <div className="rounded-lg bg-blue-100 p-2">
+            <div className="rounded-lg bg-blue-100 dark:bg-blue-950/60 p-2">
               <TrendingUp className="h-5 w-5 text-blue-600" />
             </div>
           </CardHeader>
@@ -534,12 +535,7 @@ export default function AttendancePage() {
             </CardHeader>
             <CardContent>
               {isLoadingToday ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  <span className="ml-3 text-muted-foreground">
-                    Loading attendance data...
-                  </span>
-                </div>
+                <InlineListSkeleton rows={5} />
               ) : todayError ? (
                 <div className="py-12 text-center text-destructive">
                   Error loading attendance data. Please try again.
@@ -580,7 +576,7 @@ export default function AttendancePage() {
                                     alt={getFullName(member.user)}
                                     src={member.user?.profilePictureUrl || ''}
                                   />
-                                  <AvatarFallback className="bg-blue-100 text-blue-600">
+                                  <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-blue-600">
                                     {`${getFirstLetter(member.user?.firstName || '')}${getFirstLetter(member.user?.lastName || '')}`}
                                   </AvatarFallback>
                                 </Avatar>
@@ -739,12 +735,7 @@ export default function AttendancePage() {
             </CardHeader>
             <CardContent>
               {isLoadingHistory ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  <span className="ml-3 text-muted-foreground">
-                    Loading history...
-                  </span>
-                </div>
+                <InlineListSkeleton rows={5} />
               ) : historyError ? (
                 <div className="py-12 text-center text-destructive">
                   Error loading attendance history. Please try again.
@@ -804,10 +795,10 @@ export default function AttendancePage() {
                                 <Badge
                                   className={
                                     (record.attendancePercentage || 0) >= 80
-                                      ? 'bg-green-100 text-green-800'
+                                      ? 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200'
                                       : (record.attendancePercentage || 0) >= 60
-                                        ? 'bg-yellow-100 text-yellow-800'
-                                        : 'bg-red-100 text-red-800'
+                                        ? 'bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200'
+                                        : 'bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200'
                                   }
                                 >
                                   {record.attendancePercentage ?? 0}%

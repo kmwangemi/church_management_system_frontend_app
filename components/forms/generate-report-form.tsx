@@ -1,4 +1,5 @@
 'use client';
+import { CardGridSkeleton, InlineListSkeleton } from '@/components/loaders/page-skeletons';
 
 import RenderApiError from '@/components/api-error';
 import { DatePicker } from '@/components/date-picker';
@@ -97,10 +98,7 @@ export function GenerateReportForm({ onCloseDialog }: GenerateReportFormProps) {
   };
   if (isLoadingDepartments) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin" />
-        <span className="ml-2">Loading department groups...</span>
-      </div>
+      <InlineListSkeleton rows={4} />
     );
   }
   return (

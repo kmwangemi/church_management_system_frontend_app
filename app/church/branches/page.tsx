@@ -16,7 +16,7 @@ import {
 import RenderApiError from '@/components/api-error';
 import { DeleteBranchDialog } from '@/components/dialogs/delete-branch-dialog';
 import { AddBranchForm } from '@/components/forms/add-branch-form';
-import { SpinnerLoader } from '@/components/loaders/spinnerloader';
+import { TableSkeleton } from '@/components/loaders/page-skeletons';
 import SearchInput from '@/components/search-input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -489,7 +489,7 @@ export default function BranchesPage() {
                 <RenderApiError error={errorDeleteBranch} />
               )}
               {isLoadingBranches ? (
-                <SpinnerLoader description="Loading branches..." />
+                <TableSkeleton rows={5} columns={6} />
               ) : (
                 <div className="mt-6">
                   <div className="rounded-md border">

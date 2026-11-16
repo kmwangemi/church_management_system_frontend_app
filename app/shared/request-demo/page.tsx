@@ -118,7 +118,7 @@ export default function RequestDemoPage() {
                 {/* Personal Information */}
                 <div className="space-y-4">
                   <h3 className="flex items-center font-semibold text-foreground text-lg">
-                    <div className="mr-3 flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-600 text-sm">
+                    <div className="mr-3 flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-950/60 font-bold text-blue-600 text-sm">
                       1
                     </div>
                     Personal Information
@@ -207,7 +207,7 @@ export default function RequestDemoPage() {
                 {/* Church Information */}
                 <div className="space-y-4">
                   <h3 className="flex items-center font-semibold text-foreground text-lg">
-                    <div className="mr-3 flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-600 text-sm">
+                    <div className="mr-3 flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-950/60 font-bold text-blue-600 text-sm">
                       2
                     </div>
                     Church Information

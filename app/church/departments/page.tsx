@@ -30,7 +30,7 @@ import {
 import RenderApiError from '@/components/api-error';
 import { DeleteDepartmentDialog } from '@/components/dialogs/delete-department-dialog';
 import { AddDepartmentForm } from '@/components/forms/add-department-form';
-import { SpinnerLoader } from '@/components/loaders/spinnerloader';
+import { CardGridSkeleton } from '@/components/loaders/page-skeletons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -409,7 +409,7 @@ export default function DepartmentsPage() {
           )}
           {/* Departments Grid */}
           {isLoadingDepartments ? (
-            <SpinnerLoader description="Loading departments..." />
+            <CardGridSkeleton cards={6} columns={3} />
           ) : departments?.departments && departments.departments.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {departments.departments.map((dept) => (

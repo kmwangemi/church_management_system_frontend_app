@@ -197,10 +197,10 @@ export default function SuperAdminDashboard() {
                     <Progress
                       className={`h-2 ${
                         metric.status === 'excellent'
-                          ? 'bg-green-100'
+                          ? 'bg-green-100 dark:bg-green-950/60'
                           : metric.status === 'good'
-                            ? 'bg-blue-100'
-                            : 'bg-yellow-100'
+                            ? 'bg-blue-100 dark:bg-blue-950/60'
+                            : 'bg-yellow-100 dark:bg-yellow-950/60'
                       }`}
                       value={metric.value}
                     />

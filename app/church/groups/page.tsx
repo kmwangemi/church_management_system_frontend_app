@@ -3,7 +3,7 @@
 import RenderApiError from '@/components/api-error';
 import { DeleteGroupDialog } from '@/components/dialogs/delete-group-dialog';
 import { AddSmallGroupForm } from '@/components/forms/add-small-group-form';
-import { SpinnerLoader } from '@/components/loaders/spinnerloader';
+import { TableSkeleton } from '@/components/loaders/page-skeletons';
 import SearchInput from '@/components/search-input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -484,7 +484,7 @@ export default function SmallGroupsPage() {
                 <RenderApiError error={errorDeleteGroup} />
               )}
               {isLoadingSmallGroups ? (
-                <SpinnerLoader description="Loading groups..." />
+                <TableSkeleton rows={5} columns={6} />
               ) : smallGroups?.groups && smallGroups.groups.length > 0 ? (
                 <Table>
                   <TableHeader>

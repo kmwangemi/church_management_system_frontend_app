@@ -150,11 +150,11 @@ export default function MemberSpiritualJourneyPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200';
       case 'active':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200';
       case 'paused':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200';
       default:
         return 'bg-muted text-foreground';
     }
@@ -563,7 +563,7 @@ export default function MemberSpiritualJourneyPage() {
                     </div>
                     <div className="flex space-x-2">
                       {week.completed ? (
-                        <Badge className="bg-green-100 text-green-800">
+                        <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">
                           Completed
                         </Badge>
                       ) : (

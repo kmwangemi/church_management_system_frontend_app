@@ -102,11 +102,11 @@ export default function BranchesPage() {
   const getStatusBadge = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'active':
-        return <Badge className="bg-green-100 text-green-800">Active</Badge>;
+        return <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">Active</Badge>;
       case 'pending':
-        return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
+        return <Badge className="bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200">Pending</Badge>;
       case 'inactive':
-        return <Badge className="bg-red-100 text-red-800">Inactive</Badge>;
+        return <Badge className="bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200">Inactive</Badge>;
       default:
         return <Badge variant="secondary">{status || 'Active'}</Badge>;
     }

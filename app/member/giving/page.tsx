@@ -350,7 +350,7 @@ export default function MemberGiving() {
                     key={gift.id}
                   >
                     <div className="flex items-center space-x-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-950/60">
                         <DollarSign className="h-5 w-5 text-green-600" />
                       </div>
                       <div>
@@ -364,7 +364,7 @@ export default function MemberGiving() {
                     <div className="text-right">
                       <p className="font-semibold">KES {gift.amount}</p>
                       <Badge
-                        className="bg-green-100 text-green-800"
+                        className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200"
                         variant="secondary"
                       >
                         {gift.status}

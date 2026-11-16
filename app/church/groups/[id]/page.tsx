@@ -8,7 +8,7 @@ import { DeleteMemberDialog } from '@/components/dialogs/delete-member-dialog';
 import { AddGroupActivityForm } from '@/components/forms/add-group-activity-form';
 import { AddGroupGoalForm } from '@/components/forms/add-group-goal-form';
 import { AddGroupMemberForm } from '@/components/forms/add-group-member-form';
-import { SpinnerLoader } from '@/components/loaders/spinnerloader';
+import { CardGridSkeleton, DetailPageSkeleton, TableSkeleton } from '@/components/loaders/page-skeletons';
 import { MultiSelect } from '@/components/multi-select';
 import { NumberInput } from '@/components/number-input';
 import { TimeInput } from '@/components/time-input';
@@ -595,7 +595,7 @@ export default function GroupDetailsPage({
       </div>
       {isErrorGroupDetails && <RenderApiError error={errorGroupDetails} />}
       {isLoadingGroupDetails ? (
-        <SpinnerLoader description="Loading group data..." />
+        <DetailPageSkeleton />
       ) : (
         <>
           {/* Overview Cards */}
@@ -952,7 +952,7 @@ export default function GroupDetailsPage({
                 <RenderApiError error={errorDeleteMember} />
               )}
               {isLoadingGroupMembers ? (
-                <SpinnerLoader description="Loading group members..." />
+                <TableSkeleton rows={5} columns={5} />
               ) : groupMembers?.data?.members &&
                 groupMembers.data.members.length > 0 ? (
                 <Card>
@@ -1052,7 +1052,7 @@ export default function GroupDetailsPage({
                 <RenderApiError error={errorAttendanceSummary} />
               )}
               {isLoadingAttendanceSummary ? (
-                <SpinnerLoader description="Loading attendance summary..." />
+                <CardGridSkeleton cards={4} columns={2} />
               ) : AttendanceSummary?.data?.summaries &&
                 AttendanceSummary.data.summaries.length > 0 ? (
                 <Card>
@@ -1275,7 +1275,7 @@ export default function GroupDetailsPage({
                 <RenderApiError error={errorDeleteActivity} />
               )}
               {isLoadingGroupActivities ? (
-                <SpinnerLoader description="Loading group activities..." />
+                <CardGridSkeleton cards={4} columns={2} />
               ) : groupActivities?.activities &&
                 groupActivities.activities.length > 0 ? (
                 <Card>
@@ -1434,7 +1434,7 @@ export default function GroupDetailsPage({
               {isErrorGroupGoals && <RenderApiError error={errorGroupGoals} />}
               {isErrorDeleteGoal && <RenderApiError error={errorDeleteGoal} />}
               {isLoadingGroupGoals ? (
-                <SpinnerLoader description="Loading group goals..." />
+                <CardGridSkeleton cards={4} columns={2} />
               ) : groupGoals?.data?.goals &&
                 groupGoals.data.goals.length > 0 ? (
                 <Card>

@@ -24,14 +24,14 @@ const getRoleColor = (role: string) => {
   switch (role.toLowerCase()) {
     case 'pastor':
     case 'bishop':
-      return 'bg-purple-100 text-purple-800';
+      return 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200';
     case 'admin':
     case 'church_admin':
     case 'owner':
-      return 'bg-blue-100 text-blue-800';
+      return 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200';
     case 'finance':
     case 'treasurer':
-      return 'bg-green-100 text-green-800';
+      return 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200';
     default:
       return 'bg-muted text-foreground';
   }
@@ -118,7 +118,7 @@ export function ChurchSidebar({
               className={cn(
                 'flex items-center justify-between rounded-lg px-3 py-2.5 font-medium text-sm transition-all duration-200',
                 isActive
-                  ? 'border border-blue-200 bg-blue-50 text-blue-700'
+                  ? 'border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300'
                   : 'text-muted-foreground hover:bg-accent hover:text-foreground'
               )}
               href={item.href}
@@ -147,14 +147,14 @@ export function ChurchSidebar({
         })}
       </nav>
       <div className="border-t p-4">
-        <div className="rounded-lg bg-blue-50 p-3">
+        <div className="rounded-lg bg-blue-50 dark:bg-blue-950/40 p-3">
           <div className="mb-2 flex items-center space-x-2">
             <BookOpen className="h-4 w-4 text-blue-600" />
-            <span className="font-medium text-blue-900 text-sm">
+            <span className="font-medium text-blue-900 dark:text-blue-100 text-sm">
               Need Help?
             </span>
           </div>
-          <p className="mb-2 text-blue-700 text-xs">
+          <p className="mb-2 text-blue-700 dark:text-blue-300 text-xs">
             Check our documentation and tutorials
           </p>
           <Button

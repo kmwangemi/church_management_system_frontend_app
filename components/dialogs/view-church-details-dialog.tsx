@@ -46,13 +46,13 @@ export function ViewChurchDetailsDialog({
   const getStatusBadge = (status: string) => {
     switch (status?.toUpperCase()) {
       case 'ACTIVE':
-        return <Badge className="bg-green-100 text-green-800">Active</Badge>;
+        return <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">Active</Badge>;
       case 'PENDING':
-        return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
+        return <Badge className="bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200">Pending</Badge>;
       case 'SUSPENDED':
-        return <Badge className="bg-red-100 text-red-800">Suspended</Badge>;
+        return <Badge className="bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200">Suspended</Badge>;
       case 'INACTIVE':
-        return <Badge className="bg-gray-100 text-gray-800">Inactive</Badge>;
+        return <Badge className="bg-muted text-foreground">Inactive</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -60,13 +60,13 @@ export function ViewChurchDetailsDialog({
   const getPlanBadge = (plan?: string) => {
     switch (plan?.toUpperCase()) {
       case 'CUSTOM':
-        return <Badge className="bg-purple-100 text-purple-800">Custom</Badge>;
+        return <Badge className="bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200">Custom</Badge>;
       case 'CATHEDRAL':
-        return <Badge className="bg-blue-100 text-blue-800">Cathedral</Badge>;
+        return <Badge className="bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200">Cathedral</Badge>;
       case 'MINISTRY':
         return <Badge className="bg-muted text-foreground">Ministry</Badge>;
       case 'BASIC':
-        return <Badge className="bg-emerald-100 text-emerald-800">Basic</Badge>;
+        return <Badge className="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200">Basic</Badge>;
       default:
         return <Badge variant="secondary">{plan || 'None'}</Badge>;
     }

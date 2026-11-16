@@ -109,7 +109,7 @@ export default function LandingPage() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild className="cursor-pointer">
                 <Button
-                  className="flex items-center gap-1 px-2 text-xs hover:bg-blue-50 sm:gap-2 sm:px-3 sm:text-sm dark:hover:bg-gray-800"
+                  className="flex items-center gap-1 px-2 text-xs hover:bg-blue-50 dark:bg-blue-950/40 sm:gap-2 sm:px-3 sm:text-sm dark:hover:bg-gray-800"
                   size="sm"
                   variant="ghost"
                 >
@@ -140,7 +140,7 @@ export default function LandingPage() {
             </Link>
             <Link href="/auth/member">
               <Button
-                className="px-2.5 text-xs hover:bg-blue-50 sm:px-4 sm:text-sm dark:hover:bg-gray-800"
+                className="px-2.5 text-xs hover:bg-blue-50 dark:bg-blue-950/40 sm:px-4 sm:text-sm dark:hover:bg-gray-800"
                 size="sm"
                 variant="ghost"
               >
@@ -155,7 +155,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-purple-600/5" />
         <div className="container relative mx-auto text-center">
           <div className="mb-8 flex justify-center">
-            <div className="flex items-center space-x-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 px-4 py-2 font-medium text-blue-800 text-sm shadow-lg">
+            <div className="flex items-center space-x-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 px-4 py-2 font-medium text-blue-800 text-sm shadow-lg dark:from-blue-950/80 dark:to-purple-950/80 dark:text-blue-200">
               <Star className="h-4 w-4 text-yellow-500" />
               <span>Trusted by 100+ Churches Worldwide</span>
               <Award className="h-4 w-4 text-yellow-500" />
@@ -184,7 +184,7 @@ export default function LandingPage() {
             </Link>
             <Link href="/auth/member">
               <Button
-                className="transform border-2 border-blue-600 bg-transparent px-10 py-4 text-blue-600 text-lg shadow-lg transition-all duration-300 hover:scale-105 hover:bg-blue-600 hover:text-white hover:shadow-xl"
+                className="transform border-2 border-blue-600 bg-transparent px-10 py-4 text-blue-600 text-lg shadow-lg transition-all duration-300 hover:scale-105 hover:bg-blue-600 hover:text-white hover:shadow-xl dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-500 dark:hover:text-white"
                 size="lg"
                 variant="outline"
               >
@@ -214,10 +214,10 @@ export default function LandingPage() {
         </div>
       </section>
       {/* Features Grid */}
-      <section className="bg-gradient-to-b from-gray-50 to-white px-4 py-24">
+      <section className="bg-gradient-to-b from-gray-50 to-white px-4 py-24 dark:from-gray-900 dark:to-gray-950">
         <div className="container mx-auto">
           <div className="mb-20 text-center">
-            <h2 className="mb-6 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text font-bold text-4xl text-transparent md:text-5xl">
+            <h2 className="mb-6 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text font-bold text-4xl text-transparent md:text-5xl dark:from-gray-100 dark:to-gray-300">
               Everything Your Church Needs
             </h2>
             <p className="mx-auto max-w-3xl text-muted-foreground text-xl leading-relaxed">
@@ -234,7 +234,7 @@ export default function LandingPage() {
                 description:
                   'Complete member profiles with role-based access, attendance tracking, and department organization',
                 color: 'text-blue-600',
-                bgColor: 'bg-blue-50',
+                bgColor: 'bg-blue-50 dark:bg-blue-950/40',
               },
               {
                 icon: DollarSign,
@@ -242,7 +242,7 @@ export default function LandingPage() {
                 description:
                   'Track tithes, offerings, pledges with mobile payment integration including M-Pesa API',
                 color: 'text-green-600',
-                bgColor: 'bg-green-50',
+                bgColor: 'bg-green-50 dark:bg-green-950/40',
               },
               {
                 icon: Calendar,
@@ -250,7 +250,7 @@ export default function LandingPage() {
                 description:
                   'Schedule services, meetings, and special events with RSVP tracking and automated reminders',
                 color: 'text-purple-600',
-                bgColor: 'bg-purple-50',
+                bgColor: 'bg-purple-50 dark:bg-purple-950/40',
               },
               {
                 icon: BarChart3,
@@ -258,7 +258,7 @@ export default function LandingPage() {
                 description:
                   'Comprehensive reports on attendance trends, giving patterns, and church growth statistics',
                 color: 'text-orange-600',
-                bgColor: 'bg-orange-50',
+                bgColor: 'bg-orange-50 dark:bg-orange-950/40',
               },
               {
                 icon: MessageSquare,
@@ -266,7 +266,7 @@ export default function LandingPage() {
                 description:
                   'SMS/Email alerts via Twilio & SendGrid, member notification board, and announcement system',
                 color: 'text-blue-600',
-                bgColor: 'bg-blue-50',
+                bgColor: 'bg-blue-50 dark:bg-blue-950/40',
               },
               {
                 icon: Heart,
@@ -274,7 +274,7 @@ export default function LandingPage() {
                 description:
                   'Track new converts, discipleship class progression, and spiritual growth milestones',
                 color: 'text-red-600',
-                bgColor: 'bg-red-50',
+                bgColor: 'bg-red-50 dark:bg-red-950/40',
               },
               {
                 icon: Shield,
@@ -290,7 +290,7 @@ export default function LandingPage() {
                 description:
                   'Hierarchical structure for multiple church locations and department management',
                 color: 'text-indigo-600',
-                bgColor: 'bg-indigo-50',
+                bgColor: 'bg-indigo-50 dark:bg-indigo-950/40',
               },
             ].map((feature, index) => (
               <Card
@@ -316,10 +316,10 @@ export default function LandingPage() {
         </div>
       </section>
       {/* Testimonials */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 px-4 py-24">
+      <section className="bg-gradient-to-r from-blue-50 to-purple-50 px-4 py-24 dark:from-gray-900 dark:to-gray-800">
         <div className="container mx-auto">
           <div className="mb-20 text-center">
-            <h2 className="mb-6 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text font-bold text-4xl text-transparent md:text-5xl">
+            <h2 className="mb-6 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text font-bold text-4xl text-transparent md:text-5xl dark:from-gray-100 dark:to-gray-300">
               Loved by Church Leaders
             </h2>
             <p className="text-muted-foreground text-xl">
@@ -368,7 +368,7 @@ export default function LandingPage() {
                     <p className="font-semibold text-foreground text-lg">
                       {testimonial.author}
                     </p>
-                    <p className="font-medium text-blue-600">
+                    <p className="font-medium text-blue-600 dark:text-blue-400">
                       {testimonial.position}
                     </p>
                   </div>
@@ -382,10 +382,10 @@ export default function LandingPage() {
       <section className="bg-background px-4 py-24">
         <div className="container mx-auto">
           <div className="mb-16 text-center">
-            <p className="mb-4 font-semibold text-blue-600 text-lg">
+            <p className="mb-4 font-semibold text-blue-600 text-lg dark:text-blue-400">
               Ministry Partners we're blessed to serve
             </p>
-            <h2 className="mb-6 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text font-bold text-4xl text-transparent md:text-5xl">
+            <h2 className="mb-6 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text font-bold text-4xl text-transparent md:text-5xl dark:from-gray-100 dark:to-gray-300">
               Churches that are
               <span className="block">blessed with ChurchHub</span>
             </h2>
@@ -424,7 +424,7 @@ export default function LandingPage() {
             >
               {partners.map((partner, index) => (
                 <div className="group flex-shrink-0" key={index}>
-                  <div className="hover:-translate-y-2 flex h-32 w-48 flex-col items-center justify-center rounded-2xl border border-border bg-gradient-to-br from-gray-50 to-white shadow-md transition-all duration-300 hover:border-blue-200 hover:shadow-xl">
+                  <div className="hover:-translate-y-2 flex h-32 w-48 flex-col items-center justify-center rounded-2xl border border-border bg-gradient-to-br from-gray-50 to-white shadow-md transition-all duration-300 hover:border-blue-200 hover:shadow-xl dark:from-gray-800 dark:to-gray-900 dark:hover:border-blue-700">
                     <div className="mb-2 text-4xl transition-transform duration-300 group-hover:scale-110">
                       {partner.logo}
                     </div>
@@ -453,8 +453,9 @@ export default function LandingPage() {
           </p>
           <Link href="/shared/request-demo">
             <Button
-              className="transform bg-background px-12 py-4 text-lg text-white shadow-2xl transition-all duration-300 hover:scale-105 hover:bg-muted hover:shadow-3xl"
+              className="transform bg-none bg-white px-12 py-4 font-semibold text-blue-700 text-lg shadow-2xl transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:shadow-3xl dark:bg-white dark:text-blue-700 dark:hover:bg-blue-50"
               size="lg"
+              variant="secondary"
             >
               <Globe className="mr-2 h-5 w-5" />
               Request a Demo

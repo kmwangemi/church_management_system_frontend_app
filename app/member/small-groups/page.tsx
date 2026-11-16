@@ -123,15 +123,15 @@ export default function MemberSmallGroupsPage() {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'bible-study':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200';
       case 'prayer':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200';
       case 'discipleship':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200';
       case 'family':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-orange-100 dark:bg-orange-950/60 text-orange-800 dark:text-orange-200';
       case 'youth':
-        return 'bg-pink-100 text-pink-800';
+        return 'bg-pink-100 dark:bg-pink-950/60 text-pink-800 dark:text-pink-200';
       default:
         return 'bg-muted text-foreground';
     }
@@ -290,7 +290,7 @@ export default function MemberSmallGroupsPage() {
                       </div>
                     </div>
                     {group.isJoined && (
-                      <Badge className="bg-green-100 text-green-800">
+                      <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">
                         Joined
                       </Badge>
                     )}
@@ -389,7 +389,7 @@ export default function MemberSmallGroupsPage() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <CardTitle className="text-lg">{group.name}</CardTitle>
-                    <Badge className="bg-green-100 text-green-800">
+                    <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">
                       Active
                     </Badge>
                   </div>

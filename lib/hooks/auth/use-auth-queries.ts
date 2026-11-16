@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import apiClient from '@/lib/api-client';
+import { getLoginRoute } from '@/lib/auth-redirect';
 import { useAuthStore } from '@/lib/store/use-auth-store';
 
 // -------------
@@ -60,13 +61,19 @@ export const useAuthStatus = () => {
 // Logout
 // -------------
 
-const logoutRequest = async (): Promise<void> => {
-  const refreshToken = useAuthStore.getState().refreshToken;
+const logoutRequest = async (): Promise<string> => {
+  const state = useAuthStore.getState();
+  const refreshToken = state.refreshToken;
+  const target = getLoginRoute(
+    state.user?.role || state.user?.globalRole,
+    typeof window !== 'undefined' ? window.location.pathname : undefined
+  );
   try {
     await apiClient.post('/auth/logout', { refresh_token: refreshToken });
   } finally {
     useAuthStore.getState().logout();
   }
+  return target;
 };
 
 export const useLogout = () => {
@@ -74,16 +81,20 @@ export const useLogout = () => {
   const router = useRouter();
   return useMutation({
     mutationFn: logoutRequest,
-    onSuccess: () => {
+    onSuccess: (target) => {
       queryClient.clear(); // Clear all queries
-      router.push('/auth/member');
+      router.push(target);
     },
     onError: (error) => {
       // biome-ignore lint/suspicious/noConsole: ignore
       console.error('Logout failed:', error);
       // Still redirect on error as the intent is to logout
+      const target = getLoginRoute(
+        undefined,
+        typeof window !== 'undefined' ? window.location.pathname : undefined
+      );
       queryClient.clear();
-      router.push('/auth/member');
+      router.push(target);
     },
   });
 };

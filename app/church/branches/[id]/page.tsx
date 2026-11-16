@@ -9,7 +9,7 @@ import { ActivityForm } from '@/components/forms/activity-form';
 import { AddDepartmentForm } from '@/components/forms/add-department-form';
 import { ServiceScheduleForm } from '@/components/forms/service-schedule-form';
 import { getRoleBadge } from '@/components/helpers';
-import { SpinnerLoader } from '@/components/loaders/spinnerloader';
+import { CardGridSkeleton, DetailPageSkeleton, TableSkeleton } from '@/components/loaders/page-skeletons';
 import { NumberInput } from '@/components/number-input';
 import { PhoneInput } from '@/components/phone-number-input';
 import ReusableSelect from '@/components/reusable-select';
@@ -396,7 +396,7 @@ export default function BranchDetailsPage({
       {isErrorBranch && <RenderApiError error={errorBranch} />}
       {isErrorUpdateBranch && <RenderApiError error={errorUpdateBranch} />}
       {isLoadingBranch ? (
-        <SpinnerLoader description="Loading branch data..." />
+        <DetailPageSkeleton />
       ) : (
         <>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -951,7 +951,7 @@ export default function BranchDetailsPage({
                     </TabsList>
                     {isErrorUsers && <RenderApiError error={errorUsers} />}
                     {isLoadingUsers ? (
-                      <SpinnerLoader description="Loading members..." />
+                      <TableSkeleton rows={5} columns={5} />
                     ) : (
                       <TabsContent className="mt-6" value={selectedTab}>
                         <div className="rounded-md border">
@@ -981,7 +981,7 @@ export default function BranchDetailsPage({
                                           alt={user?.firstName || 'User'}
                                           src={user?.profilePictureUrl ?? ''}
                                         />
-                                        <AvatarFallback className="bg-blue-100 text-blue-600">
+                                        <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-blue-600">
                                           {`${getFirstLetter(user?.firstName || '')}${getFirstLetter(user?.lastName || '')}`}
                                         </AvatarFallback>
                                       </Avatar>
@@ -1122,7 +1122,7 @@ export default function BranchDetailsPage({
                 <RenderApiError error={errorDepartments} />
               )}
               {isLoadingDepartments ? (
-                <SpinnerLoader description="Loading departments..." />
+                <CardGridSkeleton cards={4} columns={2} />
               ) : (
                 <div className="grid gap-4 md:grid-cols-2">
                   {departments?.departments?.map((dept) => (
@@ -1239,7 +1239,7 @@ export default function BranchDetailsPage({
                 <RenderApiError error={errorDeleteSchedule} />
               )}
               {isLoadingSchedules ? (
-                <SpinnerLoader description="Loading service schedules..." />
+                <CardGridSkeleton cards={4} columns={2} />
               ) : (
                 <Card>
                   <CardContent className="p-0">
@@ -1407,7 +1407,7 @@ export default function BranchDetailsPage({
                 <RenderApiError error={errorDeleteActivity} />
               )}
               {isLoadingActivities ? (
-                <SpinnerLoader description="Loading activities..." />
+                <CardGridSkeleton cards={4} columns={2} />
               ) : (
                 <Card>
                   <CardContent className="p-0">
