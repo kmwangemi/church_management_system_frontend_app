@@ -110,8 +110,8 @@ export function GenerateReportForm({ onCloseDialog }: GenerateReportFormProps) {
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <BarChart3 className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                <BarChart3 className="h-5 w-5 shrink-0" />
                 <span>Report Configuration</span>
               </CardTitle>
               <CardDescription>
@@ -148,7 +148,7 @@ export function GenerateReportForm({ onCloseDialog }: GenerateReportFormProps) {
                         value={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className="cursor-pointer">
+                          <SelectTrigger className="w-full cursor-pointer">
                             <SelectValue placeholder="Select type" />
                           </SelectTrigger>
                         </FormControl>
@@ -181,7 +181,7 @@ export function GenerateReportForm({ onCloseDialog }: GenerateReportFormProps) {
                         value={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className="cursor-pointer">
+                          <SelectTrigger className="w-full cursor-pointer">
                             <SelectValue placeholder="Select format" />
                           </SelectTrigger>
                         </FormControl>
@@ -229,7 +229,7 @@ export function GenerateReportForm({ onCloseDialog }: GenerateReportFormProps) {
                     </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger className="cursor-pointer">
+                        <SelectTrigger className="w-full cursor-pointer">
                           <SelectValue placeholder="Select date range" />
                         </SelectTrigger>
                       </FormControl>
@@ -307,18 +307,18 @@ export function GenerateReportForm({ onCloseDialog }: GenerateReportFormProps) {
               )}
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Users className="h-5 w-5" />
+                  <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-base sm:text-lg">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
                       <span>Departments</span>
                       <span className="text-red-500">*</span>
                     </div>
-                    <Badge variant="secondary">
+                    <Badge className="shrink-0" variant="secondary">
                       {getTotalDepartments()} departments selected
                     </Badge>
                   </CardTitle>
                   <CardDescription>
-                    Select atleast one department to include to the report{' '}
+                    Select at least one department to include in the report
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -327,7 +327,7 @@ export function GenerateReportForm({ onCloseDialog }: GenerateReportFormProps) {
                     name="departments"
                     render={() => (
                       <FormItem>
-                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                           {reportDepartmentGroups.map((group) => (
                             <FormField
                               control={form.control}
@@ -336,7 +336,7 @@ export function GenerateReportForm({ onCloseDialog }: GenerateReportFormProps) {
                               render={({ field }) => {
                                 return (
                                   <FormItem
-                                    className="flex flex-row items-center space-x-3 space-y-0 rounded-lg border p-3 hover:bg-accent"
+                                    className="flex flex-row items-center gap-3 space-y-0 rounded-lg border p-3 hover:bg-accent"
                                     key={group.id}
                                   >
                                     <FormControl>
@@ -354,8 +354,8 @@ export function GenerateReportForm({ onCloseDialog }: GenerateReportFormProps) {
                                         }}
                                       />
                                     </FormControl>
-                                    <div className="flex-1">
-                                      <FormLabel className="cursor-pointer font-medium text-sm">
+                                    <div className="min-w-0 flex-1">
+                                      <FormLabel className="block cursor-pointer truncate font-medium text-sm">
                                         {group.name}
                                       </FormLabel>
                                       <p className="text-muted-foreground text-xs">
@@ -418,8 +418,9 @@ export function GenerateReportForm({ onCloseDialog }: GenerateReportFormProps) {
               </div>
             </CardContent>
           </Card>
-          <div className="flex justify-end space-x-4">
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
             <Button
+              className="w-full sm:w-auto"
               onClick={handleCancelDialog}
               type="button"
               variant="outline"
@@ -427,6 +428,7 @@ export function GenerateReportForm({ onCloseDialog }: GenerateReportFormProps) {
               Cancel
             </Button>
             <Button
+              className="w-full sm:w-auto"
               disabled={isPending}
               type="submit"
             >

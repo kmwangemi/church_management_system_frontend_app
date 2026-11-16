@@ -486,7 +486,7 @@ export default function AssetsPage() {
             Manage church assets, properties, and equipment
           </p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Button
             onClick={() => setIsImportDialogOpen(true)}
             size="sm"
@@ -501,7 +501,7 @@ export default function AssetsPage() {
           </Button>
           <Dialog onOpenChange={setIsDialogOpen} open={isDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button size="sm">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Asset
               </Button>

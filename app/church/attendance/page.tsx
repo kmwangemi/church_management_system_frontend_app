@@ -388,7 +388,7 @@ export default function AttendancePage() {
             Track member attendance and service participation
           </p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Button
             onClick={() => setIsQrOpen(true)}
             size="sm"
@@ -403,7 +403,7 @@ export default function AttendancePage() {
           </Button>
           <Dialog onOpenChange={setIsCheckInOpen} open={isCheckInOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button size="sm">
                 <UserCheck className="mr-2 h-4 w-4" />
                 Manual Check-in
               </Button>
