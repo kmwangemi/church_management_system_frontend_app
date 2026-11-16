@@ -262,36 +262,36 @@ export default function MemberAnalytics() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between rounded-lg bg-green-50 p-3">
+                <div className="flex items-center justify-between rounded-lg bg-green-50 dark:bg-green-950/40 p-3">
                   <div>
-                    <p className="font-medium text-green-900">Best Month</p>
-                    <p className="text-green-700 text-sm">
+                    <p className="font-medium text-green-900 dark:text-green-100">Best Month</p>
+                    <p className="text-green-700 dark:text-green-300 text-sm">
                       Perfect attendance in March & September
                     </p>
                   </div>
-                  <Badge className="bg-green-100 text-green-800">100%</Badge>
+                  <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">100%</Badge>
                 </div>
 
-                <div className="flex items-center justify-between rounded-lg bg-blue-50 p-3">
+                <div className="flex items-center justify-between rounded-lg bg-blue-50 dark:bg-blue-950/40 p-3">
                   <div>
-                    <p className="font-medium text-blue-900">Current Streak</p>
-                    <p className="text-blue-700 text-sm">
+                    <p className="font-medium text-blue-900 dark:text-blue-100">Current Streak</p>
+                    <p className="text-blue-700 dark:text-blue-300 text-sm">
                       4 consecutive services
                     </p>
                   </div>
-                  <Badge className="bg-blue-100 text-blue-800">Active</Badge>
+                  <Badge className="bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200">Active</Badge>
                 </div>
 
-                <div className="flex items-center justify-between rounded-lg bg-purple-50 p-3">
+                <div className="flex items-center justify-between rounded-lg bg-purple-50 dark:bg-purple-950/40 p-3">
                   <div>
-                    <p className="font-medium text-purple-900">
+                    <p className="font-medium text-purple-900 dark:text-purple-100">
                       Special Events
                     </p>
-                    <p className="text-purple-700 text-sm">
+                    <p className="text-purple-700 dark:text-purple-300 text-sm">
                       Attended 6 out of 8 special events
                     </p>
                   </div>
-                  <Badge className="bg-purple-100 text-purple-800">75%</Badge>
+                  <Badge className="bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200">75%</Badge>
                 </div>
               </CardContent>
             </Card>
@@ -441,7 +441,7 @@ export default function MemberAnalytics() {
                         </p>
                       </div>
                     </div>
-                    <Badge className="bg-blue-100 text-blue-800">Active</Badge>
+                    <Badge className="bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200">Active</Badge>
                   </div>
 
                   <div className="flex items-center justify-between rounded-lg border p-3">
@@ -454,7 +454,7 @@ export default function MemberAnalytics() {
                         </p>
                       </div>
                     </div>
-                    <Badge className="bg-red-100 text-red-800">Active</Badge>
+                    <Badge className="bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200">Active</Badge>
                   </div>
 
                   <div className="flex items-center justify-between rounded-lg border p-3">
@@ -467,7 +467,7 @@ export default function MemberAnalytics() {
                         </p>
                       </div>
                     </div>
-                    <Badge className="bg-green-100 text-green-800">
+                    <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">
                       Regular
                     </Badge>
                   </div>
@@ -529,7 +529,7 @@ export default function MemberAnalytics() {
                         className="flex items-center space-x-4 rounded-lg border p-3"
                         key={index}
                       >
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-950/60">
                           <IconComponent className="h-5 w-5 text-yellow-600" />
                         </div>
                         <div className="flex-1">

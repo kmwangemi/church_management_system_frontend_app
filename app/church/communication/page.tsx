@@ -1,4 +1,5 @@
 'use client';
+import { TableRowsSkeleton, InlineListSkeleton, CardGridSkeleton } from '@/components/loaders/page-skeletons';
 
 import { CreateAnnouncementForm } from '@/components/forms/create-announcement-form';
 import { SendMessageForm } from '@/components/forms/send-message-form';
@@ -203,13 +204,13 @@ export default function CommunicationPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'Sent':
-        return <Badge className="bg-green-100 text-green-800">Sent</Badge>;
+        return <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">Sent</Badge>;
       case 'Scheduled':
-        return <Badge className="bg-blue-100 text-blue-800">Scheduled</Badge>;
+        return <Badge className="bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200">Scheduled</Badge>;
       case 'Draft':
         return <Badge className="bg-muted text-foreground">Draft</Badge>;
       case 'Failed':
-        return <Badge className="bg-red-100 text-red-800">Failed</Badge>;
+        return <Badge className="bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200">Failed</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -218,11 +219,11 @@ export default function CommunicationPage() {
   const getPriorityBadge = (priority: string) => {
     switch (priority) {
       case 'High':
-        return <Badge className="bg-red-100 text-red-800">High</Badge>;
+        return <Badge className="bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200">High</Badge>;
       case 'Medium':
-        return <Badge className="bg-yellow-100 text-yellow-800">Medium</Badge>;
+        return <Badge className="bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200">Medium</Badge>;
       case 'Low':
-        return <Badge className="bg-green-100 text-green-800">Low</Badge>;
+        return <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">Low</Badge>;
       default:
         return <Badge variant="secondary">{priority}</Badge>;
     }
@@ -471,7 +472,7 @@ export default function CommunicationPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Total Messages
             </CardTitle>
-            <div className="rounded-lg bg-blue-100 p-2">
+            <div className="rounded-lg bg-blue-100 dark:bg-blue-950/60 p-2">
               <MessageSquare className="h-5 w-5 text-blue-600" />
             </div>
           </CardHeader>
@@ -487,7 +488,7 @@ export default function CommunicationPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Sent Today
             </CardTitle>
-            <div className="rounded-lg bg-green-100 p-2">
+            <div className="rounded-lg bg-green-100 dark:bg-green-950/60 p-2">
               <Send className="h-5 w-5 text-green-600" />
             </div>
           </CardHeader>
@@ -503,7 +504,7 @@ export default function CommunicationPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Active Announcements
             </CardTitle>
-            <div className="rounded-lg bg-orange-100 p-2">
+            <div className="rounded-lg bg-orange-100 dark:bg-orange-950/60 p-2">
               <Bell className="h-5 w-5 text-orange-600" />
             </div>
           </CardHeader>
@@ -521,7 +522,7 @@ export default function CommunicationPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Total Recipients
             </CardTitle>
-            <div className="rounded-lg bg-purple-100 p-2">
+            <div className="rounded-lg bg-purple-100 dark:bg-purple-950/60 p-2">
               <Users className="h-5 w-5 text-purple-600" />
             </div>
           </CardHeader>
@@ -583,11 +584,7 @@ export default function CommunicationPage() {
                   </TableHeader>
                   <TableBody>
                     {isLoadingMessages ? (
-                      <TableRow>
-                        <TableCell className="py-8 text-center" colSpan={7}>
-                          <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
-                        </TableCell>
-                      </TableRow>
+                      <TableRowsSkeleton columns={7} rows={5} />
                     ) : activeMessages.length === 0 ? (
                       <TableRow>
                         <TableCell
@@ -726,11 +723,7 @@ export default function CommunicationPage() {
                   </TableHeader>
                   <TableBody>
                     {isLoadingAnnouncements ? (
-                      <TableRow>
-                        <TableCell className="py-8 text-center" colSpan={7}>
-                          <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
-                        </TableCell>
-                      </TableRow>
+                      <TableRowsSkeleton columns={7} rows={5} />
                     ) : activeAnnouncements.length === 0 ? (
                       <TableRow>
                         <TableCell
@@ -866,11 +859,7 @@ export default function CommunicationPage() {
                   </TableHeader>
                   <TableBody>
                     {isLoadingTemplates ? (
-                      <TableRow>
-                        <TableCell className="py-8 text-center" colSpan={6}>
-                          <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
-                        </TableCell>
-                      </TableRow>
+                      <TableRowsSkeleton columns={6} rows={5} />
                     ) : activeTemplates.length === 0 ? (
                       <TableRow>
                         <TableCell
@@ -1068,7 +1057,7 @@ export default function CommunicationPage() {
                   {selectedMessage.recipients ?? 0} Recipients
                 </Badge>
                 {selectedMessage.status === 'Sent' && (
-                  <Badge className="bg-green-100 text-green-800">
+                  <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">
                     Delivery: {selectedMessage.deliveryRate}%
                   </Badge>
                 )}

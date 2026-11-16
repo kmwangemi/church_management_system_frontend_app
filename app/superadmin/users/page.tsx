@@ -114,19 +114,19 @@ export default function UsersPage() {
   const getRoleBadge = (role: string) => {
     const r = role?.toLowerCase() || '';
     if (r.includes('super')) {
-      return <Badge className="bg-red-100 text-red-800">Super Admin</Badge>;
+      return <Badge className="bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200">Super Admin</Badge>;
     }
     if (r.includes('admin')) {
-      return <Badge className="bg-blue-100 text-blue-800">Church Admin</Badge>;
+      return <Badge className="bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200">Church Admin</Badge>;
     }
     if (r.includes('pastor')) {
-      return <Badge className="bg-purple-100 text-purple-800">Pastor</Badge>;
+      return <Badge className="bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200">Pastor</Badge>;
     }
     if (r.includes('staff')) {
-      return <Badge className="bg-amber-100 text-amber-800">Staff</Badge>;
+      return <Badge className="bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200">Staff</Badge>;
     }
     if (r.includes('volunteer')) {
-      return <Badge className="bg-green-100 text-green-800">Volunteer</Badge>;
+      return <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">Volunteer</Badge>;
     }
     return <Badge variant="secondary">{role || 'Member'}</Badge>;
   };
@@ -134,12 +134,12 @@ export default function UsersPage() {
   const getStatusBadge = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'active':
-        return <Badge className="bg-green-100 text-green-800">Active</Badge>;
+        return <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">Active</Badge>;
       case 'pending':
-        return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
+        return <Badge className="bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200">Pending</Badge>;
       case 'suspended':
       case 'inactive':
-        return <Badge className="bg-red-100 text-red-800">Suspended</Badge>;
+        return <Badge className="bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200">Suspended</Badge>;
       default:
         return <Badge variant="secondary">{status || 'Active'}</Badge>;
     }

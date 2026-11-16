@@ -1,4 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { getLoginRoute } from './auth-redirect';
 import { useAuthStore } from './store/use-auth-store';
 
 const API_BASE_URL =
@@ -118,7 +119,7 @@ apiClient.interceptors.response.use(
             pathname.startsWith('/auth') ||
             pathname.startsWith('/shared');
           if (!isPublicRoute) {
-            window.location.href = '/auth/member';
+            window.location.href = getLoginRoute(undefined, pathname);
           }
         }
         return Promise.reject(err);

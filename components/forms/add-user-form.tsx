@@ -702,7 +702,7 @@ export function AddUserForm({
           </details>
 
           {/* Form Actions */}
-          <div className="flex justify-end space-x-3 pt-2">
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3 pt-2">
             <Button
               onClick={handleCancelDialog}
               type="button"

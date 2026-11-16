@@ -24,6 +24,7 @@ import { Bell, Globe, LogOut, Menu, Settings, User } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import type React from 'react';
 import { useState } from 'react';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { SuperAdminSidebar } from './superadmin-sidebar';
 
 export function SuperAdminClient({
@@ -41,7 +42,7 @@ export function SuperAdminClient({
     setIsLoggingOut(true);
     try {
       await logoutMutation();
-      window.location.href = '/auth/member';
+      window.location.href = '/auth/superadmin';
     } catch (_error) {
       setIsLoggingOut(false);
     } finally {
@@ -104,7 +105,8 @@ export function SuperAdminClient({
                 </span>
               </div>
             </div>
-            <div className="flex items-center gap-x-4 lg:gap-x-6">
+            <div className="flex items-center gap-x-2 sm:gap-x-4 lg:gap-x-6">
+              <ThemeToggle />
               <Button className="relative" size="sm" variant="ghost">
                 <Bell className="h-5 w-5" />
                 <Badge className="-right-1 -top-1 absolute flex size-5 items-center justify-center rounded-full bg-red-500 text-white text-xs">

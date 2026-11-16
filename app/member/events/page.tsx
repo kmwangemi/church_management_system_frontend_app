@@ -69,7 +69,7 @@ export default function MemberEvents() {
       registered: Number(e.currentAttendees || e.registered || 0),
       registrationStatus: 'available',
       icon: Calendar,
-      color: 'bg-blue-100 text-blue-800',
+      color: 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200',
     })
   );
 
@@ -88,7 +88,7 @@ export default function MemberEvents() {
       registered: 245,
       registrationStatus: 'registered',
       icon: Music,
-      color: 'bg-blue-100 text-blue-800',
+      color: 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200',
     },
     {
       id: 2,
@@ -104,7 +104,7 @@ export default function MemberEvents() {
       registered: 15,
       registrationStatus: 'registered',
       icon: BookOpen,
-      color: 'bg-green-100 text-green-800',
+      color: 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200',
     },
     {
       id: 3,
@@ -120,7 +120,7 @@ export default function MemberEvents() {
       registered: 32,
       registrationStatus: 'available',
       icon: Heart,
-      color: 'bg-purple-100 text-purple-800',
+      color: 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200',
     },
     {
       id: 4,
@@ -136,7 +136,7 @@ export default function MemberEvents() {
       registered: 28,
       registrationStatus: 'waitlist',
       icon: Coffee,
-      color: 'bg-orange-100 text-orange-800',
+      color: 'bg-orange-100 dark:bg-orange-950/60 text-orange-800 dark:text-orange-200',
     },
     {
       id: 5,
@@ -152,7 +152,7 @@ export default function MemberEvents() {
       registered: 18,
       registrationStatus: 'available',
       icon: Heart,
-      color: 'bg-pink-100 text-pink-800',
+      color: 'bg-pink-100 dark:bg-pink-950/60 text-pink-800 dark:text-pink-200',
     },
     {
       id: 6,
@@ -168,7 +168,7 @@ export default function MemberEvents() {
       registered: 35,
       registrationStatus: 'available',
       icon: Users,
-      color: 'bg-yellow-100 text-yellow-800',
+      color: 'bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200',
     },
   ];
 
@@ -446,7 +446,7 @@ export default function MemberEvents() {
             {myRegistrations.map((event) => {
               const IconComponent = event.icon;
               return (
-                <Card className="border-green-200 bg-green-50" key={event.id}>
+                <Card className="border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/40" key={event.id}>
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center space-x-2">
@@ -457,7 +457,7 @@ export default function MemberEvents() {
                           <CardTitle className="text-lg">
                             {event.title}
                           </CardTitle>
-                          <Badge className="mt-1 bg-green-100 text-green-800">
+                          <Badge className="mt-1 bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">
                             Registered
                           </Badge>
                         </div>

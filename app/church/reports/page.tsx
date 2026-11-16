@@ -1,4 +1,5 @@
 'use client';
+import { CardGridSkeleton, InlineListSkeleton } from '@/components/loaders/page-skeletons';
 
 import { GenerateReportForm } from '@/components/forms/generate-report-form';
 import { Badge } from '@/components/ui/badge';
@@ -234,12 +235,12 @@ export default function ReportsPage() {
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
       case 'completed':
-        return <Badge className="bg-green-100 text-green-800">Completed</Badge>;
+        return <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">Completed</Badge>;
       case 'processing':
       case 'generating':
-        return <Badge className="bg-blue-100 text-blue-800">Processing</Badge>;
+        return <Badge className="bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200">Processing</Badge>;
       case 'failed':
-        return <Badge className="bg-red-100 text-red-800">Failed</Badge>;
+        return <Badge className="bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200">Failed</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -353,7 +354,7 @@ export default function ReportsPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Total Reports
             </CardTitle>
-            <div className="rounded-lg bg-blue-100 p-2">
+            <div className="rounded-lg bg-blue-100 dark:bg-blue-950/60 p-2">
               <BarChart3 className="h-5 w-5 text-blue-600" />
             </div>
           </CardHeader>
@@ -369,7 +370,7 @@ export default function ReportsPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Completed
             </CardTitle>
-            <div className="rounded-lg bg-green-100 p-2">
+            <div className="rounded-lg bg-green-100 dark:bg-green-950/60 p-2">
               <FileText className="h-5 w-5 text-green-600" />
             </div>
           </CardHeader>
@@ -387,7 +388,7 @@ export default function ReportsPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Downloads
             </CardTitle>
-            <div className="rounded-lg bg-purple-100 p-2">
+            <div className="rounded-lg bg-purple-100 dark:bg-purple-950/60 p-2">
               <Download className="h-5 w-5 text-purple-600" />
             </div>
           </CardHeader>
@@ -405,7 +406,7 @@ export default function ReportsPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Active Templates
             </CardTitle>
-            <div className="rounded-lg bg-orange-100 p-2">
+            <div className="rounded-lg bg-orange-100 dark:bg-orange-950/60 p-2">
               <PieChart className="h-5 w-5 text-orange-600" />
             </div>
           </CardHeader>
@@ -460,12 +461,7 @@ export default function ReportsPage() {
             {/* Generated Reports Tab */}
             <TabsContent className="mt-6" value="reports">
               {isLoadingReports ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  <span className="ml-2 text-muted-foreground">
-                    Loading reports...
-                  </span>
-                </div>
+                <InlineListSkeleton rows={5} />
               ) : filteredReports.length === 0 ? (
                 <div className="flex flex-col items-center justify-center rounded-md border border-dashed py-12 text-center">
                   <FileText className="mb-3 h-10 w-10 text-muted-foreground" />
@@ -629,12 +625,7 @@ export default function ReportsPage() {
               </div>
 
               {isLoadingTemplates ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  <span className="ml-2 text-muted-foreground">
-                    Loading templates...
-                  </span>
-                </div>
+                <InlineListSkeleton rows={5} />
               ) : (
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {templates.map((template) => (
@@ -748,12 +739,7 @@ export default function ReportsPage() {
             {/* Analytics Dashboard Tab */}
             <TabsContent className="mt-6 space-y-6" value="analytics">
               {isLoadingStats ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  <span className="ml-2 text-muted-foreground">
-                    Loading analytics...
-                  </span>
-                </div>
+                <InlineListSkeleton rows={5} />
               ) : (
                 <>
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

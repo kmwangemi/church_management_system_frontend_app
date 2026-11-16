@@ -92,7 +92,7 @@ export function AddEventForm({ onCloseDialog }: AddEventFormProps) {
           {/* Basic Information */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center gap-2 text-base font-semibold sm:text-lg">
                 <Calendar className="h-5 w-5" />
                 <span>Event Details</span>
               </CardTitle>
@@ -188,7 +188,7 @@ export function AddEventForm({ onCloseDialog }: AddEventFormProps) {
           {/* Date, Time & Location */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center gap-2 text-base font-semibold sm:text-lg">
                 <Clock className="h-5 w-5" />
                 <span>Schedule & Location</span>
               </CardTitle>
@@ -356,7 +356,7 @@ export function AddEventForm({ onCloseDialog }: AddEventFormProps) {
           {/* Attendance & Registration */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center gap-2 text-base font-semibold sm:text-lg">
                 <Users className="h-5 w-5" />
                 <span>Attendance & Registration</span>
               </CardTitle>
@@ -461,7 +461,7 @@ export function AddEventForm({ onCloseDialog }: AddEventFormProps) {
               />
             </CardContent>
           </Card>
-          <div className="flex justify-end space-x-4 pt-6">
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3 pt-6">
             <Button
               onClick={handleCancelDialog}
               type="button"

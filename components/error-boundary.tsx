@@ -73,7 +73,7 @@ class ErrorBoundary extends Component<Props, State> {
           <div className="sm:mx-auto sm:w-full sm:max-w-md">
             <div className="bg-background px-4 py-8 shadow-lg sm:rounded-lg sm:px-10">
               {/* Error Icon */}
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/60">
                 <svg
                   className="h-8 w-8 text-red-600"
                   fill="none"

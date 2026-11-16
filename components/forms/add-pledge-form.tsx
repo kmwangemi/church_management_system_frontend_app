@@ -82,7 +82,7 @@ export function AddPledgeForm({ onCloseDialog }: AddPledgeFormProps) {
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center gap-2 text-base font-semibold sm:text-lg">
                 <Target className="h-5 w-5" />
                 <span>Pledge Information</span>
               </CardTitle>
@@ -239,7 +239,7 @@ export function AddPledgeForm({ onCloseDialog }: AddPledgeFormProps) {
               />
             </CardContent>
           </Card>
-          <div className="flex justify-end space-x-4">
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
             <Button
               onClick={handleCancelDialog}
               type="button"

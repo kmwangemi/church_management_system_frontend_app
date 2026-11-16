@@ -4,7 +4,7 @@ import RenderApiError from '@/components/api-error';
 import { DeleteUserDialog } from '@/components/dialogs/delete-user-dialog';
 import { AddUserForm } from '@/components/forms/add-user-form';
 import { getRoleBadge, getStatusBadge } from '@/components/helpers';
-import { SpinnerLoader } from '@/components/loaders/spinnerloader';
+import { TableSkeleton } from '@/components/loaders/page-skeletons';
 import SearchInput from '@/components/search-input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -445,7 +445,7 @@ export default function UsersPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Total Users
             </CardTitle>
-            <div className="rounded-lg bg-blue-100 p-2">
+            <div className="rounded-lg bg-blue-100 dark:bg-blue-950/60 p-2">
               <Users className="h-5 w-5 text-blue-600" />
             </div>
           </CardHeader>
@@ -461,7 +461,7 @@ export default function UsersPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Active Users
             </CardTitle>
-            <div className="rounded-lg bg-green-100 p-2">
+            <div className="rounded-lg bg-green-100 dark:bg-green-950/60 p-2">
               <UserCheck className="h-5 w-5 text-green-600" />
             </div>
           </CardHeader>
@@ -477,7 +477,7 @@ export default function UsersPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Inactive Users
             </CardTitle>
-            <div className="rounded-lg bg-red-100 p-2">
+            <div className="rounded-lg bg-red-100 dark:bg-red-950/60 p-2">
               <UserX className="h-5 w-5 text-red-600" />
             </div>
           </CardHeader>
@@ -493,7 +493,7 @@ export default function UsersPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Staff Users
             </CardTitle>
-            <div className="rounded-lg bg-purple-100 p-2">
+            <div className="rounded-lg bg-purple-100 dark:bg-purple-950/60 p-2">
               <Crown className="h-5 w-5 text-purple-600" />
             </div>
           </CardHeader>
@@ -541,7 +541,7 @@ export default function UsersPage() {
             {isErrorUsers && <RenderApiError error={errorUsers} />}
             {isErrorDeleteUser && <RenderApiError error={errorDeleteUser} />}
             {isLoadingUsers ? (
-              <SpinnerLoader description="Loading users..." />
+              <TableSkeleton rows={6} columns={6} />
             ) : (
               <TabsContent className="mt-6" value={selectedTab}>
                 <div className="rounded-md border">
@@ -568,7 +568,7 @@ export default function UsersPage() {
                                   alt={user?.user.name || 'User'}
                                   src={user?.user.image ?? ''}
                                 />
-                                <AvatarFallback className="bg-blue-100 text-blue-600">
+                                <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-blue-600">
                                   {(user?.user?.name || 'U')
                                     .split(' ')
                                     .filter(Boolean)
@@ -616,7 +616,7 @@ export default function UsersPage() {
                                 user?.user?.teammembers.length > 0 ? (
                                 user?.user?.teammembers.map((tm: any) => (
                                   <span
-                                    className="inline-flex items-center rounded-md bg-blue-100 px-2 py-1 font-medium text-blue-800 text-xs"
+                                    className="inline-flex items-center rounded-md bg-blue-100 dark:bg-blue-950/60 px-2 py-1 font-medium text-blue-800 dark:text-blue-200 text-xs"
                                     key={tm.id}
                                   >
                                     {capitalizeFirstLetterOfEachWord(

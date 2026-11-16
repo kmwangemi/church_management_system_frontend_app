@@ -272,7 +272,7 @@ export default function ContentPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Total Content
             </CardTitle>
-            <div className="rounded-lg bg-blue-100 p-2">
+            <div className="rounded-lg bg-blue-100 dark:bg-blue-950/60 p-2">
               <FileText className="h-5 w-5 text-blue-600" />
             </div>
           </CardHeader>
@@ -288,7 +288,7 @@ export default function ContentPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Published
             </CardTitle>
-            <div className="rounded-lg bg-green-100 p-2">
+            <div className="rounded-lg bg-green-100 dark:bg-green-950/60 p-2">
               <Eye className="h-5 w-5 text-green-600" />
             </div>
           </CardHeader>
@@ -304,7 +304,7 @@ export default function ContentPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Total Views
             </CardTitle>
-            <div className="rounded-lg bg-purple-100 p-2">
+            <div className="rounded-lg bg-purple-100 dark:bg-purple-950/60 p-2">
               <Eye className="h-5 w-5 text-purple-600" />
             </div>
           </CardHeader>
@@ -320,7 +320,7 @@ export default function ContentPage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Downloads
             </CardTitle>
-            <div className="rounded-lg bg-orange-100 p-2">
+            <div className="rounded-lg bg-orange-100 dark:bg-orange-950/60 p-2">
               <Download className="h-5 w-5 text-orange-600" />
             </div>
           </CardHeader>
@@ -344,7 +344,7 @@ export default function ContentPage() {
                 className="flex items-center space-x-3 rounded-lg border p-3 hover:bg-accent"
                 key={category.name}
               >
-                <div className="rounded-lg bg-blue-100 p-2">
+                <div className="rounded-lg bg-blue-100 dark:bg-blue-950/60 p-2">
                   <category.icon className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
@@ -560,7 +560,7 @@ export default function ContentPage() {
                             {getTypeIcon(item.type)}
                             <Badge variant="outline">{item.type}</Badge>
                           </div>
-                          <Badge className="bg-orange-100 text-orange-800">
+                          <Badge className="bg-orange-100 dark:bg-orange-950/60 text-orange-800 dark:text-orange-200">
                             {item.views} views
                           </Badge>
                         </div>

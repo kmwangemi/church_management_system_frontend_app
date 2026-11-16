@@ -151,10 +151,10 @@ const DatePickerComponent = React.forwardRef<
       setOpen(false);
     };
     return (
-      <div className={cn('relative', className)} ref={ref} {...props}>
+      <div className={cn('relative w-full', className)} ref={ref} {...props}>
         <Popover onOpenChange={setOpen} open={open}>
           <PopoverTrigger asChild>
-            <div>
+            <div className="w-full">
               <CustomInput
                 className="w-full"
                 disabled={disabled}

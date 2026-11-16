@@ -68,6 +68,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import type React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { ChurchNavigation } from './church-navigation';
 import { ChurchSidebar } from './church-sidebar';
 
@@ -314,7 +315,8 @@ export function ChurchClient({
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <ThemeToggle />
             {/* Notifications Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -337,7 +339,7 @@ export function ChurchClient({
                   <div className="flex items-center space-x-2">
                     <span className="font-semibold text-sm">Notifications</span>
                     {unreadCount > 0 && (
-                      <Badge className="bg-blue-100 text-blue-800" variant="secondary">
+                      <Badge className="bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200" variant="secondary">
                         {unreadCount} new
                       </Badge>
                     )}

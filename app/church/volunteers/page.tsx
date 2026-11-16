@@ -1,4 +1,5 @@
 'use client';
+import { CardGridSkeleton, InlineListSkeleton } from '@/components/loaders/page-skeletons';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -265,15 +266,15 @@ export default function VolunteersPage() {
     switch (status) {
       case 'Active':
       case 'Completed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200';
       case 'Inactive':
         return 'bg-muted text-foreground';
       case 'Scheduled':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200';
       case 'Needs Volunteers':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200';
       case 'Open':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200';
       default:
         return 'bg-muted text-foreground';
     }
@@ -282,11 +283,11 @@ export default function VolunteersPage() {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'High':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200';
       case 'Medium':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200';
       case 'Low':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200';
       default:
         return 'bg-muted text-foreground';
     }
@@ -1019,12 +1020,7 @@ export default function VolunteersPage() {
               </div>
 
               {isLoadingVolunteers ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="mr-2 h-6 w-6 animate-spin text-muted-foreground" />
-                  <span className="text-muted-foreground">
-                    Loading volunteers...
-                  </span>
-                </div>
+                <CardGridSkeleton cards={6} columns={3} />
               ) : activeVolunteers.length === 0 ? (
                 <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12 text-center">
                   <Users className="mb-2 h-10 w-10 text-muted-foreground" />
@@ -1163,7 +1159,7 @@ export default function VolunteersPage() {
                               <Edit className="h-4 w-4" />
                             </Button>
                             <Button
-                              className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                              className="text-red-600 hover:bg-red-50 dark:bg-red-950/40 hover:text-red-700 dark:text-red-300"
                               onClick={() => setDeletingVolunteer(volunteer)}
                               size="sm"
                               title="Delete Volunteer"
@@ -1199,12 +1195,7 @@ export default function VolunteersPage() {
             </CardHeader>
             <CardContent>
               {isLoadingRoles ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="mr-2 h-6 w-6 animate-spin text-muted-foreground" />
-                  <span className="text-muted-foreground">
-                    Loading volunteer roles...
-                  </span>
-                </div>
+                <CardGridSkeleton cards={6} columns={3} />
               ) : activeRoles.length === 0 ? (
                 <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12 text-center">
                   <UserCheck className="mb-2 h-10 w-10 text-muted-foreground" />
@@ -1317,7 +1308,7 @@ export default function VolunteersPage() {
                               Edit Role
                             </Button>
                             <Button
-                              className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                              className="text-red-600 hover:bg-red-50 dark:bg-red-950/40 hover:text-red-700 dark:text-red-300"
                               onClick={() => setDeletingRole(role)}
                               size="sm"
                               variant="outline"
@@ -1353,12 +1344,7 @@ export default function VolunteersPage() {
             </CardHeader>
             <CardContent>
               {isLoadingTasks ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="mr-2 h-6 w-6 animate-spin text-muted-foreground" />
-                  <span className="text-muted-foreground">
-                    Loading scheduled tasks...
-                  </span>
-                </div>
+                <CardGridSkeleton cards={6} columns={3} />
               ) : upcomingTasks.length === 0 ? (
                 <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12 text-center">
                   <Calendar className="mb-2 h-10 w-10 text-muted-foreground" />
@@ -1459,7 +1445,7 @@ export default function VolunteersPage() {
                               Edit Task
                             </Button>
                             <Button
-                              className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                              className="text-red-600 hover:bg-red-50 dark:bg-red-950/40 hover:text-red-700 dark:text-red-300"
                               onClick={() => setDeletingTask(task)}
                               size="sm"
                               variant="outline"

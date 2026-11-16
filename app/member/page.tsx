@@ -208,7 +208,7 @@ export default function MemberDashboard() {
                 <div className="flex items-center space-x-2">
                   {event.registered ? (
                     <Badge
-                      className="bg-green-100 text-green-800"
+                      className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200"
                       variant="secondary"
                     >
                       Registered
@@ -285,7 +285,7 @@ export default function MemberDashboard() {
                 <div
                   className={`flex h-8 w-8 items-center justify-center rounded-full ${
                     milestone.completed
-                      ? 'bg-green-100 text-green-600'
+                      ? 'bg-green-100 dark:bg-green-950/60 text-green-600'
                       : 'bg-muted text-muted-foreground'
                   }`}
                 >

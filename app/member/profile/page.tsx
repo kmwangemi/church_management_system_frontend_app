@@ -109,7 +109,7 @@ export default function MemberProfile() {
                   alt="Profile"
                   src="/placeholder.svg?height=96&width=96"
                 />
-                <AvatarFallback className="bg-blue-100 text-2xl text-blue-600">
+                <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-2xl text-blue-600">
                   {profileData.firstName[0]}
                   {profileData.lastName[0]}
                 </AvatarFallback>
@@ -148,7 +148,7 @@ export default function MemberProfile() {
 
               <div className="mb-3 flex flex-wrap gap-2">
                 <Badge
-                  className="bg-green-100 text-green-800"
+                  className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200"
                   variant="secondary"
                 >
                   {membershipInfo.membershipStatus}
@@ -388,7 +388,7 @@ export default function MemberProfile() {
                     <Label className="font-medium text-muted-foreground text-sm">
                       Membership Status
                     </Label>
-                    <Badge className="mt-1 bg-green-100 text-green-800">
+                    <Badge className="mt-1 bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">
                       {membershipInfo.membershipStatus}
                     </Badge>
                   </div>
@@ -454,7 +454,7 @@ export default function MemberProfile() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between rounded-lg bg-blue-50 p-3">
+                <div className="flex items-center justify-between rounded-lg bg-blue-50 dark:bg-blue-950/40 p-3">
                   <div>
                     <p className="font-medium">Bible Reading Streak</p>
                     <p className="text-muted-foreground text-sm">Consecutive days</p>
@@ -504,7 +504,7 @@ export default function MemberProfile() {
                     className="flex items-center space-x-3 rounded-lg border p-3"
                     key={index}
                   >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-950/60">
                       <Award className="h-5 w-5 text-yellow-600" />
                     </div>
                     <div>
@@ -569,11 +569,11 @@ export default function MemberProfile() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="rounded-lg bg-green-50 p-6 text-center">
+                <div className="rounded-lg bg-green-50 dark:bg-green-950/40 p-6 text-center">
                   <div className="mb-2 font-bold text-3xl text-green-600">
                     124
                   </div>
-                  <p className="text-green-700 text-sm">
+                  <p className="text-green-700 dark:text-green-300 text-sm">
                     Total volunteer hours this year
                   </p>
                 </div>

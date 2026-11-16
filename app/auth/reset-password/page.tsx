@@ -93,7 +93,7 @@ export default function ResetPasswordPage() {
                 ChurchHub
               </span>
             </div>
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 p-4">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-950/60 p-4">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
             <CardTitle className="font-bold text-2xl text-foreground">
@@ -245,8 +245,8 @@ export default function ResetPasswordPage() {
                 )}
               />
 
-              <Alert className="border-blue-200 bg-blue-50">
-                <AlertDescription className="text-blue-800 text-sm">
+              <Alert className="border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40">
+                <AlertDescription className="text-blue-800 dark:text-blue-200 text-sm">
                   Password must be at least 8 characters and contain uppercase,
                   lowercase, and number.
                 </AlertDescription>

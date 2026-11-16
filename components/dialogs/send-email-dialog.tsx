@@ -167,7 +167,7 @@ export function SendEmailDialog({
                 alt={user?.firstName || 'User'}
                 src={user?.profilePictureUrl ?? ''}
               />
-              <AvatarFallback className="bg-blue-100 text-blue-600">
+              <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-blue-600">
                 {`${getFirstLetter(
                   user?.firstName || ''
                 )}${getFirstLetter(user?.lastName || '')}`}

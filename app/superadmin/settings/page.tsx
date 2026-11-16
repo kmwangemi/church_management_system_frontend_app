@@ -165,9 +165,9 @@ export default function GlobalSettingsPage() {
         </div>
         <div className="flex items-center space-x-2">
           {saveStatus === 'saved' && (
-            <Alert className="w-auto border-green-200 bg-green-50">
+            <Alert className="w-auto border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/40">
               <CheckCircle className="h-4 w-4 text-green-600" />
-              <AlertDescription className="text-green-700">
+              <AlertDescription className="text-green-700 dark:text-green-300">
                 Settings saved successfully
               </AlertDescription>
             </Alert>
@@ -573,11 +573,11 @@ export default function GlobalSettingsPage() {
                     <div className="flex-1">
                       <div className="flex items-center space-x-3">
                         <h4 className="font-medium">{plan.name}</h4>
-                        <Badge className="bg-green-100 text-green-800">
+                        <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">
                           ${plan.price}/month
                         </Badge>
                         {plan.active && (
-                          <Badge className="bg-blue-100 text-blue-800">
+                          <Badge className="bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200">
                             Active
                           </Badge>
                         )}
@@ -682,9 +682,9 @@ export default function GlobalSettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <Alert className="border-yellow-200 bg-yellow-50">
+              <Alert className="border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950/40">
                 <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                <AlertDescription className="text-yellow-700">
+                <AlertDescription className="text-yellow-700 dark:text-yellow-300">
                   Warning: These settings can affect system performance. Only
                   modify if you understand the implications.
                 </AlertDescription>

@@ -31,7 +31,7 @@ export function RecordOfferingForm() {
   return (
     <div className="p-6 max-w-xl mx-auto bg-background rounded-xl shadow-md space-y-4 border border-border">
       <h2 className="text-2xl font-bold text-foreground">Record Offering</h2>
-      {isSuccess && <div className="p-3 bg-green-50 text-green-700 rounded-md">Offering recorded successfully!</div>}
+      {isSuccess && <div className="p-3 bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 rounded-md">Offering recorded successfully!</div>}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-muted-foreground mb-1">Amount</label>

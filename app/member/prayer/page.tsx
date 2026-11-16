@@ -185,17 +185,17 @@ export default function MemberPrayerPage() {
   const getCategoryColor = (category: string) => {
     switch (category.toLowerCase()) {
       case 'health':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200';
       case 'career':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200';
       case 'relationships':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200';
       case 'family':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200';
       case 'mental health':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200';
       case 'spiritual':
-        return 'bg-indigo-100 text-indigo-800';
+        return 'bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-200';
       default:
         return 'bg-muted text-foreground';
     }
@@ -204,9 +204,9 @@ export default function MemberPrayerPage() {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200';
       case 'normal':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200';
       case 'low':
         return 'bg-muted text-foreground';
       default:
@@ -460,7 +460,7 @@ export default function MemberPrayerPage() {
                           {request.priority}
                         </Badge>
                         {request.isAnswered && (
-                          <Badge className="bg-green-100 text-green-800">
+                          <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">
                             Answered
                           </Badge>
                         )}
@@ -544,11 +544,11 @@ export default function MemberPrayerPage() {
                           {request.priority}
                         </Badge>
                         {request.isAnswered ? (
-                          <Badge className="bg-green-100 text-green-800">
+                          <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">
                             Answered
                           </Badge>
                         ) : (
-                          <Badge className="bg-blue-100 text-blue-800">
+                          <Badge className="bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200">
                             Active
                           </Badge>
                         )}
@@ -598,7 +598,7 @@ export default function MemberPrayerPage() {
             {prayerRequests
               .filter((request) => request.isAnswered)
               .map((request) => (
-                <Card className="border-green-200 bg-green-50" key={request.id}>
+                <Card className="border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/40" key={request.id}>
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -612,7 +612,7 @@ export default function MemberPrayerPage() {
                           <Badge className={getCategoryColor(request.category)}>
                             {request.category}
                           </Badge>
-                          <Badge className="bg-green-100 text-green-800">
+                          <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">
                             Answered Prayer
                           </Badge>
                         </div>

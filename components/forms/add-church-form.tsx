@@ -381,7 +381,7 @@ export function AddChurchForm({ onCloseDialog }: AddChurchFormProps) {
           <TabsContent className="space-y-6" value="basic">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+                <CardTitle className="flex items-center gap-2 text-base font-semibold sm:text-lg">
                   <Church className="h-5 w-5" />
                   <span>Basic Church Information</span>
                 </CardTitle>
@@ -538,7 +538,7 @@ export function AddChurchForm({ onCloseDialog }: AddChurchFormProps) {
                           alt="Church Logo"
                           src={logoPreview || logoUrl || ''}
                         />
-                        <AvatarFallback className="bg-blue-100 text-blue-600">
+                        <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-blue-600">
                           <Church className="h-8 w-8" />
                         </AvatarFallback>
                       </Avatar>
@@ -629,7 +629,7 @@ export function AddChurchForm({ onCloseDialog }: AddChurchFormProps) {
           <TabsContent className="space-y-6" value="contact">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+                <CardTitle className="flex items-center gap-2 text-base font-semibold sm:text-lg">
                   <MapPin className="h-5 w-5" />
                   <span>Church Contact Information</span>
                 </CardTitle>
@@ -798,7 +798,7 @@ export function AddChurchForm({ onCloseDialog }: AddChurchFormProps) {
           <TabsContent className="space-y-6" value="subscription">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+                <CardTitle className="flex items-center gap-2 text-base font-semibold sm:text-lg">
                   <Building2 className="h-5 w-5" />
                   <span>Subscription Plan & Setup</span>
                 </CardTitle>
@@ -831,7 +831,7 @@ export function AddChurchForm({ onCloseDialog }: AddChurchFormProps) {
                                 aria-checked={selected}
                                 className={`w-full cursor-pointer rounded-lg border p-4 text-left transition-colors ${
                                   selected
-                                    ? 'border-blue-500 bg-blue-50'
+                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/40'
                                     : 'border-border hover:border-blue-300'
                                 }`}
                                 key={plan.value}
@@ -868,11 +868,11 @@ export function AddChurchForm({ onCloseDialog }: AddChurchFormProps) {
                     </FormItem>
                   )}
                 />
-                <div className="rounded-lg bg-green-50 p-4">
-                  <h4 className="mb-2 font-medium text-green-900">
+                <div className="rounded-lg bg-green-50 dark:bg-green-950/40 p-4">
+                  <h4 className="mb-2 font-medium text-green-900 dark:text-green-100">
                     What happens next?
                   </h4>
-                  <ul className="space-y-1 text-green-700 text-sm">
+                  <ul className="space-y-1 text-green-700 dark:text-green-300 text-sm">
                     <li>
                       • The church is created and set to active, with a 30-day
                       free trial on the selected plan

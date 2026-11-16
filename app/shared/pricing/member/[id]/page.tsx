@@ -169,7 +169,7 @@ export default function MembersPricingPage() {
             <ThemeToggle />
             <Link href="/">
               <Button
-                className="hover:bg-blue-50 dark:hover:bg-gray-800"
+                className="hover:bg-blue-50 dark:bg-blue-950/40 dark:hover:bg-gray-800"
                 variant="ghost"
               >
                 Home
@@ -182,7 +182,7 @@ export default function MembersPricingPage() {
             </Link>
             <Link href="/auth/member">
               <Button
-                className="hover:bg-blue-50 dark:hover:bg-gray-800"
+                className="hover:bg-blue-50 dark:bg-blue-950/40 dark:hover:bg-gray-800"
                 variant="ghost"
               >
                 Login

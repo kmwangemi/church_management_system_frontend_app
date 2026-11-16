@@ -1,4 +1,5 @@
 'use client';
+import { TableRowsSkeleton, InlineListSkeleton, CardGridSkeleton } from '@/components/loaders/page-skeletons';
 
 import { AddAdminForm } from '@/components/forms/add-admin-form';
 import { uploadFile } from '@/components/upload-helpers';
@@ -467,12 +468,12 @@ export default function SettingsPage() {
   const getRoleBadge = (role: string, label?: string) => {
     const upper = (role || '').toUpperCase();
     const colors: Record<string, string> = {
-      OWNER: 'bg-red-100 text-red-800',
-      ADMIN: 'bg-blue-100 text-blue-800',
-      PASTOR: 'bg-purple-100 text-purple-800',
-      BISHOP: 'bg-indigo-100 text-indigo-800',
-      TREASURER: 'bg-green-100 text-green-800',
-      STAFF: 'bg-amber-100 text-amber-800',
+      OWNER: 'bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200',
+      ADMIN: 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200',
+      PASTOR: 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200',
+      BISHOP: 'bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-200',
+      TREASURER: 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200',
+      STAFF: 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200',
     };
     return (
       <Badge className={colors[upper] || 'bg-muted text-foreground'}>
@@ -483,7 +484,7 @@ export default function SettingsPage() {
 
   const getStatusBadge = (status: string) => {
     return status === 'Active' ? (
-      <Badge className="bg-green-100 text-green-800">Active</Badge>
+      <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">Active</Badge>
     ) : (
       <Badge className="bg-muted text-foreground">Inactive</Badge>
     );
@@ -584,9 +585,7 @@ export default function SettingsPage() {
             {/* ==================== GENERAL TAB ==================== */}
             <TabsContent className="space-y-6 p-6" value="general">
               {isLoadingSettings ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                </div>
+                <InlineListSkeleton rows={4} />
               ) : (
                 <>
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -773,7 +772,7 @@ export default function SettingsPage() {
                             alt={settings.churchName || 'Church Logo'}
                             src={settings.logo || undefined}
                           />
-                          <AvatarFallback className="bg-blue-100 text-2xl text-blue-600">
+                          <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-2xl text-blue-600">
                             {churchInitials}
                           </AvatarFallback>
                         </Avatar>
@@ -870,11 +869,7 @@ export default function SettingsPage() {
                   </TableHeader>
                   <TableBody>
                     {isLoadingAdmins ? (
-                      <TableRow>
-                        <TableCell className="py-10 text-center" colSpan={6}>
-                          <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
-                        </TableCell>
-                      </TableRow>
+                      <TableRowsSkeleton columns={6} rows={5} />
                     ) : admins.length === 0 ? (
                       <TableRow>
                         <TableCell
@@ -895,7 +890,7 @@ export default function SettingsPage() {
                                   alt={user.name}
                                   src={user.avatar || undefined}
                                 />
-                                <AvatarFallback className="bg-blue-100 text-blue-600">
+                                <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-blue-600">
                                   {user.name
                                     .split(' ')
                                     .filter(Boolean)
@@ -1008,9 +1003,7 @@ export default function SettingsPage() {
               </div>
 
               {isLoadingRoles ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                </div>
+                <InlineListSkeleton rows={4} />
               ) : (
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   {roles.map((role) => (

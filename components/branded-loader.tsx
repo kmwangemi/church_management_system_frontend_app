@@ -207,7 +207,7 @@ function ChurchLoader({
             </div>
           ) : (
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-background shadow-2xl ring-4 ring-white/20">
-              <span className="font-bold text-3xl text-blue-900">
+              <span className="font-bold text-3xl text-blue-900 dark:text-blue-100">
                 {brandName.charAt(0)}
               </span>
             </div>

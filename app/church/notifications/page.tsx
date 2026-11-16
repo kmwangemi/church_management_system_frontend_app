@@ -1,4 +1,5 @@
 'use client';
+import { CardGridSkeleton, InlineListSkeleton } from '@/components/loaders/page-skeletons';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -80,17 +81,17 @@ export default function NotificationsPage() {
   const getNotificationBadgeColor = (cat: string) => {
     switch (cat) {
       case 'Prayer':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200';
       case 'Members':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200';
       case 'Finance':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200';
       case 'Events':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-orange-100 dark:bg-orange-950/60 text-orange-800 dark:text-orange-200';
       case 'Volunteers':
-        return 'bg-pink-100 text-pink-800';
+        return 'bg-pink-100 dark:bg-pink-950/60 text-pink-800 dark:text-pink-200';
       case 'Assets':
-        return 'bg-amber-100 text-amber-800';
+        return 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200';
       default:
         return 'bg-muted text-foreground';
     }
@@ -244,12 +245,7 @@ export default function NotificationsPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
-              <span className="ml-2 text-muted-foreground text-sm">
-                Loading notifications...
-              </span>
-            </div>
+            <InlineListSkeleton rows={5} />
           ) : notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Bell className="mb-3 h-10 w-10 text-muted-foreground/50" />

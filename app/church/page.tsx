@@ -1,7 +1,7 @@
 'use client';
 
 import RenderApiError from '@/components/api-error';
-import { SpinnerLoader } from '@/components/loaders/spinnerloader';
+import { DashboardSkeleton } from '@/components/loaders/page-skeletons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -61,7 +61,7 @@ export default function DashboardPage() {
       trend: statsData?.totalMembers?.trend || 'up',
       icon: Users,
       color: 'text-blue-600',
-      bgColor: 'bg-blue-100',
+      bgColor: 'bg-blue-100 dark:bg-blue-950/60',
     },
     {
       title: "This Week's Attendance",
@@ -70,7 +70,7 @@ export default function DashboardPage() {
       trend: statsData?.weeklyAttendance?.trend || 'up',
       icon: UserPlus,
       color: 'text-green-600',
-      bgColor: 'bg-green-100',
+      bgColor: 'bg-green-100 dark:bg-green-950/60',
     },
     {
       title: 'Monthly Giving',
@@ -79,7 +79,7 @@ export default function DashboardPage() {
       trend: statsData?.monthlyGiving?.trend || 'up',
       icon: DollarSign,
       color: 'text-purple-600',
-      bgColor: 'bg-purple-100',
+      bgColor: 'bg-purple-100 dark:bg-purple-950/60',
     },
     {
       title: 'Active Events',
@@ -88,7 +88,7 @@ export default function DashboardPage() {
       trend: statsData?.activeEvents?.trend || 'up',
       icon: Calendar,
       color: 'text-orange-600',
-      bgColor: 'bg-orange-100',
+      bgColor: 'bg-orange-100 dark:bg-orange-950/60',
     },
   ];
 
@@ -110,12 +110,12 @@ export default function DashboardPage() {
   const getEventStyle = (category?: string) => {
     const cat = (category || '').toLowerCase();
     if (cat.includes('study') || cat.includes('prayer')) {
-      return { Icon: Heart, color: 'bg-green-100 text-green-600' };
+      return { Icon: Heart, color: 'bg-green-100 dark:bg-green-950/60 text-green-600' };
     }
     if (cat.includes('youth') || cat.includes('meeting') || cat.includes('social')) {
-      return { Icon: Users, color: 'bg-purple-100 text-purple-600' };
+      return { Icon: Users, color: 'bg-purple-100 dark:bg-purple-950/60 text-purple-600' };
     }
-    return { Icon: Calendar, color: 'bg-blue-100 text-blue-600' };
+    return { Icon: Calendar, color: 'bg-blue-100 dark:bg-blue-950/60 text-blue-600' };
   };
 
   const quickActions = [
@@ -124,28 +124,28 @@ export default function DashboardPage() {
       description: 'Register a new church member',
       icon: UserPlus,
       href: '/church/users',
-      color: 'bg-blue-50 hover:bg-blue-100 border-blue-200',
+      color: 'bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 border-blue-200 dark:border-blue-800',
     },
     {
       title: 'Create Event',
       description: 'Schedule a new church event',
       icon: CalendarDays,
       href: '/church/events',
-      color: 'bg-green-50 hover:bg-green-100 border-green-200',
+      color: 'bg-green-50 dark:bg-green-950/40 hover:bg-green-100 border-green-200 dark:border-green-800',
     },
     {
       title: 'Record Offering',
       description: 'Log financial contributions',
       icon: DollarSign,
       href: '/church/finance',
-      color: 'bg-purple-50 hover:bg-purple-100 border-purple-200',
+      color: 'bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 border-purple-200 dark:border-purple-800',
     },
     {
       title: 'Manage Assets',
       description: 'Update church assets and properties',
       icon: Building,
       href: '/church/assets',
-      color: 'bg-orange-50 hover:bg-orange-100 border-orange-200',
+      color: 'bg-orange-50 dark:bg-orange-950/40 hover:bg-orange-100 border-orange-200 dark:border-orange-800',
     },
   ];
 
@@ -191,7 +191,7 @@ export default function DashboardPage() {
 
       {isError && <RenderApiError error={error} />}
       {isLoading ? (
-        <SpinnerLoader description="Loading dashboard overview..." />
+        <DashboardSkeleton />
       ) : (
         <>
           {/* Stats Grid */}
@@ -234,7 +234,7 @@ export default function DashboardPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <div className="rounded bg-blue-100 p-1">
+                    <div className="rounded bg-blue-100 dark:bg-blue-950/60 p-1">
                       <UserPlus className="h-4 w-4 text-blue-600" />
                     </div>
                     <span>Quick Actions</span>
@@ -271,7 +271,7 @@ export default function DashboardPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <div className="rounded bg-green-100 p-1">
+                    <div className="rounded bg-green-100 dark:bg-green-950/60 p-1">
                       <Clock className="h-4 w-4 text-green-600" />
                     </div>
                     <span>Recent Activity</span>
@@ -320,7 +320,7 @@ export default function DashboardPage() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="flex items-center space-x-2">
-                  <div className="rounded bg-purple-100 p-1">
+                  <div className="rounded bg-purple-100 dark:bg-purple-950/60 p-1">
                     <Calendar className="h-4 w-4 text-purple-600" />
                   </div>
                   <span>Upcoming Events</span>

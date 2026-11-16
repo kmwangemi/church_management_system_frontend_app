@@ -173,7 +173,7 @@ export function AddContentForm({ onCloseDialog }: AddContentFormProps) {
     <>
       {isError && <RenderApiError error={error} />}
       {uploadError && (
-        <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-3">
+        <div className="mb-4 rounded-md border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/40 p-3">
           <p className="text-red-600 text-sm">{uploadError}</p>
         </div>
       )}
@@ -181,7 +181,7 @@ export function AddContentForm({ onCloseDialog }: AddContentFormProps) {
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center gap-2 text-base font-semibold sm:text-lg">
                 <FileText className="h-5 w-5" />
                 <span>Content Details</span>
               </CardTitle>
@@ -455,7 +455,7 @@ export function AddContentForm({ onCloseDialog }: AddContentFormProps) {
               />
             </CardContent>
           </Card>
-          <div className="flex justify-end space-x-4">
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
             <Button
               disabled={isLoading}
               onClick={onCloseDialog}

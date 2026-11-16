@@ -211,7 +211,7 @@ export function AttendanceCheckInForm({
                   value={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select service" />
                     </SelectTrigger>
                   </FormControl>
@@ -248,17 +248,19 @@ export function AttendanceCheckInForm({
                   Attendance Date <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
-                  <DatePicker
-                    disabled={isEditMode}
-                    format="long"
-                    maxDate={new Date()}
-                    minDate={getRelativeYear(-1)}
-                    onChange={(date) =>
-                      field.onChange(date ? date.toISOString() : '')
-                    }
-                    placeholder="Select payment date"
-                    value={field.value ? new Date(field.value) : undefined}
-                  />
+                  <div className="w-full [&_.react-datepicker-wrapper]:w-full">
+                    <DatePicker
+                      disabled={isEditMode}
+                      format="long"
+                      maxDate={new Date()}
+                      minDate={getRelativeYear(-1)}
+                      onChange={(date) =>
+                        field.onChange(date ? date.toISOString() : '')
+                      }
+                      placeholder="Select attendance date"
+                      value={field.value ? new Date(field.value) : undefined}
+                    />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -280,17 +282,17 @@ export function AttendanceCheckInForm({
             )}
           />
           <div className="flex items-end">
-            <div className="text-muted-foreground text-sm">
-              <Clock className="mr-1 inline h-4 w-4" />
-              {new Date().toLocaleTimeString()}
+            <div className="flex h-10 items-center text-muted-foreground text-sm">
+              <Clock className="mr-1.5 h-4 w-4 shrink-0" />
+              <span>{new Date().toLocaleTimeString()}</span>
             </div>
           </div>
         </div>
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
+            <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-base sm:text-lg">
               <span>Select Members</span>
-              <Badge variant="secondary">
+              <Badge className="shrink-0" variant="secondary">
                 {selectedMembers.length} selected
               </Badge>
             </CardTitle>
@@ -347,7 +349,7 @@ export function AttendanceCheckInForm({
                                     className="rounded-lg border p-3 hover:bg-accent"
                                     key={member._id}
                                   >
-                                    <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                    <FormItem className="flex flex-row flex-wrap items-center gap-3 space-y-0">
                                       <FormControl>
                                         <Checkbox
                                           checked={isSelected}
@@ -376,20 +378,20 @@ export function AttendanceCheckInForm({
                                           }}
                                         />
                                       </FormControl>
-                                      <Avatar className="h-10 w-10">
+                                      <Avatar className="h-10 w-10 shrink-0">
                                         <AvatarImage
                                           alt={getFullName(member)}
                                           src={member?.profilePictureUrl || ''}
                                         />
-                                        <AvatarFallback className="bg-blue-100 text-blue-600">
+                                        <AvatarFallback className="bg-blue-100 dark:bg-blue-950/60 text-blue-600">
                                           {`${getFirstLetter(member?.firstName || '')}${getFirstLetter(member?.lastName || '')}`}
                                         </AvatarFallback>
                                       </Avatar>
                                       <div className="min-w-0 flex-1">
-                                        <FormLabel className="cursor-pointer font-medium text-sm">
+                                        <FormLabel className="block cursor-pointer truncate font-medium text-sm">
                                           {getFullName(member)}
                                         </FormLabel>
-                                        <div className="flex items-center gap-2 text-muted-foreground text-xs">
+                                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-muted-foreground text-xs">
                                           {member.email && (
                                             <span className="truncate">
                                               {member.email}
@@ -398,7 +400,7 @@ export function AttendanceCheckInForm({
                                           {member.branchId && (
                                             <>
                                               {member.email && <span>•</span>}
-                                              <span>
+                                              <span className="truncate">
                                                 {member?.branchId?.name}
                                               </span>
                                             </>
@@ -406,37 +408,39 @@ export function AttendanceCheckInForm({
                                         </div>
                                       </div>
                                       {isSelected && (
-                                        <Select
-                                          onValueChange={(value) =>
-                                            handleStatusChange(
-                                              member._id,
-                                              value as
-                                                | 'present'
-                                                | 'late'
-                                                | 'absent'
-                                                | 'excused'
-                                            )
-                                          }
-                                          value={currentStatus}
-                                        >
-                                          <SelectTrigger className="w-32">
-                                            <SelectValue />
-                                          </SelectTrigger>
-                                          <SelectContent>
-                                            <SelectItem value="present">
-                                              Present
-                                            </SelectItem>
-                                            <SelectItem value="late">
-                                              Late
-                                            </SelectItem>
-                                            <SelectItem value="absent">
-                                              Absent
-                                            </SelectItem>
-                                            <SelectItem value="excused">
-                                              Excused
-                                            </SelectItem>
-                                          </SelectContent>
-                                        </Select>
+                                        <div className="w-full sm:w-auto">
+                                          <Select
+                                            onValueChange={(value) =>
+                                              handleStatusChange(
+                                                member._id,
+                                                value as
+                                                  | 'present'
+                                                  | 'late'
+                                                  | 'absent'
+                                                  | 'excused'
+                                              )
+                                            }
+                                            value={currentStatus}
+                                          >
+                                            <SelectTrigger className="w-full sm:w-32">
+                                              <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                              <SelectItem value="present">
+                                                Present
+                                              </SelectItem>
+                                              <SelectItem value="late">
+                                                Late
+                                              </SelectItem>
+                                              <SelectItem value="absent">
+                                                Absent
+                                              </SelectItem>
+                                              <SelectItem value="excused">
+                                                Excused
+                                              </SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                        </div>
                                       )}
                                     </FormItem>
                                   </div>
@@ -473,11 +477,20 @@ export function AttendanceCheckInForm({
             </FormItem>
           )}
         />
-        <div className="flex justify-end space-x-4">
-          <Button onClick={onSuccess} type="button" variant="outline">
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
+          <Button
+            className="w-full sm:w-auto"
+            onClick={onSuccess}
+            type="button"
+            variant="outline"
+          >
             Cancel
           </Button>
-          <Button disabled={isLoading} type="submit">
+          <Button
+            className="w-full sm:w-auto"
+            disabled={isLoading}
+            type="submit"
+          >
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

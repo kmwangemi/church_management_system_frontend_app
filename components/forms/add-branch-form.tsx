@@ -83,7 +83,7 @@ export function AddBranchForm({ onCloseDialog }: AddBranchFormProps) {
         >
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center gap-2 text-base font-semibold sm:text-lg">
                 <Church className="h-5 w-5" />
                 <span>Branch Information</span>
               </CardTitle>
@@ -203,7 +203,7 @@ export function AddBranchForm({ onCloseDialog }: AddBranchFormProps) {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center gap-2 text-base font-semibold sm:text-lg">
                 <MapPin className="h-5 w-5" />
                 <span>Address Information</span>
               </CardTitle>
@@ -276,7 +276,7 @@ export function AddBranchForm({ onCloseDialog }: AddBranchFormProps) {
               </div>
             </CardContent>
           </Card>
-          <div className="flex justify-end space-x-2">
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
             <Button
               onClick={handleCancelDialog}
               type="button"

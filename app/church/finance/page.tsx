@@ -1,4 +1,5 @@
 'use client';
+import { TableRowsSkeleton, InlineListSkeleton, CardGridSkeleton } from '@/components/loaders/page-skeletons';
 
 import { AddOfferingForm } from '@/components/forms/add-offering-form';
 import { AddPledgeForm } from '@/components/forms/add-pledge-form';
@@ -196,9 +197,9 @@ export default function FinancePage() {
   const getStatusBadge = (status: string) => {
     const normalized = (status || 'Completed').toLowerCase();
     return normalized === 'completed' ? (
-      <Badge className="bg-green-100 text-green-800">Completed</Badge>
+      <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">Completed</Badge>
     ) : (
-      <Badge className="bg-yellow-100 text-yellow-800">{status}</Badge>
+      <Badge className="bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200">{status}</Badge>
     );
   };
 
@@ -486,7 +487,7 @@ export default function FinancePage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Total Income (Offerings & Tithes)
             </CardTitle>
-            <div className="rounded-lg bg-green-100 p-2">
+            <div className="rounded-lg bg-green-100 dark:bg-green-950/60 p-2">
               <DollarSign className="h-5 w-5 text-green-600" />
             </div>
           </CardHeader>
@@ -508,7 +509,7 @@ export default function FinancePage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Total Tithes
             </CardTitle>
-            <div className="rounded-lg bg-blue-100 p-2">
+            <div className="rounded-lg bg-blue-100 dark:bg-blue-950/60 p-2">
               <PiggyBank className="h-5 w-5 text-blue-600" />
             </div>
           </CardHeader>
@@ -527,7 +528,7 @@ export default function FinancePage() {
             <CardTitle className="font-medium text-muted-foreground text-sm">
               Pledges
             </CardTitle>
-            <div className="rounded-lg bg-purple-100 p-2">
+            <div className="rounded-lg bg-purple-100 dark:bg-purple-950/60 p-2">
               <Target className="h-5 w-5 text-purple-600" />
             </div>
           </CardHeader>
@@ -634,11 +635,7 @@ export default function FinancePage() {
                   </TableHeader>
                   <TableBody>
                     {isOfferingsLoading ? (
-                      <TableRow>
-                        <TableCell className="py-8 text-center" colSpan={8}>
-                          <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
-                        </TableCell>
-                      </TableRow>
+                      <TableRowsSkeleton columns={8} rows={5} />
                     ) : transactions.length === 0 ? (
                       <TableRow>
                         <TableCell
@@ -708,7 +705,7 @@ export default function FinancePage() {
                                 <Edit className="h-4 w-4" />
                               </Button>
                               <Button
-                                className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                                className="text-red-600 hover:bg-red-50 dark:bg-red-950/40 hover:text-red-700 dark:text-red-300"
                                 onClick={() => {
                                   const targetId =
                                     transaction._id || transaction.id;
@@ -769,11 +766,7 @@ export default function FinancePage() {
                   </TableHeader>
                   <TableBody>
                     {isPledgesLoading ? (
-                      <TableRow>
-                        <TableCell className="py-8 text-center" colSpan={8}>
-                          <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
-                        </TableCell>
-                      </TableRow>
+                      <TableRowsSkeleton columns={8} rows={5} />
                     ) : pledgesList.length === 0 ? (
                       <TableRow>
                         <TableCell
@@ -827,8 +820,8 @@ export default function FinancePage() {
                             <Badge
                               className={
                                 pledge.status === 'Completed'
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-blue-100 text-blue-800'
+                                  ? 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200'
+                                  : 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200'
                               }
                               variant={
                                 pledge.status === 'Completed'
@@ -865,7 +858,7 @@ export default function FinancePage() {
                                 <Edit className="h-4 w-4" />
                               </Button>
                               <Button
-                                className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                                className="text-red-600 hover:bg-red-50 dark:bg-red-950/40 hover:text-red-700 dark:text-red-300"
                                 onClick={() => {
                                   const targetId = pledge._id || pledge.id;
                                   if (targetId) deletePledge(targetId);
@@ -900,9 +893,7 @@ export default function FinancePage() {
               </CardHeader>
               <CardContent>
                 {isSummaryLoading ? (
-                  <div className="py-6 text-center">
-                    <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
-                  </div>
+                  <InlineListSkeleton rows={3} />
                 ) : summary.incomeBreakdown.length === 0 ? (
                   <p className="text-muted-foreground text-sm">
                     No income data recorded yet.
@@ -960,9 +951,7 @@ export default function FinancePage() {
               </CardHeader>
               <CardContent>
                 {isSummaryLoading ? (
-                  <div className="py-6 text-center">
-                    <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
-                  </div>
+                  <InlineListSkeleton rows={3} />
                 ) : summary.expenseBreakdown.length === 0 ? (
                   <p className="py-4 text-center text-muted-foreground text-sm">
                     No expenses recorded yet. Click "Add Expense" to log church
@@ -1032,11 +1021,7 @@ export default function FinancePage() {
                   </TableHeader>
                   <TableBody>
                     {isExpensesLoading ? (
-                      <TableRow>
-                        <TableCell className="py-6 text-center" colSpan={5}>
-                          <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
-                        </TableCell>
-                      </TableRow>
+                      <TableRowsSkeleton columns={5} rows={5} />
                     ) : expensesList.length === 0 ? (
                       <TableRow>
                         <TableCell
@@ -1065,7 +1050,7 @@ export default function FinancePage() {
                           </TableCell>
                           <TableCell className="text-right">
                             <Button
-                              className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                              className="text-red-600 hover:bg-red-50 dark:bg-red-950/40 hover:text-red-700 dark:text-red-300"
                               onClick={() =>
                                 deleteExpense(expense._id || expense.id)
                               }

@@ -685,7 +685,7 @@ export default function MemberSettingsPage() {
                       </p>
                     </div>
                   </div>
-                  <Badge className="bg-green-100 text-green-800">Current</Badge>
+                  <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">Current</Badge>
                 </div>
                 <div className="flex items-center justify-between rounded-lg border p-3">
                   <div className="flex items-center space-x-3">
@@ -951,7 +951,7 @@ export default function MemberSettingsPage() {
           </Card>
 
           {/* Account Deletion */}
-          <Card className="border-red-200">
+          <Card className="border-red-200 dark:border-red-800">
             <CardHeader>
               <CardTitle className="text-red-600">Danger Zone</CardTitle>
               <CardDescription>
@@ -959,12 +959,12 @@ export default function MemberSettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+              <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/40 p-4">
                 <div className="flex items-start space-x-3">
                   <Trash2 className="mt-0.5 h-5 w-5 text-red-600" />
                   <div className="flex-1">
-                    <h4 className="font-medium text-red-900">Delete Account</h4>
-                    <p className="mb-3 text-red-700 text-sm">
+                    <h4 className="font-medium text-red-900 dark:text-red-100">Delete Account</h4>
+                    <p className="mb-3 text-red-700 dark:text-red-300 text-sm">
                       Permanently delete your account and all associated data.
                       This action cannot be undone.
                     </p>

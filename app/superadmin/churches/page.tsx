@@ -120,11 +120,11 @@ export default function ChurchesPage() {
     const statusLower = status?.toLowerCase();
     switch (statusLower) {
       case 'active':
-        return <Badge className="bg-green-100 text-green-800">Active</Badge>;
+        return <Badge className="bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200">Active</Badge>;
       case 'pending':
-        return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
+        return <Badge className="bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-200">Pending</Badge>;
       case 'suspended':
-        return <Badge className="bg-red-100 text-red-800">Suspended</Badge>;
+        return <Badge className="bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200">Suspended</Badge>;
       default:
         return <Badge variant="secondary">{status || 'Unknown'}</Badge>;
     }
@@ -133,9 +133,9 @@ export default function ChurchesPage() {
     const planLower = plan?.toLowerCase();
     switch (planLower) {
       case 'CUSTOM':
-        return <Badge className="bg-purple-100 text-purple-800">Custom</Badge>;
+        return <Badge className="bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200">Custom</Badge>;
       case 'CATHEDRAL':
-        return <Badge className="bg-blue-100 text-blue-800">Cathedral</Badge>;
+        return <Badge className="bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200">Cathedral</Badge>;
       case 'MINISTRY':
         return <Badge className="bg-muted text-foreground">Ministry</Badge>;
       default:

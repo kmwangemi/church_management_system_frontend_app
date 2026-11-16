@@ -84,7 +84,7 @@ export function DeleteGroupDialog({
           </div>
           {/* Group Statistics */}
           <div className="grid grid-cols-2 gap-4 text-center">
-            <div className="rounded-lg bg-blue-50 p-3">
+            <div className="rounded-lg bg-blue-50 dark:bg-blue-950/40 p-3">
               <div className="font-bold text-blue-600 text-lg">
                 {group?.memberCount ??
                   group?.members ??
@@ -93,7 +93,7 @@ export function DeleteGroupDialog({
               </div>
               <div className="text-blue-600 text-sm">Members</div>
             </div>
-            <div className="rounded-lg bg-green-50 p-3">
+            <div className="rounded-lg bg-green-50 dark:bg-green-950/40 p-3">
               <div className="font-bold text-green-600 text-lg">
                 {group?.stats?.totalActivities ?? 0}
               </div>
@@ -101,9 +101,9 @@ export function DeleteGroupDialog({
             </div>
           </div>
           {/* Warning Section */}
-          <Alert className="border-red-200 bg-red-50">
+          <Alert className="border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/40">
             <AlertTriangle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-red-800">
+            <AlertDescription className="text-red-800 dark:text-red-200">
               <strong>Warning:</strong> This will permanently delete all data
               associated with this Group including all members.
             </AlertDescription>

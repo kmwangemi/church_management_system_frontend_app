@@ -512,7 +512,7 @@ export default function SmallGroupsPage() {
                         </Badge>
                       </div>
                       <Badge
-                        className="bg-green-50 text-green-700"
+                        className="bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
                         variant="outline"
                       >
                         Joined
@@ -615,7 +615,7 @@ export default function SmallGroupsPage() {
                       className="flex items-center space-x-4 rounded-lg border p-4"
                       key={meeting.id}
                     >
-                      <div className="rounded-lg bg-blue-100 p-2">
+                      <div className="rounded-lg bg-blue-100 dark:bg-blue-950/60 p-2">
                         <CalendarIcon className="h-5 w-5 text-blue-600" />
                       </div>
                       <div className="flex-1">
