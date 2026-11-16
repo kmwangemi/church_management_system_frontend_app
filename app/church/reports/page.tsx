@@ -434,7 +434,7 @@ export default function ReportsPage() {
               />
             </div>
             <Select onValueChange={setFilterType} value={filterType}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Filter by type" />
               </SelectTrigger>
               <SelectContent>

@@ -223,7 +223,7 @@ export default function DepartmentsPage() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[300px]"
+                  className="h-[250px] w-full sm:h-[300px]"
                   config={{
                     worship: { label: 'Worship', color: '#3b82f6' },
                     children: { label: 'Children', color: '#10b981' },
@@ -233,7 +233,6 @@ export default function DepartmentsPage() {
                     prayer: { label: 'Prayer', color: '#06b6d4' },
                   }}
                 >
-                  <ResponsiveContainer height="100%" width="100%">
                     <LineChart data={activityData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
@@ -264,7 +263,6 @@ export default function DepartmentsPage() {
                         type="monotone"
                       />
                     </LineChart>
-                  </ResponsiveContainer>
                 </ChartContainer>
               </CardContent>
             </Card>
@@ -275,12 +273,11 @@ export default function DepartmentsPage() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[300px]"
+                  className="h-[250px] w-full sm:h-[300px]"
                   config={{
                     value: { label: 'Members' },
                   }}
                 >
-                  <ResponsiveContainer height="100%" width="100%">
                     <PieChart>
                       <Pie
                         cx="50%"
@@ -292,7 +289,7 @@ export default function DepartmentsPage() {
                             (percent ?? 0) * 100
                           ).toFixed(0)}%`
                         }
-                        outerRadius={80}
+                        outerRadius="65%"
                       >
                         {memberDistribution.map((entry, index) => (
                           <Cell fill={entry.color} key={`cell-${index}`} />
@@ -300,7 +297,6 @@ export default function DepartmentsPage() {
                       </Pie>
                       <ChartTooltip content={<ChartTooltipContent />} />
                     </PieChart>
-                  </ResponsiveContainer>
                 </ChartContainer>
               </CardContent>
             </Card>
@@ -317,13 +313,12 @@ export default function DepartmentsPage() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[300px]"
+                  className="h-[250px] w-full sm:h-[300px]"
                   config={{
                     budget: { label: 'Budget', color: '#3b82f6' },
                     spent: { label: 'Spent', color: '#10b981' },
                   }}
                 >
-                  <ResponsiveContainer height="100%" width="100%">
                     <BarChart data={departmentBudgets}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
@@ -332,7 +327,6 @@ export default function DepartmentsPage() {
                       <Bar dataKey="budget" fill="var(--color-budget)" />
                       <Bar dataKey="spent" fill="var(--color-spent)" />
                     </BarChart>
-                  </ResponsiveContainer>
                 </ChartContainer>
               </CardContent>
             </Card>

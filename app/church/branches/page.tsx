@@ -312,10 +312,9 @@ export default function BranchesPage() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[300px]"
+                  className="h-[250px] w-full sm:h-[300px]"
                   config={attendanceChartConfig}
                 >
-                  <ResponsiveContainer height="100%" width="100%">
                     <LineChart data={attendanceData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
@@ -332,7 +331,6 @@ export default function BranchesPage() {
                         />
                       ))}
                     </LineChart>
-                  </ResponsiveContainer>
                 </ChartContainer>
               </CardContent>
             </Card>
@@ -343,12 +341,11 @@ export default function BranchesPage() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[300px]"
+                  className="h-[250px] w-full sm:h-[300px]"
                   config={{
                     value: { label: 'Members' },
                   }}
                 >
-                  <ResponsiveContainer height="100%" width="100%">
                     <PieChart>
                       <Pie
                         cx="50%"
@@ -358,7 +355,7 @@ export default function BranchesPage() {
                         label={({ name, percent }) =>
                           `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
                         }
-                        outerRadius={80}
+                        outerRadius="65%"
                       >
                         {dynamicBranchDistribution.map((entry: any, index: number) => (
                           <Cell fill={entry.color} key={`cell-${index}`} />
@@ -366,7 +363,6 @@ export default function BranchesPage() {
                       </Pie>
                       <ChartTooltip content={<ChartTooltipContent />} />
                     </PieChart>
-                  </ResponsiveContainer>
                 </ChartContainer>
               </CardContent>
             </Card>
@@ -381,13 +377,12 @@ export default function BranchesPage() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[300px]"
+                  className="h-[250px] w-full sm:h-[300px]"
                   config={{
                     memberCount: { label: 'Members', color: '#3b82f6' },
                     growth: { label: 'Growth %', color: '#10b981' },
                   }}
                 >
-                  <ResponsiveContainer height="100%" width="100%">
                     <BarChart data={branchList}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
@@ -396,7 +391,6 @@ export default function BranchesPage() {
                       <Bar dataKey="memberCount" fill="var(--color-memberCount)" name="Members" />
                       <Bar dataKey="growth" fill="var(--color-growth)" name="Growth %" />
                     </BarChart>
-                  </ResponsiveContainer>
                 </ChartContainer>
               </CardContent>
             </Card>

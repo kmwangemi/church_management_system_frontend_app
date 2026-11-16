@@ -267,14 +267,13 @@ export default function SmallGroupsPage() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[300px]"
+                  className="h-[250px] w-full sm:h-[300px]"
                   config={{
                     total: { label: 'Total', color: '#3b82f6' },
                     active: { label: 'Active Members', color: '#10b981' },
                     new: { label: 'New Members', color: '#f59e0b' },
                   }}
                 >
-                  <ResponsiveContainer height="100%" width="100%">
                     <LineChart data={attendanceData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
@@ -299,7 +298,6 @@ export default function SmallGroupsPage() {
                         type="monotone"
                       />
                     </LineChart>
-                  </ResponsiveContainer>
                 </ChartContainer>
               </CardContent>
             </Card>
@@ -310,12 +308,11 @@ export default function SmallGroupsPage() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[300px]"
+                  className="h-[250px] w-full sm:h-[300px]"
                   config={{
                     value: { label: 'Members' },
                   }}
                 >
-                  <ResponsiveContainer height="100%" width="100%">
                     <PieChart>
                       <Pie
                         cx="50%"
@@ -325,7 +322,7 @@ export default function SmallGroupsPage() {
                         label={({ name, percent }) =>
                           `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
                         }
-                        outerRadius={80}
+                        outerRadius="65%"
                       >
                         {categoryDistribution.map((entry, index) => (
                           <Cell fill={entry.color} key={`cell-${index}`} />
@@ -333,7 +330,6 @@ export default function SmallGroupsPage() {
                       </Pie>
                       <ChartTooltip content={<ChartTooltipContent />} />
                     </PieChart>
-                  </ResponsiveContainer>
                 </ChartContainer>
               </CardContent>
             </Card>
@@ -348,12 +344,11 @@ export default function SmallGroupsPage() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[300px]"
+                  className="h-[250px] w-full sm:h-[300px]"
                   config={{
                     groups: { label: 'Groups', color: '#3b82f6' },
                   }}
                 >
-                  <ResponsiveContainer height="100%" width="100%">
                     <BarChart data={meetingDays}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="day" />
@@ -361,7 +356,6 @@ export default function SmallGroupsPage() {
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Bar dataKey="groups" fill="var(--color-groups)" />
                     </BarChart>
-                  </ResponsiveContainer>
                 </ChartContainer>
               </CardContent>
             </Card>
@@ -372,7 +366,7 @@ export default function SmallGroupsPage() {
               </CardHeader>
               <CardContent>
                 <ChartContainer
-                  className="h-[300px]"
+                  className="h-[250px] w-full sm:h-[300px]"
                   config={{
                     worship: { label: 'Worship', color: '#3b82f6' },
                     children: { label: 'Children', color: '#10b981' },
@@ -382,7 +376,6 @@ export default function SmallGroupsPage() {
                     prayer: { label: 'Prayer', color: '#06b6d4' },
                   }}
                 >
-                  <ResponsiveContainer height="100%" width="100%">
                     <LineChart data={activityData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
@@ -413,7 +406,6 @@ export default function SmallGroupsPage() {
                         type="monotone"
                       />
                     </LineChart>
-                  </ResponsiveContainer>
                 </ChartContainer>
               </CardContent>
             </Card>

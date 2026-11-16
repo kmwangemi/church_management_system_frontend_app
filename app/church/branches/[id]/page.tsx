@@ -399,19 +399,19 @@ export default function BranchDetailsPage({
         <SpinnerLoader description="Loading branch data..." />
       ) : (
         <>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
               <Link href="/church/branches">
                 <Button size="sm" variant="outline">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Back to Branches
                 </Button>
               </Link>
-              <div>
-                <h1 className="font-bold text-3xl tracking-tight">
+              <div className="min-w-0">
+                <h1 className="truncate font-bold text-2xl tracking-tight sm:text-3xl">
                   {capitalizeFirstLetter(branch?.name ?? 'Not Provided')}
                 </h1>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground text-sm sm:text-base">
                   Branch details and management
                 </p>
               </div>

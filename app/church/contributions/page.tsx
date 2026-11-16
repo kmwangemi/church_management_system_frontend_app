@@ -553,7 +553,7 @@ export default function ContributionsPage() {
               />
             </div>
             <Select onValueChange={setSelectedType} value={selectedType}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
@@ -569,7 +569,7 @@ export default function ContributionsPage() {
               </SelectContent>
             </Select>
             <Select onValueChange={setSelectedStatus} value={selectedStatus}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>

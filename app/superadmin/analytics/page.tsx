@@ -78,7 +78,7 @@ export default function AnalyticsPage() {
         </div>
         <div className="flex items-center space-x-2">
           <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-full sm:w-[160px]">
               <SelectValue placeholder="Select time range" />
             </SelectTrigger>
             <SelectContent>
@@ -189,7 +189,7 @@ export default function AnalyticsPage() {
               <Skeleton className="h-[300px] w-full" />
             ) : (
               <ChartContainer
-                className="h-[300px]"
+                className="h-[250px] w-full sm:h-[300px]"
                 config={{
                   members: {
                     label: 'Total Members',
@@ -201,7 +201,6 @@ export default function AnalyticsPage() {
                   },
                 }}
               >
-                <ResponsiveContainer height="100%" width="100%">
                   <LineChart data={membershipGrowthData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
@@ -223,7 +222,6 @@ export default function AnalyticsPage() {
                       type="monotone"
                     />
                   </LineChart>
-                </ResponsiveContainer>
               </ChartContainer>
             )}
           </CardContent>
@@ -242,7 +240,7 @@ export default function AnalyticsPage() {
               <Skeleton className="h-[300px] w-full" />
             ) : (
               <ChartContainer
-                className="h-[300px]"
+                className="h-[250px] w-full sm:h-[300px]"
                 config={{
                   revenue: {
                     label: 'Total Revenue (KES)',
@@ -258,7 +256,6 @@ export default function AnalyticsPage() {
                   },
                 }}
               >
-                <ResponsiveContainer height="100%" width="100%">
                   <AreaChart data={revenueData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
@@ -291,7 +288,6 @@ export default function AnalyticsPage() {
                       type="monotone"
                     />
                   </AreaChart>
-                </ResponsiveContainer>
               </ChartContainer>
             )}
           </CardContent>
@@ -312,7 +308,6 @@ export default function AnalyticsPage() {
               <Skeleton className="h-[300px] w-full" />
             ) : (
               <div className="h-[300px] w-full">
-                <ResponsiveContainer height="100%" width="100%">
                   <PieChart>
                     <Pie
                       cx="50%"
@@ -324,7 +319,7 @@ export default function AnalyticsPage() {
                         `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
                       }
                       labelLine={false}
-                      outerRadius={80}
+                      outerRadius="65%"
                     >
                       {churchDistributionData.map((entry: any, index: number) => (
                         <Cell fill={entry.color || '#8884d8'} key={`cell-${index}`} />
@@ -332,7 +327,6 @@ export default function AnalyticsPage() {
                     </Pie>
                     <ChartTooltip />
                   </PieChart>
-                </ResponsiveContainer>
               </div>
             )}
           </CardContent>
@@ -351,7 +345,7 @@ export default function AnalyticsPage() {
               <Skeleton className="h-[300px] w-full" />
             ) : (
               <ChartContainer
-                className="h-[300px]"
+                className="h-[250px] w-full sm:h-[300px]"
                 config={{
                   attendance: {
                     label: 'Attendance',
@@ -363,7 +357,6 @@ export default function AnalyticsPage() {
                   },
                 }}
               >
-                <ResponsiveContainer height="100%" width="100%">
                   <BarChart data={attendanceData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="day" />
@@ -382,7 +375,6 @@ export default function AnalyticsPage() {
                       name="Attendance"
                     />
                   </BarChart>
-                </ResponsiveContainer>
               </ChartContainer>
             )}
           </CardContent>
